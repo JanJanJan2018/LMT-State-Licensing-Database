@@ -1,0 +1,1495 @@
+---
+title: "data census gov demographic per state additions"
+author: "Janis Corona"
+date: "7/7/2020-7/15/2020"
+output: html_document
+---
+
+This script pulls together other tables created from related scripts for extracting zillow two bedroom home values for May 2020, current July 2020 number of jobs available and hourly and annual average pay per job compared to licensed massage therapists (LMTs) in each of 50 of the US states not including the new District of Columbia state added this year 2020. It also pulls in the top 3 populated city per state that makes those average pay values according to the advertised pay per job and city from Indeed. All files are in the github repository located at https://github.com/JanJanJan2018/LMT-State-Licensing-Database and the census data that we start adding to this table is pulled from 2018 data from
+Data.census.gov demographics to add per state to state licensing requirements excel file:
+https://data.census.gov/cedsci/table?q=median%20pay%20by%20region%20and%20race&tid=ACSDP1Y2018.DP05&vintage=2018&cid=DP05_0001E&g=0100000US.04000.001&hidePreview=false
+
+```{r}
+library(ggplot2)
+library(grid)
+library(gridExtra)
+library(dplyr)
+library(tidyr)
+```
+
+
+```{r}
+data <- read.csv('ACSDP1Y2018.DP05_data_with_overlays_2020-07-07T154725.csv',
+                 sep=',',
+                 header=TRUE, na.strings = c('',' ','NA'))
+                 
+meta <- read.csv('ACSDP1Y2018.DP05_metadata_2020-07-07T154725.csv',header=TRUE, 
+                 sep=',',na.strings=c('',' ','NA'))
+```
+
+
+```{r}
+head(data)
+
+```
+
+
+```{r}
+meta <- meta[,-3]              
+head(meta)
+
+```
+
+
+```{r}
+df <- data[-c(1,21,40),-1]
+row.names(df) <- NULL
+df$NAME <- as.character(paste(df$NAME))
+
+```
+
+
+```{r}
+metanames <- meta$GEO_ID
+dfnames <- as.factor(colnames(df))
+
+```
+
+
+```{r}
+length(metanames)==length(dfnames)
+g <- metanames==dfnames
+sum(g==TRUE)
+
+```
+
+
+```{r}
+meta$id <- as.character(paste(meta$id))
+
+err <- grep('Error',meta$id)
+
+DF <- df[,-err]
+```
+
+```{r}
+head(DF)
+```
+
+```{r}
+estimate <- grep('Estimate',meta$id)
+
+Estimate <- meta[estimate,]
+head(Estimate)
+```
+
+```{r}
+age <- Estimate[grep('AGE',Estimate$id),]
+head(age)
+```
+
+```{r}
+race <- Estimate[grep('RACE',Estimate$id),]
+head(race)
+```
+
+
+```{r}
+percentRace <- race[grep('Percent',race$id),]
+percentRace$id <- gsub('Percent Estimate!!RACE!!','',percentRace$id)
+percentRace
+```
+
+Lets get the white, black, asian, native american indian, two or more total, pacific islander, and latino groups.
+```{r}
+totalPop <- percentRace[1,]
+black <- percentRace[6,]
+white <- percentRace[5,]
+twoOrMore <- percentRace[3,]
+AmericanIndian <- percentRace[7,]
+Asian <- percentRace[12,]
+pacificIslander <- percentRace[20,]
+LatinoHispanic <- percentRace[32,]
+
+totalPop$id <- 'total_state_population'
+black$id <- 'percent_black'
+white$id <- 'percent_white'
+twoOrMore$id <- 'percent_two_or_more'
+AmericanIndian$id <- 'percent_Native_American'
+Asian$id <- 'percent_Asian'
+pacificIslander$id <- 'percent_Pacific_Islander'
+LatinoHispanic$id <- 'percent_Latino'
+
+EthnicBackground <- rbind(totalPop,black,white,twoOrMore,AmericanIndian,Asian,pacificIslander,LatinoHispanic)
+EthnicBackground
+```
+
+```{r}
+IDs <- EthnicBackground$GEO_ID
+class(IDs)
+IDs <- as.character(paste(IDs))
+```
+
+```{r}
+DF2 <- DF[,c('NAME',IDs)]
+DF2
+```
+
+```{r}
+colnames(DF2) <- c('state',EthnicBackground$id)
+DF2
+```
+
+```{r}
+Ethnicities <- DF2[order(DF2$state),]
+row.names(Ethnicities) <- NULL
+Ethnicities
+```
+
+```{r}
+write.csv(Ethnicities, 'race_distribution_2018.csv',row.names=FALSE)
+```
+
+Merge the state licensing excel file with this csv file to add in the demographic race data per state.
+```{r}
+stateREQs <- read.csv('stateLicensingRequirements.csv', sep=',', header=TRUE, na.strings=c('',' ','NA'))
+```
+
+```{r}
+colnames(stateREQs)
+```
+
+```{r}
+stateREQs <- stateREQs[,1:36]
+colnames(stateREQs)
+```
+
+
+```{r}
+Ethnicities$state <- as.factor(Ethnicities$state)
+```
+
+```{r}
+StateLicensing <- merge(stateREQs,Ethnicities, by.x='state',by.y='state')
+dim(StateLicensing)
+colnames(StateLicensing)
+```
+
+
+***
+
+We added the demographics to the state licensing requirements and facts csv version of the excel version.
+
+Now lets add in the fields from our Indeed web scrape to update the columns 32-34 of the StateLicensing table.We added them in manually before, but now that a table was made with the copy of the indeed web scrape script that uses the modified writeIndeedJobData5Pages() using the original getIndeedJobData5Pages(). We can update the table on the fly as needed as long as the Indeed site doesn't change its layout. This file is the statesRates.csv file made in the 'copy-indeed-webscrape-function-altered.Rmd' script.
+```{r}
+statesRates <- read.csv('statesRates.csv', sep=',',header=TRUE, na.strings=c('',' ','NA'),
+                       stringsAsFactors = FALSE)
+head(statesRates)
+
+```
+
+```{r}
+statesOrdered <- statesRates[order(statesRates$state),]
+head(statesOrdered)
+```
+
+When ordering by the state abbreviations, the order isn't the same as by the state spelled out. So lets compare the two and adjust changes.
+```{r}
+statesOrdered$state
+```
+The statesOrdered has an NA, lets remove it.
+```{r}
+statesOrdered <- statesOrdered[1:50,]
+```
+
+```{r}
+states <- c("Alaska"  ,"Alabama"     ,      "Arkansas"     ,     "Arizona"     ,    "California",    
+ "Colorado"    ,   "Connecticut"  ,  "Delaware"     ,  "Florida"    ,    "Georgia"  ,     
+"Hawaii"   ,     "Iowa"   , "Idaho"   ,       "Illinois"  ,     "Indiana"        ,       
+ "Kansas"   ,      "Kentucky",       "Louisiana" ,  "Massachusetts",  "Maryland" , "Maine",     
+  "Michigan"  ,     "Minnesota"   ,  "Missouri"  , "Mississippi"    ,    
+"Montana"       , "North Carolina","North Dakota" ,"Nebraska"   ,  "New Hampshire" , "New Jersey", "New Mexico"     , "Nevada"       ,      
+"New York"    ,      "Ohio"       ,   
+"Oklahoma"      , "Oregon"       ,  "Pennsylvania"   ,"Rhode Island",   "South Carolina",
+"South Dakota"  , "Tennessee"     , "Texas"          ,"Utah"       , "Virginia",   "Vermont",   
+ "Washington" ,"Wisconsin" ,  "West Virginia"  ,   "Wyoming" )
+
+states
+```
+
+```{r}
+statesOrdered$stateName <- states
+statesOrdered <- statesOrdered[,c(1,9,2:8)]
+statesOrdered <- statesOrdered[order(statesOrdered$stateName),]
+head(statesOrdered)
+```
+
+Lets make sure the stateName of the statesOrdered and the state of the StateLicensing tables are identical before updating the table with the latest job information from Indeed.
+```{r}
+as.factor(statesOrdered$stateName)==StateLicensing$state
+```
+That checks out, so we can now update the information with the latest data.
+```{r}
+StateLicensing$LMT_AnualMedianPayAdvertised_Indeed <- statesOrdered$avgAnualSalary
+StateLicensing$LMT_HourlyMedianPayRangeAdvertised_Indeed <- statesOrdered$avgHourly
+StateLicensing$LMT_medianJobsListed_IndeedFirst5pages <- statesOrdered$jobsListed
+
+```
+
+```{r}
+colnames(StateLicensing)
+```
+
+We should change the names of those columns to say 'avg' instead of 'median'.
+```{r}
+colnames(StateLicensing)[32:34] <- gsub('[mM]edian','Avg',colnames(StateLicensing)[32:34])
+colnames(StateLicensing)
+```
+
+The Zillow data was also added manually from the find3zillowCitiesFunctionMedian2BRHomeValues.Rmd file that used a downloaded Zillow dataset on 2 bedroom zillow home value index value per city.
+The file is 'updatedZillow2BR.csv' made from our copy-find3zillowCitiesFunctionMean2BRHomeValues.Rmd script.
+```{r}
+zillowData <- read.csv('updatedZillow2BR.csv',sep=',', header=TRUE, na.strings=c('',' ','NA'))
+```
+
+```{r}
+head(zillowData)
+```
+
+```{r}
+zillowData$State
+```
+
+```{r}
+zillowData$stateName <- states
+zillowData
+```
+
+```{r}
+zOrdered <- zillowData[order(zillowData$stateName),]
+zOrdered
+```
+
+```{r}
+zillowOrdered <- zOrdered[,2:3]
+colnames(zillowOrdered)[1] <- 'zillow2BR_2020May'
+zillowOrdered
+```
+
+```{r}
+StateLicensing$state==zillowOrdered$stateName
+```
+Everything checks out so we can now update our zillow 2 bedroom median home values per state to the mean values per state instead. Some of the top 3 cities of population weren't in the Zillow data, such as AL.
+```{r}
+StateLicensing$Zillow_2BR_3cityMedianHomeValue <- zillowOrdered$zillow2BR_2020May
+colnames(StateLicensing)[35] <- 'Zillow_2BR_3cityAverageHomeValue'
+colnames(StateLicensing)
+```
+
+Now, we can write our table out to csv. We manually put in the 2018 median household income per state from data.census.gov, but we can update that later or as needed when more relevant data is available. That was two years ago, and there should be 2020 data soon because of the 2020 census.
+
+Because this will be the same table but with added and updated columns, we should name it something else to keep separate from the original table with fewer columns.
+
+
+```{r}
+write.csv(StateLicensing,'stateLicensingDemographicsAddedAndUpdated.csv',row.names=FALSE)
+```
+
+***
+
+Note that the original csv file stateLicensingRequirements.csv has to be manually input for the changes, then use this script to add the demographics, updated Zillow 2BR home values, and update the average Indeed pay rates and job listings. Don't make changes in the file just written out or else they will be lost if modifying the state by state licensing requirements of the first variables.
+
+
+***
+
+Now, lets add in the data on the alternate jobs available for a massage therapist looking to move to another state and work as a massage therapist, but needing alternate work to pay bills while waiting for license approval. 
+
+I have gathered the information on job title for the first five web pages of job listings on Indeed for similar jobs to a massage therapist or that might not need any license to work as. These jobs are: nanny, server, personal trainer, security, data science, house cleaner, warehouse worker, and cashier. The data scientist job is more relevant to me specifically, but some people could possibly have experience as a coder or computer programmer and statistical analyst to land a job in data science without the intense and rigorous education required in machine learning that I went through. It is not likely, but some people do make it to similar jobs with just a couple months to years of proving they are qualified as computer programmers and coders. So, we will assume that is the case, and that companies don't want to pay higher salaries to arrogant top educated and possibly difficult to work with graduates and would rather pay motivated and slightly proven but coachable males and females from team building backgrounds or sports competitive athletes used to the heirarchical structure of 'yes sir and mam' to their directors at lower wages than a professional, skilled, and educated in the background theory that could possibly question the director's motives, authority, and decisions, and possibly leak the lack of sound leadership within the company to something as viral as a social media site. 
+
+So, without further a do, lets start, shall we?
+
+We will import the data sets individually for each of the 50 states' counts, and salaries be it hourly, annual, or both from our top three populated cities of each state.
+
+house cleaner:
+```{r}
+houseCleaner <- read.csv('./Alternate Jobs Each State Indeed/statesRates-house cleaner.csv', header=TRUE,
+                            na.strings=c('',' ','NA'), sep=',')
+houseCleaner$stateName <- states
+houseCleaner <- houseCleaner[,c(1,10,2:9)]
+head(houseCleaner)
+
+```
+
+nanny:
+```{r}
+nanny <- read.csv('./Alternate Jobs Each State Indeed/statesRates-nanny.csv', header=TRUE,
+                            na.strings=c('',' ','NA'), sep=',')
+nanny$stateName <- states
+nanny <- nanny[,c(1,10,2:9)]
+head(nanny)
+
+```
+
+cashier:
+```{r}
+cashier <- read.csv('./Alternate Jobs Each State Indeed/statesRates-cashier.csv', header=TRUE,
+                            na.strings=c('',' ','NA'), sep=',')
+cashier$stateName <- states
+cashier <- cashier[,c(1,10,2:9)]
+head(cashier)
+
+```
+
+personal trainer:
+```{r}
+personalTrainer <- read.csv('./Alternate Jobs Each State Indeed/statesRates-personal trainer.csv', header=TRUE,
+                            na.strings=c('',' ','NA'), sep=',')
+personalTrainer$stateName <- states
+personalTrainer <- personalTrainer[,c(1,10,2:9)]
+head(personalTrainer)
+```
+
+security:
+```{r}
+security <- read.csv('./Alternate Jobs Each State Indeed/statesRates-security.csv', header=TRUE,
+                            na.strings=c('',' ','NA'), sep=',')
+security$stateName <- states
+security <- security[,c(1,10,2:9)]
+head(security)
+
+```
+
+```{r}
+server <- read.csv('./Alternate Jobs Each State Indeed/statesRates-server.csv', header=TRUE,
+                            na.strings=c('',' ','NA'), sep=',')
+server$stateName <- states
+server <- server[,c(1,10,2:9)]
+head(server)
+
+```
+
+warehouse worker:
+```{r}
+warehouseWorker <- read.csv('./Alternate Jobs Each State Indeed/statesRates-warehouse worker.csv', header=TRUE,
+                            na.strings=c('',' ','NA'), sep=',')
+warehouseWorker$stateName <- states
+warehouseWorker <- warehouseWorker[,c(1,10,2:9)]
+head(warehouseWorker)
+
+```
+
+data scientist:
+```{r}
+dataScientist <- read.csv('./Alternate Jobs Each State Indeed/statesRates-data scientist.csv', header=TRUE,
+                            na.strings=c('',' ','NA'), sep=',')
+dataScientist$stateName <- states
+dataScientist <- dataScientist[,c(1,10,2:9)]
+head(dataScientist)
+
+```
+
+tutor:
+```{r}
+tutor <- read.csv('./Alternate Jobs Each State Indeed/statesRates-tutor.csv', header=TRUE,
+                            na.strings=c('',' ','NA'), sep=',')
+tutor$stateName <- states
+tutor <- tutor[,c(1,10,2:9)]
+head(tutor)
+
+```
+
+clerical:
+```{r}
+clerical <- read.csv('./Alternate Jobs Each State Indeed/statesRates-clerical.csv', header=TRUE,
+                            na.strings=c('',' ','NA'), sep=',')
+clerical$stateName <- states
+clerical <- clerical[,c(1,10,2:9)]
+head(clerical)
+
+```
+
+teacher:
+```{r}
+teacher <- read.csv('./Alternate Jobs Each State Indeed/statesRates-teacher.csv', header=TRUE,
+                            na.strings=c('',' ','NA'), sep=',')
+teacher$stateName <- states
+teacher <- teacher[,c(1,10,2:9)]
+head(teacher)
+
+```
+
+Lets get only the columns needed.
+```{r}
+dataScientist2 <- dataScientist[,c(2,3,10)]
+colnames(dataScientist2)[2:3] <- paste('dataScientist',colnames(dataScientist2)[2:3],sep='_')
+dataScientist2$dataScientist_avgHourly <- (dataScientist2$dataScientist_avgAnualSalary/52)/40
+dataScientist2 <- dataScientist2[,c(1,2,4,3)]
+head(dataScientist2)
+```
+
+```{r}
+warehouseWorker2 <- warehouseWorker[,c(2,3,9)]
+colnames(warehouseWorker2)[2:3] <- paste('warehouse',colnames(warehouseWorker2)[2:3],
+                                         sep='_')
+warehouseWorker2$warehouse_avgAnnualSalary <- warehouseWorker2$warehouse_avgHourly*52*40
+head(warehouseWorker2)
+```
+
+```{r}
+nanny2 <- nanny[,c(2,3,9)]
+colnames(nanny2)[2:3] <- paste('nanny',colnames(nanny2)[2:3],
+                                         sep='_')
+nanny2$nanny_avgAnnualSalary <- nanny2$nanny_avgHourly*52*40
+head(nanny2)
+```
+
+```{r}
+personalTrainer2 <- personalTrainer[,c(2,3,9)]
+colnames(personalTrainer2)[2:3] <- paste('personalTrainer',colnames(personalTrainer2)[2:3],
+                                         sep='_')
+personalTrainer2$personalTrainer_avgAnnualSalary <-
+                          personalTrainer2$personalTrainer_avgHourly*52*40
+head(personalTrainer2)
+```
+
+
+```{r}
+security2 <- security[,c(2,3,9)]
+colnames(security2)[2:3] <- paste('security',colnames(security2)[2:3],
+                                         sep='_')
+security2$security_avgAnnualSalary <- security2$security_avgHourly*52*40
+head(security2)
+```
+
+
+```{r}
+houseCleaner2 <- houseCleaner[,c(2,3,9)]
+colnames(houseCleaner2)[2:3] <- paste('houseCleaner',colnames(houseCleaner2)[2:3],
+                                         sep='_')
+houseCleaner2$houseCleaner_avgAnnualSalary <- houseCleaner2$houseCleaner_avgHourly*52*40
+head(houseCleaner2)
+```
+
+
+```{r}
+server2 <- server[,c(2,3,9)]
+colnames(server2)[2:3] <- paste('server',colnames(server2)[2:3],
+                                         sep='_')
+server2$server_avgAnnualSalary <- server2$server_avgHourly*52*40
+head(server2)
+```
+
+
+```{r}
+cashier2 <- cashier[,c(2,3,9)]
+colnames(cashier2)[2:3] <- paste('cashier',colnames(cashier2)[2:3],
+                                         sep='_')
+cashier2$cashier_avgAnnualSalary <- cashier2$cashier_avgHourly*52*40
+head(cashier2)
+```
+
+```{r}
+tutor2 <- tutor[,c(2,3,9)]
+colnames(tutor2)[2:3] <- paste('tutor',colnames(tutor2)[2:3],
+                                         sep='_')
+tutor2$tutor_avgAnnualSalary <- tutor2$tutor_avgHourly*52*40
+head(tutor2)
+```
+
+```{r}
+clerical2 <- clerical[,c(2,3,9)]
+colnames(clerical2)[2:3] <- paste('clerical',colnames(clerical2)[2:3],
+                                         sep='_')
+clerical2$clerical_avgAnnualSalary <- clerical2$clerical_avgHourly*52*40
+head(clerical2)
+```
+
+```{r}
+teacher2 <- teacher[,c(2,3,10)]
+colnames(teacher2)[2:3] <- paste('teacher',colnames(teacher2)[2:3],sep='_')
+teacher2$teacher_avgHourly <- (teacher2$teacher_avgAnualSalary/52)/40
+teacher2 <- teacher2[,c(1,2,4,3)]
+head(teacher2)
+```
+
+Lets add these new columns to our data table StateLicensing one at a time.
+```{r}
+slr <- merge(StateLicensing,cashier2, by.x='state', by.y='stateName')
+slr <- merge(slr, server2, by.x='state', by.y='stateName')
+slr <- merge(slr, personalTrainer2, by.x='state', by.y='stateName')
+slr <- merge(slr, houseCleaner2, by.x='state', by.y='stateName')
+slr <- merge(slr, warehouseWorker2, by.x='state', by.y='stateName')
+slr <- merge(slr, security2, by.x='state', by.y='stateName')
+slr <- merge(slr, nanny2, by.x='state', by.y='stateName')
+slr <- merge(slr, clerical2, by.x='state', by.y='stateName')
+slr <- merge(slr, tutor2, by.x='state', by.y='stateName')
+slr <- merge(slr, teacher2, by.x='state', by.y='stateName')
+slr <- merge(slr, dataScientist2, by.x='state', by.y='stateName')
+
+
+colnames(slr)
+```
+
+Lets now write this data table out to csv.
+```{r}
+write.csv(slr,'stateLicensingDemographicsAddedAndUpdated.csv', row.names=FALSE)
+```
+
+***
+
+Lets plot some of this data to get a good sense of what the job outlook is like compared to massage therapy for other professions.
+
+```{r}
+numberOfJobs <- slr[,c(1,32,45,48,51,54,57,60,63,66,69,72,75)]
+numberOfJobs
+```
+
+
+
+```{r}
+gg <- ggplot(numberOfJobs, aes(x=numberOfJobs$LMT_AvgJobsListed_IndeedFirst5pages))
+gg <- gg + geom_histogram(binwidth=2, colour="black", 
+                          aes(y=..density.., fill=..count..))
+gg <- gg + stat_function(fun=dnorm,
+                         color="red",
+                         args=list(mean=mean(numberOfJobs$LMT_AvgJobsListed_IndeedFirst5pages), 
+                                  sd=sd(numberOfJobs$LMT_AvgJobsListed_IndeedFirst5pages)))
+
+gg
+
+```
+
+```{r}
+avg <- mean(numberOfJobs$LMT_AvgJobsListed_IndeedFirst5pages)
+m <- min(numberOfJobs$LMT_AvgJobsListed_IndeedFirst5pages)
+M <- max(numberOfJobs$LMT_AvgJobsListed_IndeedFirst5pages)
+
+ggplot(data = numberOfJobs, aes(y=numberOfJobs$LMT_AvgJobsListed_IndeedFirst5pages, x=numberOfJobs$state)) +
+  geom_bar(stat='identity', position=position_dodge())+
+  scale_y_continuous(breaks=c(m,avg,M),labels=c(m,avg,M))+
+  scale_fill_brewer(palette='Paired') +
+  geom_hline(yintercept=mean(numberOfJobs$LMT_AvgJobsListed_IndeedFirst5pages), linetype="dashed", color = "red")+
+  theme_classic()+
+  theme(legend.position="bottom")+
+  theme(axis.text = element_text(colour = "black", angle=90, size = rel(.75)))+
+  ggtitle('LMT Average Job Listings in the US Top 3 Cities of each State')+
+  ylab(NULL)+
+  xlab(NULL)
+  
+```
+
+Lets look at those states whose job listings on Indeed are more than the US average job listings for licensed massage therapists.
+```{r}
+moreThanAvgLMT <- subset(numberOfJobs, numberOfJobs$LMT_AvgJobsListed_IndeedFirst5pages>avg)
+moreThanAvgLMT$state
+```
+The above list of 31 states look like heavily populated states, such as CA, CO, NY, and TX.
+
+Now, lets see which states have fewer than the US average number of job listings for LMT on Indeed.
+```{r}
+lessThanAvgLMT <- subset(numberOfJobs, numberOfJobs$LMT_AvgJobsListed_IndeedFirst5pages<avg)
+lessThanAvgLMT$state
+```
+
+From the above, Alaska and many southern and sierra mountain range north mid-western states as well as Hawaii don't have as many job listings for massage therapists as the more city or urban states do. Surprising Georgia is on this list, as that state has a large somewhat urban population and high pay for LMTs on average compared to other states.
+Lets look at the pay visually for the 50 states to see this claim just made as true or false.
+```{r}
+payRates <- slr[,c(1,33,46,49,52,55,58,61,64,67,70,73,76)]
+payRates
+```
+
+
+
+```{r}
+avgPay <- mean(payRates$LMT_HourlyAvgPayRangeAdvertised_Indeed)
+mPay <- min(payRates$LMT_HourlyAvgPayRangeAdvertised_Indeed)
+MPay <- max(payRates$LMT_HourlyAvgPayRangeAdvertised_Indeed)
+
+ggplot(data = numberOfJobs, aes(y=payRates$LMT_HourlyAvgPayRangeAdvertised_Indeed, x=payRates$state)) +
+  geom_bar(stat='identity', position=position_dodge())+
+  scale_y_continuous(breaks=c(mPay,avgPay,MPay),labels=c(mPay,avgPay,MPay))+
+  scale_fill_brewer(palette='Paired') +
+  geom_hline(yintercept=mean(payRates$LMT_HourlyAvgPayRangeAdvertised_Indeed), linetype="dashed", color = "red")+
+  theme_classic()+
+  theme(legend.position="bottom")+
+  theme(axis.text = element_text(colour = "black", angle=90, size = rel(.75)))+
+  ggtitle('LMT Average Hourly Pay in the US Top 3 Cities of each State')+
+  ylab(NULL)+
+  xlab(NULL)
+  
+```
+Lets see what states are paying their massage therapists more than the US average. Visually, above we can see Georgia does, and that GA is also in the list of the states with less than the average number of LMT job listings in the US per state. This logically indicates there is a demand for massage therapists in these states, and that the businesses offering massage therapy need LMTs and are willing to offer them more pay. 
+```{r}
+morePayThanAvgLMT <- subset(payRates, payRates$LMT_HourlyAvgPayRangeAdvertised_Indeed>avgPay)
+morePayThanAvgLMT$state
+```
+
+Lets see which states offer more than the national LMT average hourly pay and are also in the list of states with less than the national average number of LMT job listings.
+```{r}
+fewListings <- lessThanAvgLMT$state
+morePayAdvertised <- morePayThanAvgLMT$state
+
+demandStatesLMT <- fewListings %in% morePayAdvertised
+demanded <- fewListings[demandStatesLMT]
+demanded
+```
+The above states have a demand for massage therapists because they have fewer listings advertised on Indeed, but are willing to pay more than the national average for massage therapists. Those states are Georgia, Mississippi, and Wyoming.
+
+Using this same logic, it is fair to say those states that have a higher than average demand for massage therapists and also more pay than average for massage therapists must also be states where the cost of living is higher than normal. Lets look at those states and compare their home values for a two bedroom Zillow listed price from our larger data table called slr.
+```{r}
+moreListings <- moreThanAvgLMT$state
+
+highCostStates <- moreListings %in% morePayAdvertised
+highLivingCost <- moreListings[highCostStates]
+highLivingCost
+```
+There are 20 states that are listed as possible high cost of living states because we are making the assumption that those states with higher than average pay for LMTs and higher than average job listings for LMT are in high cost of living states. We can verify this by looking at the two bedroom homes for sale in all states and get the average to compare to these 20 states.
+```{r}
+avgHomePrice <- mean(slr$Zillow_2BR_3cityAverageHomeValue)
+mHomePrice <- min(slr$Zillow_2BR_3cityAverageHomeValue)
+MHomePrice <- max(slr$Zillow_2BR_3cityAverageHomeValue)
+
+ggplot(data = numberOfJobs, aes(y=slr$Zillow_2BR_3cityAverageHomeValue, x=slr$state)) +
+  geom_bar(stat='identity', position=position_dodge())+
+  scale_y_continuous(breaks=c(mHomePrice,avgHomePrice,MHomePrice),
+                     labels=c(mHomePrice,avgHomePrice,MHomePrice))+
+  scale_fill_brewer(palette='Paired') +
+  geom_hline(yintercept=avgHomePrice, linetype="dashed", color = "red")+
+  theme_classic()+
+  theme(legend.position="bottom")+
+  theme(axis.text = element_text(colour = "black", angle=90, size = rel(.75)))+
+  ggtitle('Zillow 2 Bedroom Home Value in the US Top 3 Cities of each State')+
+  ylab(NULL)+
+  xlab(NULL)
+```
+Lets see exactly which states have higher priced homes than the national average.
+```{r}
+expensiveHomes <- subset(slr,slr$Zillow_2BR_3cityAverageHomeValue>avgHomePrice)
+e <- expensiveHomes$state
+e
+```
+There are 22 states with higher priced homes than the national average from the list produced above.
+
+Lets see if those states are also in the list of states with high living costs.
+```{r}
+expensive <- expensiveHomes$state %in% highLivingCost
+expensiveHomes <- e[expensive]
+expensiveHomes
+```
+There are 10 states with expensive homes compared to the national average home price, and that also have higher pay advertised for LMTs and more advertised job listings for LMTs in the three most populated cities in each state according to the first five web pages of Indeed.
+
+Lets see which states have lower priced homes than the national average but also have higher pay advertised for LMTs and more job listings advertised for LMTs.
+```{r}
+inexpensiveHomes <- subset(slr,slr$Zillow_2BR_3cityAverageHomeValue < avgHomePrice)
+inexpensive <- inexpensiveHomes$state 
+
+notExpensive <- inexpensive %in% highLivingCost
+affordable <- inexpensive[notExpensive]
+affordable
+```
+
+We have a couple lists we generated, one for the higher priced states that also pay more for LMTs and have more jobs available called 'expensiveHomes', and another list that is the list of states that aren't as expensive but also pay more for LMTs and have more jobs available for LMTs called 'affordable' that we can compare other factors in our large dataset called slr. We also have a third list called 'demanded' that lists those states that don't have as many jobs available as the national average for LMTs but pays more than the national average. Lets see if those states are in our list of states with a higher than national average home according to Zillow's two bedroom home values that was named 'e' for expensive homes by state.
+```{r}
+demanded
+demanded %in% e
+```
+
+We can see none of the demand for LMT states are in the list of states with expensive homes or homes with higher than average two bedroom home values.
+
+So, we actually have four lists: **e** is the list of states with expensive homes, **demanded** is our list of states with demand has influenced LMT pay to higher for LMTs than the national average, **expensiveHomes** is our list of states with high cost of living based on higher home values and that also pay more and have more jobs available for LMTs, and our 4th list is the **affordable** list of lower cost of living by home price less than national average but also that has higher pay and more jobs available for LMTs than the national average.
+
+Lets look at the demographics of the states that are in our affordable list and compare to the demographics or our expensiveHomes list to get an idea of the diversity.
+```{r}
+demographics <- subset(slr, slr$state %in% affordable)
+demographics2 <- demographics[,c(1,37:44)]
+demographics2
+```
+
+Lets look at this above chart of affordable states for LMTs compared to the demographics of CA.
+```{r}
+CA_demog <- subset(slr, slr$state=='California')
+CA_demog2 <- CA_demog[,c(1,37:44)]
+CA_demog2
+```
+When comparing demographics of percent race to population, it could be similar in fashion to looking for an alternate planet similar to Earth in a vast universe. But we can see the state with a closer distribution of the population by Asian, Latino, Black, and two or more races is New York. The other states that are affordable in our list of 10 when compared to CA, a high cost of living state, don't really compare similarly as far as race distribution goes. Lets look at how a few of our alternate jobs from these 10 states compare to CA next.
+```{r}
+altjobs_aff <- demographics[,c(1,32,45,48,51,54,57,60,63,66,69,72,75)]
+CA_altjobs <- CA_demog[,c(1,32,45,48,51,54,57,60,63,66,69,72,75)]
+altjobs_aff
+```
+There are less nanny, personal training, house cleaning, and data science jobs in the affordable states than in CA. While there are more cashier, server, and teaching jobs in the affordable states than in CA. The number of tutoring, clerical, warehouse, and security jobs are similar in available jobs. 
+```{r}
+CA_altjobs
+```
+
+Now, lets compare CA to our list of expensive states for demographics and alternate jobs available. CA is in our list of expensive states, so we don't have to do separate table chart comparisons.
+```{r}
+expensiveDemog <- subset(slr, slr$state %in% expensiveHomes)
+expensiveDemog2 <- expensiveDemog[,c(1,37:44)]
+expensiveDemog2
+```
+From the above data, the closest state in comparison to diversity to CA is NV or Nevada. The next state would be Colorado or Washington.
+
+Now, we will compare the alternate jobs available in our list of expensive states that includes CA.
+```{r}
+altJobs_expStates <- expensiveDemog[,c(1,32,45,48,51,54,57,60,63,66,69,72,75)]
+altJobs_expStates
+```
+For the most part, the expensive states have about the same distribution of available jobs alternative to LMT work, except some states have noticeably less nanny and personal training jobs. Arizona and Washington have less personal training jobs, while Nevada, Rhode Island, and Washington have less nanny jobs. And there are far less house cleaning jobs in Connecticut than any other state that is expensive. Also, there are not as many data science jobs available in Nevada as any other expensive state.
+
+Lets now plot the number of available jobs by category in CA compared to Arizona and New York. Arizona is an expensive state and New York is not so expensive compared to the average home value of the three top populated cities in each state.
+```{r}
+NY_altJobs <- subset(altjobs_aff, altjobs_aff$state=='New York')
+CA_altJobs <- subset(altJobs_expStates, altJobs_expStates$state=='California')
+AZ_altJobs <- subset(altJobs_expStates, altJobs_expStates$state=='Arizona')
+
+NY_tidyJobs <- gather(NY_altJobs,key="jobTitle", value="jobsListed",2:13, na.rm=TRUE)
+NY_tidyJobs$jobTitle <- gsub('_.*$','',NY_tidyJobs$jobTitle, perl=TRUE)
+
+CA_tidyJobs <- gather(CA_altJobs,key="jobTitle", value="jobsListed",2:13, na.rm=TRUE)
+CA_tidyJobs$jobTitle <- gsub('_.*$','',CA_tidyJobs$jobTitle, perl=TRUE)
+
+AZ_tidyJobs <- gather(AZ_altJobs,key="jobTitle", value="jobsListed",2:13, na.rm=TRUE)
+AZ_tidyJobs$jobTitle <- gsub('_.*$','',AZ_tidyJobs$jobTitle, perl=TRUE)
+
+
+```
+
+```{r}
+ggplot(data = CA_tidyJobs, aes(y=CA_tidyJobs$jobsListed, x=CA_tidyJobs$jobTitle)) +
+  geom_bar(stat='identity', position=position_dodge())+
+  scale_fill_brewer(palette='Paired') +
+  theme_classic()+
+  theme(legend.position="bottom")+
+  theme(axis.text = element_text(colour = "black", angle=90, size = rel(.75)))+
+  ggtitle('CA Alternate and LMT Jobs Advertised')+
+  ylab(NULL)+
+  xlab(NULL)
+```
+There are more warehouse and security jobs available on Indeed than the other listed jobs in CA. In comparison to other job categories available in CA, there are less tutor, nanny, and LMT jobs available than other comparative jobs.
+
+```{r}
+ggplot(data = NY_tidyJobs, aes(y=NY_tidyJobs$jobsListed, x=NY_tidyJobs$jobTitle)) +
+  geom_bar(stat='identity', position=position_dodge())+
+  scale_fill_brewer(palette='Paired') +
+  theme_classic()+
+  theme(legend.position="bottom")+
+  theme(axis.text = element_text(colour = "black", angle=90, size = rel(.75)))+
+  ggtitle('NY Alternate and LMT Jobs Advertised')+
+  ylab(NULL)+
+  xlab(NULL)
+```
+New York has more clerical, teaching, and warehouse jobs available than other jobs in NY, but has far less personal training and nanny jobs available than CA did.
+
+```{r}
+ggplot(data = AZ_tidyJobs, aes(y=AZ_tidyJobs$jobsListed, x=AZ_tidyJobs$jobTitle)) +
+  geom_bar(stat='identity', position=position_dodge())+
+  scale_fill_brewer(palette='Paired') +
+  theme_classic()+
+  theme(legend.position="bottom")+
+  theme(axis.text = element_text(colour = "black", angle=90, size = rel(.75)))+
+  ggtitle('AZ Alternate and LMT Jobs Advertised')+
+  ylab(NULL)+
+  xlab(NULL)
+```
+
+AZ has more teacher and warehouse jobs available just like NY than other jobs in the state from our categories of alternate jobs to LMT. There are as many LMT jobs available as there are security, clerical, cashier, and server.
+
+Now, lets compare the pay to each of these states of CA, NY, and NV. To see how LMTs get paid compared to these alternative jobs in those states.
+```{r}
+NY_pay <- subset(slr, slr$state=='New York')
+NY_pay2 <- NY_pay[,c(1,34,47,50,53,56,59,62,65,68,71,74,77)]
+CA_pay <- subset(slr, slr$state=='California')
+CA_pay2 <- CA_pay[,c(1,34,47,50,53,56,59,62,65,68,71,74,77)]
+AZ_pay <- subset(slr, slr$state=='Arizona')
+AZ_pay2 <- AZ_pay[,c(1,34,47,50,53,56,59,62,65,68,71,74,77)]
+
+NY_PAY <- gather(NY_pay2,key='jobTitle',value='AnnualPay',2:13)
+NY_PAY$jobTitle <- gsub('_.*$','',NY_PAY$jobTitle)
+CA_PAY <- gather(CA_pay2,key='jobTitle',value='AnnualPay',2:13)
+CA_PAY$jobTitle <- gsub('_.*$','',CA_PAY$jobTitle)
+AZ_PAY <- gather(AZ_pay2, key='jobTitle',value='AnnualPay',2:13)
+AZ_PAY$jobTitle <- gsub('_.*$','',AZ_PAY$jobTitle)
+
+```
+
+
+```{r}
+ggplot(data = CA_PAY, aes(y=CA_PAY$AnnualPay, x=CA_PAY$jobTitle)) +
+  geom_bar(stat='identity', position=position_dodge())+
+  scale_fill_brewer(palette='Paired') +
+  geom_hline(yintercept=mean(CA_pay$median2018IncomeByState), linetype="dashed", color = "red")+
+  theme_classic()+
+  theme(legend.position="bottom")+
+  theme(axis.text = element_text(colour = "black", angle=90, size = rel(.75)))+
+  ggtitle('CA Alternate and LMT Jobs Advertised Annual Pay with Median CA pay')+
+  ylab(NULL)+
+  xlab(NULL)
+```
+
+
+```{r}
+ggplot(data = NY_PAY, aes(y=NY_PAY$AnnualPay, x=NY_PAY$jobTitle)) +
+  geom_bar(stat='identity', position=position_dodge())+
+  scale_fill_brewer(palette='Paired') +
+  geom_hline(yintercept=mean(NY_pay$median2018IncomeByState), linetype="dashed", color = "red")+
+  theme_classic()+
+  theme(legend.position="bottom")+
+  theme(axis.text = element_text(colour = "black", angle=90, size = rel(.75)))+
+  ggtitle('NY Alternate and LMT Jobs Advertised Annual Pay')+
+  ylab(NULL)+
+  xlab(NULL)
+```
+
+
+```{r}
+ggplot(data = AZ_PAY, aes(y=AZ_PAY$AnnualPay, x=AZ_PAY$jobTitle)) +
+  geom_bar(stat='identity', position=position_dodge())+
+  scale_fill_brewer(palette='Paired') +
+  geom_hline(yintercept=mean(AZ_pay$median2018IncomeByState), linetype="dashed", color = "red")+
+  theme_classic()+
+  theme(legend.position="bottom")+
+  theme(axis.text = element_text(colour = "black", angle=90, size = rel(.75)))+
+  ggtitle('AZ Alternate and LMT Jobs Advertised Annual Pay')+
+  ylab(NULL)+
+  xlab(NULL)
+```
+
+
+Lets summarize the pay for each comparative job to that of the number of jobs available. In each state, there were more warehouse jobs available than most other jobs in our categories selected, but this role is on the low end of the annual pay scale compared to those other jobs available. In all jobs, data scientist pays the most in CA, AZ, and NY. LMT pays more than clerical in AZ or CA but not in NY. In CA, nannys get paid more than LMTs and so do personal trainers. In NY, security pays more than LMTs but not in CA or AZ. Also, tutors get paid more than teachers in NY and CA, but almost the same but less than in AZ. 
+
+Those are interesting findings for those three states. Data hasn't been analyzed on the actual requirements to get licensed as a massage therapist in each state, because the table hasn't been filled in. Each state has to be handled separately by finding each requirement from their massage board website of each state, and if not available or not intuitively navigated to from their home page, then emailed and asked about each specific requirements on cost, hours required, continuing education, time to process, distribution of hours, license by endorsement or reciprocity available, etc. It is being added to as time and desire permits on a motivational need. I haven't found a table of these requirements on any internet search, but did find something close with American Massage Therapy Association's listing of schools and state requirements that lacked a date updated or sources to validate and the other variables sought.
+
+It would now be interesting to separately use our function from another script to pull in the jobs in our same wellness market of licensed massage therapists. Such as chiropractors, physical therapists, keep the personal trainer data, and add estheticians or skin care or medical spa jobs maybe by just searching for those jobs, as well as resort spas. This would add value to how effective our decision would be to move to a state to earn more, live better, or even open up a business in massage therapy that would do well based on evidence gathered from other top cities in each state and home values alongside the diversity indicated by percent race in population of the state. finding and replacing the job search sought in the scripts that are similar in file name to 'copy-indeed-webscrape-function-Alt-jobs-dataScientist.Rmd' in the github repository mentioned at the beginning of this script will get you the information you need in about 10-15 minutes. As it goes through the first five web page job listings on Indeed for 150 cities or the three most populated cities in each of the 50 US states.
+
+
+
+***
+
+Lets look at some other salaries from other professions, that reflect the state of our economy. I have ran the function to pull the wage information and number of jobs listed for nurses, medical doctors, chiropractors, physical therapists, estheticians, medical spa technicians, and personal assistants. Lets see what our data tells us in a state by state comparison.
+
+```{r}
+nurses <- read.csv('./Alternate Jobs Each State Indeed/statesRates-nurse.csv', sep=',',
+                   header=TRUE, na.strings=c('',' ','NA'))
+personalAssistants <- read.csv('./Alternate Jobs Each State Indeed/statesRates-personal assistant.csv', sep=',',
+                   header=TRUE, na.strings=c('',' ','NA'))
+chiropractor <- read.csv('./Alternate Jobs Each State Indeed/statesRates-chiropractor.csv', sep=',',
+                   header=TRUE, na.strings=c('',' ','NA'))
+physicalTherapist <- read.csv('./Alternate Jobs Each State Indeed/statesRates-physical therapist.csv', sep=',',
+                   header=TRUE, na.strings=c('',' ','NA'))
+esthetician <- read.csv('./Alternate Jobs Each State Indeed/statesRates-esthetician.csv', sep=',',
+                   header=TRUE, na.strings=c('',' ','NA'))
+medicalSpaEsthetician <- read.csv('./Alternate Jobs Each State Indeed/statesRates-medical spa technician.csv', sep=',',
+                   header=TRUE, na.strings=c('',' ','NA'))
+medicalDoctor <- read.csv('./Alternate Jobs Each State Indeed/statesRates-medical doctor.csv', sep=',',
+                   header=TRUE, na.strings=c('',' ','NA'))
+yogaInstructor <- read.csv('./Alternate Jobs Each State Indeed/statesRates-yoga Instructor.csv', sep=',',
+                   header=TRUE, na.strings=c('',' ','NA'))
+pilatesInstructor <- read.csv('./Alternate Jobs Each State Indeed/statesRates-pilates Instructor.csv', sep=',',
+                   header=TRUE, na.strings=c('',' ','NA'))
+
+```
+
+
+```{r}
+nurses$stateName <- states
+nurses <- nurses[,c(1,10,2:9)]
+head(nurses)
+```
+
+
+```{r}
+personalAssistants$stateName <- states
+personalAssistants <- personalAssistants[,c(1,10,2:9)]
+head(personalAssistants)
+```
+
+
+```{r}
+chiropractor$stateName <- states
+chiropractor <- chiropractor[,c(1,10,2:9)]
+head(chiropractor)
+```
+
+
+```{r}
+physicalTherapist$stateName <- states
+physicalTherapist <- physicalTherapist[,c(1,10,2:9)]
+head(physicalTherapist)
+```
+
+
+```{r}
+esthetician$stateName <- states
+esthetician <- esthetician[,c(1,10,2:9)]
+head(esthetician)
+```
+
+
+```{r}
+medicalSpaEsthetician$stateName <- states
+medicalSpaEsthetician <- medicalSpaEsthetician[,c(1,10,2:9)]
+head(medicalSpaEsthetician)
+```
+
+
+```{r}
+medicalDoctor$stateName <- states
+medicalDoctor <- medicalDoctor[,c(1,10,2:9)]
+head(medicalDoctor)
+```
+
+```{r}
+yogaInstructor$stateName <- states
+yogaInstructor <- yogaInstructor[,c(1,10,2:9)]
+yogaInstructor$avgAnualSalary <- yogaInstructor$avgHourly*40*52
+head(yogaInstructor)
+```
+
+```{r}
+
+pilatesInstructor$stateName <- states[2:50]
+pilatesInstructor <- pilatesInstructor[,c(1,10,2:9)]
+head(pilatesInstructor)
+
+```
+
+Lets combine these jobs to the slr dataset.
+```{r}
+nurses2 <- nurses[,c(2,3,9,10)]
+personalAssistants2 <- personalAssistants[,c(2,3,9,10)]
+chiropractor2 <- chiropractor[,c(2,3,9,10)]
+physicalTherapist2 <- physicalTherapist[,c(2,3,9,10)]
+esthetician2 <- esthetician[,c(2,3,9,10)]
+medicalSpaEsthetician2 <- medicalSpaEsthetician[,c(2,3,9,10)]
+medicalDoctor2 <- medicalDoctor[,c(2,3,9,10)]
+yogaInstructor2 <- yogaInstructor[,c(2,3,9,10)]
+pilatesInstructor2 <- pilatesInstructor[,c(2,3,9,10)]
+```
+
+
+```{r}
+nurses2$avgAnualSalary <- ifelse(nurses2$avgAnualSalary,nurses2$avgAnualSalary,
+                                 nurses2$avgHourly*40*52)
+colnames(nurses2)[2:4] <- paste('nurses',colnames(nurses2)[2:4])
+
+personalAssistants2$avgAnualSalary <- ifelse(personalAssistants2$avgAnualSalary,
+                                             personalAssistants2$avgAnualSalary,
+                                             personalAssistants2$avgHourly*40*52)
+colnames(personalAssistants2)[2:4] <- paste('personalAssistant',colnames(personalAssistants2)[2:4])
+
+chiropractor2$avgAnualSalary <- chiropractor2$avgHourly*40*52
+colnames(chiropractor2)[2:4] <- paste('chiropractor',colnames(chiropractor2)[2:4])
+
+physicalTherapist2$avgAnualSalary <- physicalTherapist2$avgHourly*40*52
+colnames(physicalTherapist2)[2:4] <- paste('physicalTherapist',colnames(physicalTherapist2)[2:4])
+
+esthetician2$avgAnualSalary <- esthetician2$avgHourly*40*52
+colnames(esthetician2)[2:4] <- paste('esthetician',colnames(esthetician2)[2:4])
+
+medicalSpaEsthetician2$avgAnualSalary <- medicalSpaEsthetician2$avgHourly*40*52
+colnames(medicalSpaEsthetician2)[2:4] <- paste('medicalSpaEsthetician',colnames(medicalSpaEsthetician2)[2:4])
+
+medicalDoctor2$avgAnualSalary <- ifelse(medicalDoctor2$avgAnualSalary,
+                                        medicalDoctor2$avgAnualSalary,
+                                        medicalDoctor2$avgHourly*40*52)
+colnames(medicalDoctor2)[2:4] <- paste('medicalDoctor',colnames(medicalDoctor2)[2:4])
+colnames(yogaInstructor2)[2:4] <- paste('yogaInstructor',colnames(yogaInstructor2)[2:4])
+pilatesInstructor2$avgAnualSalary <- pilatesInstructor2$avgHourly*40*52
+colnames(pilatesInstructor2)[2:4] <- paste('pilatesInstructor',colnames(pilatesInstructor2)[2:4])
+```
+
+Combine these other jobs into a table with the slr data table.
+```{r}
+slr2 <- merge(slr, nurses2, by.x='state',by.y='stateName')
+slr2 <- merge(slr2,personalAssistants2, by.x='state',by.y='stateName')
+slr2 <- merge(slr2, chiropractor2, by.x='state',by.y='stateName')
+slr2 <- merge(slr2, physicalTherapist2, by.x='state', by.y='stateName')
+slr2 <- merge(slr2, esthetician2, by.x='state', by.y='stateName')
+slr2 <- merge(slr2, medicalSpaEsthetician2, by.x='state', by.y='stateName')
+slr2 <- merge(slr2, medicalDoctor2, by.x='state',by.y='stateName')
+slr2 <- merge(slr2, yogaInstructor2, by.x='state',by.y='stateName')
+slr2 <- merge(slr2, pilatesInstructor2, by.x='state', by.y='stateName',all.x=TRUE)
+```
+
+```{r}
+write.csv(slr2,'stateLicensingDemographicsAddedAndUpdated.csv', row.names=FALSE)
+```
+
+
+Number of jobs listed and average annual salary in each category by state's top three populated cities:
+```{r}
+jbl <- grep('jobsListed',colnames(slr2))
+listedJobsAll <- slr2[,c(1,32,jbl)]
+
+ansy <- grep('avgAn',colnames(slr2))
+avgSalaryAll <- slr2[,c(1,34,ansy)]
+```
+
+```{r}
+colnames(listedJobsAll) <- gsub('_.*$','',colnames(listedJobsAll),perl=TRUE)
+colnames(listedJobsAll) <- gsub(' jobsListed','',colnames(listedJobsAll))
+listedJobsAll
+```
+
+
+```{r}
+colnames(avgSalaryAll) <- gsub('_.*$','',colnames(avgSalaryAll))
+colnames(avgSalaryAll) <- gsub(' .*$','',colnames(avgSalaryAll))
+avgSalaryAll
+```
+
+Lets take a look at the health and wellness number of jobs available by using the listedJobsAll columns for LMT, personalTrainer, chiropractor, physicalTherapist, esthetician, and medicalSpaEsthetician. 
+```{r}
+wellnessJobs <- listedJobsAll[,c(1,2,5,16,17,21,22)]
+wellnessSalary <- avgSalaryAll[,c(1,2,5,16,17,21,22)]
+wellnessJobs
+```
+
+Now look at the LMT with esthetician and medical spa esthetician jobs available.Nurses are needed in medical spas that are also estheticians, so we will add that class of jobs listed to our spaJobs data table.
+```{r}
+spaJobs <- listedJobsAll[,c(1,2,14,18,19)]
+spaSalary <- avgSalaryAll[,c(1,2,14,18,19)]
+spaJobs
+```
+
+Lets used our list of demanded LMT states where there weren't as many jobs available for LMT, but the pay was higher for LMT than the national LMT average pay. 
+```{r}
+demanded
+```
+
+Lets look at Georgia and see how the jobs available in the wellness and the spa industries compare by plotting the wellness jobs available in GA, then the salary of those jobs in GA against the median income for GA and the median two bedroom home value.
+```{r}
+GA <- subset(slr2, slr2=='Georgia')
+GA_2BR <- GA$Zillow_2BR_3cityAverageHomeValue
+GA_medIncome <- GA$median2018IncomeByState
+
+GA_wellness <- subset(wellnessJobs, wellnessJobs$state=='Georgia')
+GA_wellnessSalary <- subset(wellnessSalary,wellnessSalary$state=='Georgia')
+
+GA_wellness2 <- gather(GA_wellness, key='jobTitle',value='jobsListed',2:7)
+GA_wellnessSalary2 <- gather(GA_wellnessSalary, key='jobTitle', value='annualSalary',2:7)
+```
+
+```{r}
+ggplot(data = GA_wellness2, aes(y=GA_wellness2$jobsListed, x=GA_wellness2$jobTitle)) +
+  geom_bar(stat='identity', position=position_dodge())+
+  scale_fill_brewer(palette='Paired') +
+  theme_classic()+
+  theme(legend.position="bottom")+
+  theme(axis.text = element_text(colour = "black", angle=90, size = rel(.75)))+
+  ggtitle('GA Wellness Jobs Available')+
+  ylab(NULL)+
+  xlab(NULL)
+```
+
+```{r}
+ggplot(data = GA_wellnessSalary2, aes(y=GA_wellnessSalary2$annualSalary, x=GA_wellnessSalary2$jobTitle)) +
+  geom_bar(stat='identity', position=position_dodge())+
+  scale_fill_brewer(palette='Paired') +
+  theme_classic()+
+  geom_hline(yintercept=GA_medIncome, linetype="dashed", color = "red")+
+  geom_hline(yintercept=GA_2BR, linetype='dashed',color='blue')+
+  theme(legend.position="bottom")+
+  theme(axis.text = element_text(colour = "black", angle=90, size = rel(.75)))+
+  ggtitle('GA Wellness Jobs Annual Salary')+
+  ylab(NULL)+
+  xlab(NULL)
+```
+
+The blue line is the May 2020 Zillow average home value for the top 3 populated cities in GA for a two bedroom home, and the red line is the 2018 median income in GA, according to the data.census.gov data. There wasn't any salary data for physical therapists in GA, so it doesn't have a bar for salary information. But chiropractors' annual salary is above the GA 2018 median income and the average 2020 two bedroom home value. Also, personal trainers make more than LMTs and have slightly less personal training jobs available than LMTs, but both have pay below the median income of GA. The available jobs for chiropractors, LMTs, and personal trainers is roughly the same in GA, while the demand for physical therapists is high with more than twice as many jobs available for physical therapists as any one other wellness category jobs available.Pilates and Yoga Instuctors get paid more annually than chiropractors, LMTs, or personal trainers. But their salary was approximated as full time at the average hourly rate. Many yoga and Pilates intructors might only work 20-32 hours a week. But then again, a great yoga or pilates instructor brings in clients who pay an average of $20 per class three times a week, with bargains on Groupon. Many physical therapists prescribe or recommend yoga and pilates to athletes or trauma patients with tendon injuries who need structural re-alignment.
+
+
+Now, lets look at the chart of the medical spas jobs available and annual salary in GA with the same home value and median income values for GA used in the wellness jobs above.
+```{r}
+GA_spa <- subset(spaJobs, spaJobs$state=='Georgia')
+GA_spaSalary <- subset(spaSalary,spaSalary$state=='Georgia')
+
+GA_spa2 <- gather(GA_spa, key='jobTitle',value='jobsListed',2:5)
+GA_spaSalary2 <- gather(GA_spaSalary, key='jobTitle', value='annualSalary',2:5)
+
+```
+
+```{r}
+ggplot(data = GA_spa2, aes(y=GA_spa2$jobsListed, x=GA_spa2$jobTitle)) +
+  geom_bar(stat='identity', position=position_dodge())+
+  scale_fill_brewer(palette='Paired') +
+  theme_classic()+
+  theme(legend.position="bottom")+
+  theme(axis.text = element_text(colour = "black", angle=90, size = rel(.75)))+
+  ggtitle('GA Spa and Medical Spa Jobs Available')+
+  ylab(NULL)+
+  xlab(NULL)
+```
+
+```{r}
+ggplot(data = GA_spaSalary2, aes(y=GA_spaSalary2$annualSalary, 
+                                 x=GA_spaSalary2$jobTitle)) +
+  geom_bar(stat='identity', position=position_dodge())+
+  scale_fill_brewer(palette='Paired') +
+  theme_classic()+
+  geom_hline(yintercept=GA_medIncome, linetype="dashed", color = "red")+
+  geom_hline(yintercept=GA_2BR, linetype='dashed',color='blue')+
+  theme(legend.position="bottom")+
+  theme(axis.text = element_text(colour = "black", angle=90, size = rel(.75)))+
+  ggtitle('GA Spa and Medical Spa Jobs Annual Salary')+
+  ylab(NULL)+
+  xlab(NULL)
+```
+
+The blue line above is the same two bedroom Zillow average home value for GA and the red line is the 2018 median income for GA from data.census.gov data. The above medical spa information for GA, shows that medical spa estheticians don't make as much annually as estheticians or nurses. And that estheticians make more than nurses in GA. A medical spa esthetician is supposed to be an esthetician and a nurse to be able to give botox injections. But there could be some differences in state to state requirements and regulations for estheticians. Estheticians call it 'lancing' when they can drain a white head with a needle. Logically, on the surface the above doesn't make sense, but it is possible that estheticians do make 150,000 USD a year. It is not unlikely that nurse make close to 100,000 USD a year either. The demand of nurses in GA is more than double that of the other medical spa jobs available and nearly triple it at around 250 available nursing jobs in GA's top three populated cities.
+
+***
+
+There is now a script that did similar to what the indeed function did but for yellowpages.com. This script takes the first five webpages of yellowpages.com for the business searched in the city and state and returns a table of the number of businesses of that type in the same three top populated cities per state used in this program. The script is called 'yellowPages-number-of-businesses.Rmd' and it was used to get the number of businesses in those three cities per state for coffee, massage, gym, tanning, hair salon, tanning, yoga, chiropractic, wellness, and health food businesses. Lets add these counts to our table slr2 of all features used so far.
+
+```{r}
+ypChiro <- read.csv('./number of businesses/statesRates- chiropractor .csv',
+                    sep=',', header=TRUE, na.strings=c('',' ','NA'))
+ypWellness <- read.csv('./number of businesses/statesRates- wellness clinic .csv',
+                    sep=',', header=TRUE, na.strings=c('',' ','NA'))
+ypMassage <- read.csv('./number of businesses/statesRates- massage .csv',
+                    sep=',', header=TRUE, na.strings=c('',' ','NA'))
+ypYoga <- read.csv('./number of businesses/statesRates- yoga .csv',
+                    sep=',', header=TRUE, na.strings=c('',' ','NA'))
+ypGym <- read.csv('./number of businesses/statesRates- gym .csv',
+                    sep=',', header=TRUE, na.strings=c('',' ','NA'))
+ypCoffee <- read.csv('./number of businesses/statesRates- coffee .csv',
+                    sep=',', header=TRUE, na.strings=c('',' ','NA'))
+ypHealthFood <- read.csv('./number of businesses/statesRates- health food .csv',
+                    sep=',', header=TRUE, na.strings=c('',' ','NA'))
+ypHairSalon <- read.csv('./number of businesses/statesRates- hair salon .csv',
+                    sep=',', header=TRUE, na.strings=c('',' ','NA'))
+ypTanning <- read.csv('./number of businesses/statesRates- tanning .csv',
+                    sep=',', header=TRUE, na.strings=c('',' ','NA'))
+```
+
+```{r}
+ypChiro$states <- states
+ypWellness$states <- states
+ypMassage$states <- states
+ypYoga$states <- states
+ypGym$states <- states
+ypCoffee$states <- states
+ypHealthFood$states <- states
+ypHairSalon$states <- states
+ypTanning$states <- states
+
+```
+
+```{r}
+ypChiro <- ypChiro[,-1]
+ypWellness <- ypWellness[,-1]
+ypMassage <- ypMassage[,-1]
+ypYoga <- ypYoga[,-1]
+ypGym <- ypGym[,-1]
+ypCoffee <- ypCoffee[,-1]
+ypHealthFood <- ypHealthFood[,-1]
+ypHairSalon <- ypHairSalon[,-1]
+ypTanning <- ypTanning[,-1]
+
+```
+
+```{r}
+slr3 <- merge(slr2,ypChiro, by.x='state', by.y='states')
+slr3 <- merge(slr3,ypWellness,by.x='state', by.y='states')
+slr3 <- merge(slr3,ypMassage,by.x='state', by.y='states')
+slr3 <- merge(slr3,ypYoga,by.x='state', by.y='states')
+slr3 <- merge(slr3,ypGym,by.x='state', by.y='states')
+slr3 <- merge(slr3,ypCoffee,by.x='state', by.y='states')
+slr3 <- merge(slr3,ypHealthFood,by.x='state', by.y='states')
+slr3 <- merge(slr3,ypHairSalon,by.x='state', by.y='states')
+slr3 <- merge(slr3,ypTanning,by.x='state', by.y='states')
+
+```
+
+```{r}
+colnames(slr3)
+```
+
+```{r}
+write.csv(slr3, 'stateLicensingDemographicsAddedAndUpdated.csv', row.names=FALSE)
+```
+
+
+***
+
+We currently have the price of 2 bedroom homes using Zillow data, but now we can add in apartments.com data for rental apartments of 2-3 bedroom, 2 bathroom, dog/cat friendly pricing to our data set to compare rental prices in the three top populated cities in each state. It didn't happen by magic either, there is a script for it very similar to the indeed and yellowpages web scraping scripts. Originally, I was going to use rent.com, but wouldn't you know they have a web scraping blocker in place that makes sure their terms of use aren't violated for 'not downloading their data.' I did download apartments.com data, but only to share the aggregate results. Each individual file is downloaded for the date pulled but not added to githu. The script is 'aps-com-2BR-2BA.Rmd' in github with all these other shared files. It will produce this table in csv format, 'apts_2BR2BA_prices.csv' to add to our updated and added state licensing requirements csv table of data to compare state by state.
+```{r}
+apt2and2 <- read.csv('./apartments Dot Com/apts_2BR2BA_prices.csv',sep=',',
+                     header=TRUE, na.strings=c('',' ','NA'))
+```
+
+```{r}
+head(apt2and2,10)
+```
+
+The above information takes the price of each listing in those 50 states' three most populated cities, and gets the minimum, maximum, and average prices of a 2 bedroom, 2 bath dog/cat friendly apartment for rent. The average minimum is the average of all minimum price boundaries of all three cities for each state, and the average maximum is the average of all maximum boundaries of the price range in all three cities of each state, and the average is the average price of all prices listed in each state.
+
+Now lets add these new data columns to our table of 50 states.
+```{r}
+colnames(apt2and2)[1] <- 'stateAbbreviation'
+apt2and2$stateName <- states
+```
+
+```{r}
+slr4 <- merge(slr3,apt2and2, by.x='state',by.y='stateName')
+```
+
+```{r}
+colnames(slr4)
+```
+
+```{r}
+slr5 <- slr4[,c(114,1:113,115:118)]
+```
+
+```{r}
+write.csv(slr5,'stateLicensingDemographicsAddedAndUpdated.csv',row.names=FALSE)
+```
+
+Remember to update the stateLicensingRequirements.csv file with the actual massage board licensing requirements of each state, then adding the additional updated and added features with this script, after using those helper script files to update information as needed.
+
+***
+
+Getting back to the motivation for this project, comparing TN to CA, to satisfy some gamey choices in moving from CA to TN as a massage therapist to make my youngest and greatly adored neice's life easier and happier, Lets compare TN to CA in demographics, number of data science and massage therapist jobs, annual salary on average for those jobs, and for alternate jobs, how many health food stores, salons, spas, chiropractors, and coffee shops in each state's top three most populated cities, what the average and average minimum price range for a two bedroom, two bathroom and pet friendly apartment is, the median income from 2018 data for each state, and see how compromisable the effects of moving from CA to TN would be.
+
+Lets first get all the fields used for this comparison.
+```{r}
+comparing_TN_CA <- slr5[,c(1,11,12,17,18,19,23,33,35,37:45,55,57,58,60,
+                           64,66,67,69,70,72,76,78,82,84,108:118)]
+colnames(comparing_TN_CA)
+```
+
+Lets compare demographics of each state by the states' three most populated cities. This is important as it skews necessary information if the cities most populated aren't near the place planning to live. For CA, the cities were San Diego, Los Angeles, and San Jose. The distance between San Diego and Los Angeles is about 120 miles, and from San Jose to Los Angeles it is more than 400 miles. San Jose is also a popularly expensive high rent city due to silicon valley. For TN, the cities most populated are Nashville, Memphis, and knoxville. The idea is that the pricing will be similar as an average across the state's three most populated cities. 
+```{r}
+CA <- subset(comparing_TN_CA, comparing_TN_CA$stateAbbreviation=='CA')
+TN <- subset(comparing_TN_CA, comparing_TN_CA$stateAbbreviation=='TN')
+```
+
+Lets look at demographics from 2018 state only data using data.census.gov.
+```{r}
+CA_demographics <- CA[,c(1,11:18)]
+TN_demographics <- TN[,c(1,11:18)]
+```
+
+```{r}
+CA_demoTidy <- gather(CA_demographics, key='race', value='TotalPopulationPercent',
+                      3:9)
+CA_demoTidy$TotalPopulationPercent <- as.numeric(CA_demoTidy$TotalPopulationPercent)
+CA_pop <- CA_demographics$total_state_population
+
+gg1 <- ggplot(data = CA_demoTidy,
+              aes(y=CA_demoTidy$TotalPopulationPercent,
+                  x=CA_demoTidy$race)) +
+  geom_bar(stat='identity', position=position_dodge())+
+  theme_classic()+
+  coord_cartesian(ylim = c(0, 100))+
+  theme(legend.position="bottom")+
+  theme(axis.text = element_text(colour = "black", angle=90, size = rel(.75)))+
+  ggtitle('CA demographics, Percent of: ',CA_pop)+
+  ylab(NULL)+
+  xlab(NULL)
+
+gg1
+```
+
+```{r}
+TN_demoTidy <- gather(TN_demographics, key='race', value='TotalPopulationPercent',
+                      3:9)
+TN_demoTidy$TotalPopulationPercent <- as.numeric(TN_demoTidy$TotalPopulationPercent)
+TN_pop <- TN_demographics$total_state_population
+
+gg2 <- ggplot(data = TN_demoTidy,
+              aes(y=TN_demoTidy$TotalPopulationPercent,
+                  x=TN_demoTidy$race)) +
+  geom_bar(stat='identity', position=position_dodge())+
+  theme_classic()+
+  coord_cartesian(ylim = c(0, 100))+
+  theme(legend.position="bottom")+
+  theme(axis.text = element_text(colour = "black", angle=90, size = rel(.75)))+
+  ggtitle('TN demographics, Percent of: ',TN_pop)+
+  ylab(NULL)+
+  xlab(NULL)
+
+gg2
+```
+
+```{r}
+CA_TN_demographics <- rbind(CA_demographics,TN_demographics)
+CA_TN_demographics
+```
+
+
+```{r}
+grid.arrange(gg1, gg2, ncol = 2)
+```
+
+Now lets look at the two bedroom, two bath, pet friendly apartments for rent in CA and TN.
+```{r}
+CA_2BR <- CA[,c(1,40:43)]
+TN_2BR <- TN[,c(1,40:43)]
+```
+
+```{r}
+CA_listings <- CA_2BR$TwoBedroomApartment_Listings
+
+CA_2BR_tidy <- gather(CA_2BR, key='range',value='price',3:5)
+CA_2BR_tidy$range <- gsub('Rent2BR2BA_','',CA_2BR_tidy$range)
+gg3 <- ggplot(data = CA_2BR_tidy,
+              aes(y=CA_2BR_tidy$price,
+                  x=CA_2BR_tidy$range)) +
+  geom_bar(stat='identity', position=position_dodge())+
+  theme_classic()+
+  coord_cartesian(ylim = c(500, 5000))+
+  theme(legend.position="bottom")+
+  theme(axis.text = element_text(colour = "black", angle=90, size = rel(.75)))+
+  ggtitle('CA 2 Bedroom/2 Bath: ',CA_listings)+
+  ylab(NULL)+
+  xlab('San Diego, San Jose, and Los Angeles Prices Averaged')
+
+
+TN_listings <- TN_2BR$TwoBedroomApartment_Listings
+
+TN_2BR_tidy <- gather(TN_2BR, key='range', value='price', 3:5)
+TN_2BR_tidy$range <- gsub('Rent2BR2BA_','',TN_2BR_tidy$range)
+gg4 <- ggplot(data = TN_2BR_tidy,
+              aes(y=TN_2BR_tidy$price,
+                  x=TN_2BR_tidy$range)) +
+  geom_bar(stat='identity', position=position_dodge())+
+  theme_classic()+
+  coord_cartesian(ylim = c(500, 5000))+
+  theme(legend.position="bottom")+
+  theme(axis.text = element_text(colour = "black", angle=90, size = rel(.75)))+
+  ggtitle('TN 2 Bedroom/2 Bath: ',TN_listings)+
+  ylab(NULL)+
+  xlab('Nashville,Memphis, and Knoxville Prices Averaged')
+
+
+```
+
+```{r}
+CA_TN_2BR <- rbind(CA_2BR,TN_2BR)
+CA_TN_2BR
+```
+
+
+```{r}
+grid.arrange(gg3, gg4, ncol = 2)
+```
+
+Lets now look at the number of massage and alternate jobs in CA and TN to compare their annual salaries against number of jobs available.
+```{r}
+CA_jobsAvailable <- CA[,c(1,8,19,21,23,25,27,29,31)]
+TN_jobsAvailable <- TN[,c(1,8,19,21,23,25,27,29,31)]
+
+colnames(CA_jobsAvailable) <- gsub('_.*$','',colnames(CA_jobsAvailable))
+colnames(TN_jobsAvailable) <- gsub('_.*$','',colnames(TN_jobsAvailable))
+
+colnames(CA_jobsAvailable) <- gsub('jobsListed','',colnames(CA_jobsAvailable))
+colnames(TN_jobsAvailable) <- gsub('jobsListed','',colnames(TN_jobsAvailable))
+
+CA_jobsAvailable_tidy <- gather(CA_jobsAvailable, key='job',value='listings', 2:9)
+TN_jobsAvailable_tidy <- gather(TN_jobsAvailable, key='job',value='listings', 2:9)
+
+```
+
+```{r}
+gg5 <- ggplot(data = CA_jobsAvailable_tidy,
+              aes(y=CA_jobsAvailable_tidy$listings,
+                  x=CA_jobsAvailable_tidy$job)) +
+  geom_bar(stat='identity', position=position_dodge())+
+  theme_classic()+
+  coord_cartesian(ylim = c(0,300))+
+  theme(legend.position="bottom")+
+  theme(axis.text = element_text(colour = "black", angle=90, size = rel(.75)))+
+  ggtitle('CA Number of Advertised Jobs: ')+
+  ylab(NULL)+
+  xlab('San Diego, San Jose, and Los Angeles')
+
+gg6 <- ggplot(data = TN_jobsAvailable_tidy,
+              aes(y=TN_jobsAvailable_tidy$listings,
+                  x=TN_jobsAvailable_tidy$job)) +
+  geom_bar(stat='identity', position=position_dodge())+
+  theme_classic()+
+  coord_cartesian(ylim = c(0,300))+
+  theme(legend.position="bottom")+
+  theme(axis.text = element_text(colour = "black", angle=90, size = rel(.75)))+
+  ggtitle('TN Number of Advertised Jobs: ')+
+  ylab(NULL)+
+  xlab('Nashville, Memphis, and Knoxville')
+
+```
+
+```{r}
+CA_TN_jobsAvailable <- rbind(CA_jobsAvailable,TN_jobsAvailable)
+CA_TN_jobsAvailable
+```
+
+```{r}
+grid.arrange(gg5,gg6,ncol=2)
+```
+
+
+Now, lets look at the average annual salary for those jobs available in CA and TN.
+```{r}
+CA_salary <- CA[,c(1,9,20,22,24,26,28,30,32)]
+TN_salary <- TN[,c(1,9,20,22,24,26,28,30,32)]
+
+colnames(CA_salary) <- gsub('_.*$','',colnames(CA_salary))
+colnames(CA_salary) <- gsub(' avgAnualSalary', '',colnames(CA_salary))
+colnames(TN_salary) <- gsub('_.*$','',colnames(TN_salary))
+colnames(TN_salary) <- gsub(' avgAnualSalary', '',colnames(TN_salary))
+
+CA_salary_tidy <- gather(CA_salary, key='job',value='salary',2:9)
+TN_salary_tidy <- gather(TN_salary, key='job', value='salary',2:9)
+```
+
+```{r}
+CA_medianIncome <- CA$median2018IncomeByState
+TN_medianIncome <- TN$median2018IncomeByState
+
+gg7 <- ggplot(data = CA_salary_tidy,
+              aes(y=CA_salary_tidy$salary,
+                  x=CA_salary_tidy$job)) +
+  geom_bar(stat='identity', position=position_dodge())+
+  theme_classic()+
+  geom_hline(yintercept=CA_medianIncome, linetype="dashed", color = "red")+
+  coord_cartesian(ylim = c(10000, 120000))+
+  theme(legend.position="bottom")+
+  theme(axis.text = element_text(colour = "black", angle=90, size = rel(.75)))+
+  ggtitle('CA Advertised Salaries: ')+
+  ylab(NULL)+
+  xlab('San Diego, San Jose, and Los Angeles')
+
+gg8 <- ggplot(data = TN_salary_tidy,
+              aes(y=TN_salary_tidy$salary,
+                  x=TN_salary_tidy$job)) +
+  geom_bar(stat='identity', position=position_dodge())+
+  theme_classic()+
+  geom_hline(yintercept=TN_medianIncome, linetype="dashed", color = "red")+
+  coord_cartesian(ylim = c(10000,120000))+
+  theme(legend.position="bottom")+
+  theme(axis.text = element_text(colour = "black", angle=90, size = rel(.75)))+
+  ggtitle('TN Advertised Salaries: ')+
+  ylab(NULL)+
+  xlab('Nashville, Memphis, and Knoxville')
+
+```
+
+
+```{r}
+CA_TN_salaries <- rbind(CA_salary,TN_salary)
+CA_TN_salaries
+```
+
+
+The red dashed line across the CA and TN advertised salaries is the state's respective 2018 median income.
+```{r}
+grid.arrange(gg7,gg8, ncol=2)
+```
+
+We notice a larger gap in LMT annual pay in the CA advertised pay ranges for jobs selected when compared to the gap of the TN median income and annual salaries of jobs selected.
+
+
+

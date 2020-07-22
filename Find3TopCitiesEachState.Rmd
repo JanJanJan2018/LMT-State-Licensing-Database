@@ -1,0 +1,114 @@
+---
+title: "Three top populated Cities"
+author: "Janis Corona"
+date: "7/12/2020"
+output: html_document
+---
+
+
+
+This will take the three most populated cities from the site: https://worldpopulationreview.com/states/cities/
+
+with the state name spelled out for 50 US states other than districts and the new DC state.
+
+```{r}
+library('rvest')
+library('lubridate')
+library('dplyr')
+
+```
+
+
+```{r}
+if (dir.exists('./Top Cities')){
+  unlink('./Top Cities', recursive=TRUE)
+  dir.create('./Top Cities')
+} else {
+  dir.create('./Top Cities')
+}
+```
+
+```{r}
+writeTopCities <- function(state,n){
+  url <- 'https://worldpopulationreview.com/states/cities/STATENAME'
+  
+  N <- as.integer(n)
+  
+  state <- as.character(state)
+
+  url <- gsub('STATENAME',state, url)
+
+  webpage <- read_html(url)
+
+  stateCities_html <- html_nodes(webpage,'td:nth-child(2)') # city in table
+  state_top <- html_text(stateCities_html)
+  population_html <- html_nodes(webpage,'td:nth-child(3)') # population of city in table
+  population <- html_text(population_html)
+
+  TopCities <- as.data.frame(state_top)
+  colnames(TopCities) <- 'topCity'
+  TopPopulation <- as.data.frame(population)
+  colnames(TopPopulation) <- 'population'
+  stateName <- as.data.frame(rep(state,length(TopCities$topCity)))
+  colnames(stateName) <- 'state'
+  
+  table <- cbind(stateName,TopCities,TopPopulation)
+  
+  setwd('./Top Cities')
+  
+  write.table(table[1:N,], "TopCities.csv", append=TRUE, 
+              col.names=FALSE, sep=",",
+              row.names=FALSE)
+  names <- colnames(table)
+  write.csv(names,'tableTopCitiesHeader.csv',row.names=FALSE)
+  
+  setwd('../')
+
+}
+
+```
+
+```{r}
+writeTopCities("alabama",3)
+```
+
+```{r}
+slr <- read.csv('stateLicensingRequirements.csv', sep=',',header=TRUE, na.strings=c('',' ','NA'))
+colnames(slr)
+```
+
+```{r}
+slr_char <- tolower(as.character(slr$state))
+slr_char <- gsub(' ','-',slr_char)
+slr_char
+```
+
+```{r}
+for (i in slr_char){
+  writeTopCities(i,3)
+}
+```
+
+```{r}
+table3cities <- read.delim('./Top Cities/TopCities.csv',sep=',',header=FALSE, stringsAsFactors = FALSE, na.strings=c('',' ','NA'))
+```
+
+```{r}
+table3cities_header <- read.csv('./Top Cities/tableTopCitiesHeader.csv', sep=',',
+                               header=T, na.strings=c('',' ','NA'))
+```
+
+```{r}
+header <- table3cities_header$x
+
+colnames(table3cities) <- header
+
+table3cities$population <- gsub(',','',table3cities$population)
+table3cities$population <- as.integer(table3cities$population)
+head(table3cities)
+```
+
+```{r}
+write.csv(table3cities,'table3cities.csv', row.names=FALSE)
+```
+

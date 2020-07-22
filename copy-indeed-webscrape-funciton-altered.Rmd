@@ -1,0 +1,957 @@
+---
+title: "copy indeed webscrape function altered"
+author: "Janis Corona"
+date: "7/8/2020"
+output: html_document
+---
+
+This function will do similar to the other function but instead of printing to console results, it will append the retrieved data to a table, for the data on advertised pay if available for a job title, city, and state searched in Indeed with this function, the rvest webscrape package and the selector gadget, https://selectorgadget.com/ , the chrome extension for highlighting html and getting the tag location. 
+
+This will save time in the long run, and turn hours into about 10 minutes of getting the average pay of each state using the three most populated cities searched on Indeed and using the range of pay for hourly and salary to calculate the mean pay per state. It will also produce the number of listed job postings for the job title searched in each state.
+```{r}
+#Loading the rvest package
+library('rvest')
+library('lubridate')
+library('dplyr')
+```
+
+This function will take an input job title search, such as 'data scientist' in quotations, the city searching, i.e. "Corona" also in quotations, and the state abbreviations, such as "CA" also in quotations, then it returns a list of the job titles found, dates in 'days ago', and the hiring company's name, and a table is also returned that displays the job title, dates, hiring companies, minimum hourly, maximum hourly, minimum annual salary, and maximum annual salary for the job title searched using the Indeed website.But only for the first five page listings.
+
+Create a directory named 'Indeed cities scraped'
+```{r}
+if (dir.exists('./Indeed cities scraped')){
+  unlink('./Indeed cities scraped', recursive=TRUE)
+  dir.create('./Indeed cities scraped')
+} else {
+  dir.create('./Indeed cities scraped')
+}
+
+
+```
+
+This funciton won't return the tables to look at, but will write all results to a csv file to read in when done importing the 150 cities of the three most populated city in each US state other than the newly added District of Columbia.
+```{r}
+writeIndeedJobData5pages <- function(jobTitle, cityName,stateAbb){
+  url <- 'https://www.indeed.com/jobs?q=jobTitle&l=CityName%2C+stateAbb'
+  url2 <- 'https://www.indeed.com/jobs?q=jobTitle&l=CityName%2C+stateAbb&start=20'
+  url3 <- 'https://www.indeed.com/jobs?q=jobTitle&l=CityName%2C+stateAbb&start=30'
+  url4 <- 'https://www.indeed.com/jobs?q=jobTitle&l=CityName%2C+stateAbb&start=40'
+  url5 <- 'https://www.indeed.com/jobs?q=jobTitle&l=CityName%2C+stateAbb&start=50'
+  
+  jobSearch <- as.character(jobTitle)
+  jobSearch <- gsub(' ','+',jobSearch)
+  city <- cityName
+  city <- gsub(' ','+',city)
+  state <- stateAbb
+  
+  url <- gsub('jobTitle',jobSearch, url)
+  url <- gsub('CityName',city, url)
+  url <- gsub('stateAbb',state, url)
+  
+  url2 <- gsub('jobTitle',jobSearch, url2)
+  url2 <- gsub('CityName',city, url2)
+  url2 <- gsub('stateAbb',state, url2)
+  
+  url3 <- gsub('jobTitle',jobSearch, url3)
+  url3 <- gsub('CityName',city, url3)
+  url3 <- gsub('stateAbb',state, url3)
+
+  url4 <- gsub('jobTitle',jobSearch, url4)
+  url4 <- gsub('CityName',city, url4)
+  url4 <- gsub('stateAbb',state, url4)
+
+  url5 <- gsub('jobTitle',jobSearch, url5)
+  url5 <- gsub('CityName',city, url5)
+  url5 <- gsub('stateAbb',state, url5)
+
+  webpage <- read_html(url)
+  webpage2 <- read_html(url2)
+  webpage3 <- read_html(url3)
+  webpage4 <- read_html(url4)
+  webpage5 <- read_html(url5)
+  
+  job_title_html <- html_nodes(webpage,'.jobtitle')
+  job_title <- html_text(job_title_html)
+  
+  job_title_html2 <- html_nodes(webpage2,'.jobtitle')
+  job_title2 <- html_text(job_title_html2)
+
+  job_title_html3 <- html_nodes(webpage3,'.jobtitle')
+  job_title3 <- html_text(job_title_html3)
+
+  job_title_html4 <- html_nodes(webpage4,'.jobtitle')
+  job_title4 <- html_text(job_title_html4)
+
+  job_title_html5 <- html_nodes(webpage5,'.jobtitle')
+  job_title5 <- html_text(job_title_html5)
+
+  jobTitles <- as.data.frame(c(job_title,job_title2, job_title3, job_title4, job_title5))
+  colnames(jobTitles) <- 'jobTitle'
+  jobTitles$jobTitle <- as.character(paste(jobTitles$jobTitle))
+  jobTitles$jobTitle <- gsub('\n','',jobTitles$jobTitle)
+
+  salary_html <- html_nodes(webpage,'.salaryText')
+  salary <- html_text(salary_html)
+
+  salary_html2 <- html_nodes(webpage2,'.salaryText')
+  salary2 <- html_text(salary_html2)
+
+  salary_html3 <- html_nodes(webpage3,'.salaryText')
+  salary3 <- html_text(salary_html3)
+
+  salary_html4 <- html_nodes(webpage4,'.salaryText')
+  salary4 <- html_text(salary_html4)
+
+  salary_html5 <- html_nodes(webpage5,'.salaryText')
+  salary5 <- html_text(salary_html5)
+  
+  salaries <- as.data.frame(c(salary,salary2, salary3, salary4, salary5))
+  colnames(salaries) <- 'Salary'
+  salaries$salary <- as.character(paste(salaries$Salary))
+  salaries$salary <- gsub('\n','',salaries$salary)
+  
+  #annual
+  annual <- salaries[grep('a year', salaries$salary),]
+  
+  if (length(annual$salary)>0){
+  annual$salary <- gsub('a year','', annual$salary)
+  annual$salary <- gsub(',','', annual$salary)
+  annual$salary <- gsub('Up to','',annual$salary)
+  annual$salary <- gsub('From','',annual$salary)
+  annual$salary <- gsub('[++]','',annual$salary,perl=TRUE)
+  
+  annualSalarySplit <- strsplit(annual$salary, split='-')
+  minSalary <- lapply(annualSalarySplit,'[',1)
+  maxSalary <- lapply(annualSalarySplit,'[',2)
+  minSalary <- gsub('[$]','',minSalary, perl=TRUE)
+  minSalary <- gsub(' ','',minSalary)
+  maxSalary <- gsub('[$]','',maxSalary, perl=TRUE)
+  maxSalary <- gsub(' ','',maxSalary)
+
+  annual$minSalary <- as.numeric(paste(minSalary))
+  annual$maxSalary <- as.numeric(paste(maxSalary))
+  annual$medianMinSalary <- median(annual$minSalary,na.rm=TRUE)
+  annual$medianMaxSalary <- median(annual$maxSalary,na.rm=TRUE)
+  annual$avgMinSalary <- mean(annual$minSalary,na.rm=TRUE)
+  annual$avgMaxSalary <- mean(annual$maxSalary,na.rm=TRUE)
+  annual$minimumMinSalary <- min(annual$minSalary,na.rm=TRUE)
+  annual$maximumMaxSalary <- max(annual$maxSalary,na.rm=TRUE)
+
+  avgAnnualSalary <- mean(rbind(annual$avgMinSalary,annual$avgMaxSalary),na.rm=TRUE)
+  minAnnualSalary <- min(annual$minimumMinSalary,na.rm=TRUE)
+  maxAnnualSalary <- max(rbind(annual$maximumMaxSalary,annual$minimumMinSalary),na.rm=TRUE)
+  } else {
+    avgAnnualSalary <- 'NA'
+    minAnnualSalary <- 'NA'
+    maxAnnualSalary <- 'NA'
+  }
+  
+  # hourly
+  hourly <- salaries[grep('an hour', salaries$salary),]
+  
+  if (length(hourly$salary>0)){
+  hourly$salary <- gsub('an hour','', hourly$salary)
+  hourly$salary <- gsub(',','', hourly$salary)
+  hourly$salary <- gsub('From ','', hourly$salary)
+  hourly$salary <- gsub('Up to','',hourly$salary)
+  hourly$salary <- gsub('[++]','',hourly$salary, perl=TRUE)
+  
+  hourlySalarySplit <- strsplit(hourly$salary, split='-')
+  minSalary <- lapply(hourlySalarySplit,'[',1)
+  maxSalary <- lapply(hourlySalarySplit,'[',2)
+  minSalary <- gsub('[$]','',minSalary, perl=TRUE)
+  minSalary <- gsub(' ','',minSalary)
+  maxSalary <- gsub('[$]','',maxSalary, perl=TRUE)
+  maxSalary <- gsub(' ','',maxSalary)
+
+  hourly$minSalary <- as.numeric(paste(minSalary))
+  hourly$maxSalary <- as.numeric(paste(maxSalary))
+  hourly$medianMinSalary <- median(hourly$minSalary,na.rm=TRUE)
+  hourly$medianMaxSalary <- median(hourly$maxSalary,na.rm=TRUE)
+  hourly$avgMinSalary <- mean(hourly$minSalary,na.rm=TRUE)
+  hourly$avgMaxSalary <- mean(hourly$maxSalary,na.rm=TRUE)
+  hourly$minimumMinSalary <- min(hourly$minSalary,na.rm=TRUE)
+  hourly$maximumMaxSalary <- max(hourly$maxSalary,na.rm=TRUE)
+  
+  avgHourlySalary <- mean(rbind(hourly$avgMinSalary,hourly$avgMaxSalary), na.rm=TRUE)
+  minHourlySalary <- min(hourly$minimumMinSalary, na.rm=TRUE)
+  maxHourlySalary <- max(rbind(hourly$maximumMaxSalary,hourly$minimumMinSalary),
+                         na.rm=TRUE)
+  } else {
+    avgHourlySalary <- 'NA'
+    minHourlySalary <- 'NA'
+    maxHourlySalary <- 'NA'
+  }
+  
+  if (length(salaries$salary)>0){
+  salaries$salary <- gsub('a year','', salaries$salary)
+  salaries$salary <- gsub('an hour','', salaries$salary)
+  salaries$salary <- gsub('a day','', salaries$salary)
+  salaries$salary <- gsub('a month','', salaries$salary)
+  salaries$salary <- gsub(',','', salaries$salary)
+  salaries$salary <- gsub('From ','', salaries$salary)
+  salaries$salary <- gsub('Up to','',salaries$salary)
+  salaries$salary <- gsub('[++]','',salaries$salary, perl=TRUE)
+
+  salarysplit <- strsplit(salaries$salary, split='-')
+  minSalary <- lapply(salarysplit,'[',1)
+  maxSalary <- lapply(salarysplit,'[',2)
+  minSalary <- gsub('[$]','',minSalary, perl=TRUE)
+  minSalary <- gsub(' ','',minSalary)
+  maxSalary <- gsub('[$]','',maxSalary, perl=TRUE)
+  maxSalary <- gsub(' ','',maxSalary)
+
+  salaries$minSalary <- as.numeric(paste(minSalary))
+  salaries$maxSalary <- as.numeric(paste(maxSalary))
+  salaries$medianMinSalary <- median(salaries$minSalary,na.rm=TRUE)
+  salaries$medianMaxSalary <- median(rbind(salaries$minSalary,
+                                    salaries$maxSalary),na.rm=TRUE)
+  salaries$avgMinSalary <- mean(salaries$minSalary,na.rm=TRUE)
+  salaries$avgMaxSalary <- mean(rbind(salaries$minSalary,
+                                    salaries$maxSalary),na.rm=TRUE)
+  salaries$minimumMinSalary <- min(salaries$minSalary,na.rm=TRUE)
+  salaries$maximumMaxSalary <- max(rbind(salaries$maxSalary,salaries$minSalary),na.rm=TRUE)
+
+  avgSalary <- mean(cbind(salaries$avgMaxSalary,salaries$avgMinSalary),na.rm=TRUE)
+  minSalary <- min(salaries$minimumMinSalary,na.rm=TRUE)
+  maxSalary <- max(salaries$maximumMaxSalary,na.rm=TRUE)
+  } else {
+    salaries <- salaries
+  }
+
+  date_html <- html_nodes(webpage,'.date')
+  date <- html_text(date_html)
+
+  date_html2 <- html_nodes(webpage2,'.date')
+  date2 <- html_text(date_html2)
+
+  date_html3 <- html_nodes(webpage3,'.date')
+  date3 <- html_text(date_html3)
+
+  date_html4 <- html_nodes(webpage4,'.date')
+  date4 <- html_text(date_html4)
+
+  date_html5 <- html_nodes(webpage5,'.date')
+  date5 <- html_text(date_html5)
+  
+  dates <- as.data.frame(c(date,date2, date3, date4, date5))
+  colnames(dates) <- 'date_daysAgo'
+  dates$date_daysAgo <- as.character(paste(dates$date_daysAgo))
+  dates$date_daysAgo <- gsub('\n','',dates$date_daysAgo)
+  dates$date_daysAgo <- gsub(' days ago','', dates$date_daysAgo)
+  dates$date_daysAgo <- gsub(' day ago','', dates$date_daysAgo)
+  dates$date_daysAgo <- gsub('[+]','', dates$date_daysAgo)
+
+  hiring_html <- html_nodes(webpage,'.sjcl')
+  hiring <- html_text(hiring_html)
+  
+  hiring_html2 <- html_nodes(webpage2,'.sjcl')
+  hiring2 <- html_text(hiring_html2)
+
+  hiring_html3 <- html_nodes(webpage3,'.sjcl')
+  hiring3 <- html_text(hiring_html3)
+
+  hiring_html4 <- html_nodes(webpage4,'.sjcl')
+  hiring4 <- html_text(hiring_html4)
+
+  hiring_html5 <- html_nodes(webpage5,'.sjcl')
+  hiring5 <- html_text(hiring_html5)
+
+  hirings <- as.data.frame(c(hiring,hiring2, hiring3, hiring4, hiring5))
+  colnames(hirings) <- 'HiringAgency'
+  hirings$HiringAgency <- as.character(paste(hirings$HiringAgency))
+  hirings$HiringAgency <- gsub('\n','',hirings$HiringAgency)
+  
+  MinAnnualSalary <- as.data.frame(rep(minAnnualSalary,length(jobTitles$jobTitle)))
+  colnames(MinAnnualSalary) <- 'MinAnnualSalary'
+  MaxAnnualSalary <- as.data.frame(rep(maxAnnualSalary,length(jobTitles$jobTitle)))
+  colnames(MaxAnnualSalary) <- 'MaxAnnualSalary'
+  
+  MinHourlySalary <- as.data.frame(rep(minHourlySalary,length(jobTitles$jobTitle)))
+  colnames(MinHourlySalary) <- 'MinHourlySalary'
+  MaxHourlySalary <- as.data.frame(rep(maxHourlySalary,length(jobTitles$jobTitle)))
+  colnames(MaxHourlySalary) <- 'MaxHourlySalary'
+ 
+  cityDF <- as.data.frame(rep(cityName,length(jobTitles$jobTitle)))
+  colnames(cityDF) <- "city"
+  stateDF <- as.data.frame(rep(state,length(jobTitles$jobTitle)))
+  colnames(stateDF) <- 'state'
+  
+  date <- as.data.frame(rep(date(),length(cityDF$city)))
+  colnames(date) <- 'todaysDate'
+  
+  tableJobs <- cbind(cityDF,stateDF,jobTitles,hirings,dates,date,MinHourlySalary,
+                     MaxHourlySalary,MinAnnualSalary,MaxAnnualSalary)
+  
+  setwd('./Indeed cities scraped')
+  
+  write.csv(tableJobs,paste(jobTitle,cityName,state,".csv",sep='_'),row.names = FALSE)
+  write.table(tableJobs[2:length(tableJobs$city),], "allCities.csv", append=TRUE, 
+              col.names=FALSE, sep=",",
+              row.names=FALSE)
+  names <- colnames(tableJobs)
+  write.csv(names,'tableJobsHeader.csv',row.names=FALSE)
+  setwd('../')
+  
+  #return(list(jobTitles, salaries, dates, hirings,annual, hourly,tableJobs))
+}
+```
+
+***
+
+Retrieve all the states' three largest cities' list of advertised job postings. There will be 50X3=150 runs of this function. For example, Texas has Houston, San Antonio, and Dallas as their three largest cities to pull this information for.
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Birmingham","AL")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Huntsville","AL")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Montgomery","AL")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Anchorage","AK")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Juneau","AK")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Fairbanks","AK")
+```
+
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Phoenix","AZ")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Tucson","AZ")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Mesa","AZ")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Little Rock","AR")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Fayetteville","AR")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Fort Smith","AR")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Los Angeles","CA")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","San Diego","CA")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","San Jose","CA")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Denver","CO")
+```
+
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Colorado Springs","CO")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Aurora","CO")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Bridgeport","CT")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Stamford","CT")
+```
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","New Haven","CT")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Wilmington","DE")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Dover","DE")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Newark","DE")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Jacksonville","FL")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Miami","FL")
+```
+
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Tampa","FL")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Atlanta","GA")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Augusta","GA")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Columbus","GA")
+```
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Honolulu","HI")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","East Honolulu","HI")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Hilo","HI")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Boise","ID")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Meridian","ID")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Nampa","ID")
+```
+
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Chicago","IL")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Aurora","IL")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Naperville","IL")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Indianapolis","IN")
+```
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Fort Wayne","IN")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Evansville","IN")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Des Moines","IA")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Cedar Rapids","IA")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Davenport","IA")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Wichita","KS")
+```
+
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Overland Park","KS")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Kansas City","KS")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Louisville","KY")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Lexington","KY")
+```
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Bowling Green","KY")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","New Orleans","LA")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Baton Rouge","LA")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Shreveport","LA")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Portland","ME")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Lewiston","ME")
+```
+
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Bango","ME")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Baltimore","MD")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Columbia","MD")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Germantown","MD")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Boston","MA")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Worcester","MA")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Springfield","MA")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Detroit","MI")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Grand Rapids","MI")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Warren","MI")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Minneapolis","MN")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","St. Paul","MN")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Rochester","MN")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Jackson","MS")
+```
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Gulfport","MS")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Southaven","MS")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Kansas City","MO")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","St. Louis","MO")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Springfield","MO")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Billings","MT")
+```
+
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Missoula","MT")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Great Falls","MT")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Omaha","NE")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Lincoln","NE")
+```
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Bellevue","NE")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Las Vegas","NV")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Henderson","NV")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Reno","NV")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Manchester","NH")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Nashua","NH")
+```
+
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Concorde","NH")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Newark","NJ")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Jersey City","NJ")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Paterson","NJ")
+```
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Albuquerque","NM")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Las Cruces","NM")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Rio Rancho","NM")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","New York","NY")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Buffalo","NY")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Rochester","NY")
+```
+
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Charlotte","NC")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Raleigh","NC")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Greensboro","NC")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Fargo","ND")
+```
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Bismarck","ND")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Grand Forks","ND")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Columbus","OH")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Cleveland","OH")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Cincinnati","OH")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Oklahoma City","OK")
+```
+
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Tulsa","OK")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Norman","OK")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Portland","OR")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Salem","OR")
+```
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Eugene","OR")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Philadelphia","PA")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Pittsburgh","PA")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Allentown","PA")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Providence","RI")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Cranston","RI")
+```
+
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Warwick","RI")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Charleston","SC")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Columbia","SC")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","North Charleston","SC")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Sioux Falls","SD")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Rapid City","SD")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Aberdeen","SD")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Nashville","TN")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Memphis","TN")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Knoxville","TN")
+```
+
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Houston","TX")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","San Antonio","TX")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Dallas","TX")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Salt Lake City","UT")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","West Valley City","UT")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Provo","UT")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Burlington","VT")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","South Burlington","VT")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Rutland","VT")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Virginia Beach","VA")
+```
+
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Chesapeake","VA")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Norfolk","VA")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Seattle","WA")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Spokane","WA")
+```
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Tacoma","WA")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Charleston","WV")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Huntington","WV")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Morgantown","WV")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Milwaukee","WI")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Madison","WI")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Green Bay","WI")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Cheyenne","WY")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Casper","WY")
+```
+
+```{r, error=FALSE, message=FALSE,warning=FALSE}
+writeIndeedJobData5pages("massage therapist","Laramie","WY")
+```
+
+***
+
+When done pulling every city and state, read in the table data to get the statistics needed.
+```{r}
+allCities <- read.delim('./Indeed cities scraped/allCities.csv', sep=",", header=FALSE)
+```
+
+```{r}
+header <- read.csv('./Indeed cities scraped/tableJobsHeader.csv', sep=',')
+```
+
+```{r}
+names <- header$x
+```
+
+```{r}
+colnames(allCities) <- names
+head(allCities)
+```
+
+```{r}
+tail(allCities)
+```
+
+```{r}
+mean(rbind(allCities$MaxAnnualSalary,allCities$MinAnnualSalary),na.rm=T)
+```
+
+Group by state, and get the mean of the minimum hourly of the three cities, and the mean of the max of the hourly for the three cities used for each state, and add an avgHourly and avgAnualSalary column to get the average hourly and anual salary pay for each state using the three most populated cities in each state.
+```{r}
+stateMeans <- allCities %>% group_by(state) %>% summarise_at(vars(c("MinHourlySalary","MaxHourlySalary","MinAnnualSalary","MaxAnnualSalary")),mean, na.rm=TRUE)
+stateMeans$avgHourly <- apply(stateMeans[,2:3], 1,mean)
+stateMeans$avgAnualSalary <- apply(stateMeans[,4:5],1,mean)
+stateMeans
+```
+
+```{r}
+stateJobListings <- allCities %>% group_by(state) %>% count(state)
+colnames(stateJobListings)[2] <- 'jobsListed'
+stateJobListings
+```
+
+```{r}
+statesRates <- merge(stateJobListings, stateMeans, by.x='state',by.y='state')
+statesRates
+```
+
+```{r}
+write.csv(statesRates,'statesRates.csv', row.names=FALSE)
+```
+

@@ -1,0 +1,349 @@
+---
+title: "2 bedroom zillow median home value function 3 cities"
+author: "Janis Corona"
+date: "7/7/2020"
+output: html_document
+---
+
+
+# https://www.zillow.com/research/data/
+```{r}
+library(dplyr)
+```
+
+Create a directory named 'Zillow 2BR table'
+```{r}
+if (dir.exists('./Zillow 2BR table')){
+  unlink('./Zillow 2BR table', recursive=TRUE)
+  dir.create('./Zillow 2BR table')
+} else {
+  dir.create('./Zillow 2BR table')
+}
+
+
+```
+
+```{r}
+house_2_BR <- read.csv('City_zhvi_bdrmcnt_2_uc_sfrcondo_tier_0.33_0.67_sm_sa_mon.csv', header=TRUE, sep=',', na.strings=c('',' ','NA'))
+
+colnames(house_2_BR)
+```
+
+```{r}
+BR_2 <- house_2_BR[,c(1:8,301)]
+
+head(BR_2)
+```
+
+```{r}
+find3TableMedian <- function(state,n1,n2,n3){
+  s <- BR_2[BR_2$State==state,]
+  c3 <- subset(s, s$RegionName==n1 |
+                 s$RegionName==n2 |
+                 s$RegionName==n3)
+  
+  setwd('./Zillow 2BR table')
+  
+  write.table(c3[2:length(c3$State),c(3,6,9)], "zillow3cities.csv", append=TRUE, 
+              col.names=FALSE, sep=",",
+              row.names=FALSE)
+  
+  names <- colnames(c3)[c(3,6,9)]
+  
+  write.csv(names,'zillowTableHeader.csv',row.names=FALSE)
+  
+  setwd('../')
+  
+}
+
+```
+
+
+```{r}
+find3TableMedian('AL','Birmingham','Huntsville','Montgomery')
+```
+
+
+```{r}
+find3TableMedian('AK','Anchorage','Juneau','Fairbanks')
+```
+
+
+```{r}
+find3TableMedian('AZ','Phoenix','Tucson','Mesa')
+```
+
+
+```{r}
+find3TableMedian('AR','Little Rock','Fayetteville','Fort Smith')
+```
+
+
+```{r}
+find3TableMedian('CA','Los Angeles','San Diego','San Jose')
+```
+
+
+```{r}
+find3TableMedian('CO','Denver','Colorado Springs','Aurora')
+```
+
+
+```{r}
+find3TableMedian('CT','Bridgeport','Stamford','New Haven')
+```
+
+
+```{r}
+find3TableMedian('DE','Wilmington','Dover','Newark')
+```
+
+
+```{r}
+find3TableMedian('FL','Jacksonville','Miami','Tampa')
+```
+
+
+```{r}
+find3TableMedian('GA','Atlanta','Augusta','Columbus')
+```
+
+
+```{r}
+find3TableMedian('HI','Honolulu','East Honolulu','Hilo')
+```
+
+
+
+```{r}
+find3TableMedian('ID','Boise','Meridian','Nampa')
+```
+
+
+```{r}
+find3TableMedian('IL','Chicago','Aurora','Naperville')
+```
+
+
+```{r}
+find3TableMedian('IN','Indianapolis','Fort Wayne','Evansville')
+```
+
+
+```{r}
+find3TableMedian('IA','Des Moines','Cedar Rapids','Davenport')
+```
+
+
+```{r}
+find3TableMedian('KS','Wichita','Overland Park','Kansas City')
+```
+
+
+```{r}
+find3TableMedian('KY','Louisville','Lexington','Bowling Green')
+```
+
+
+```{r}
+find3TableMedian('LA','New Orleans','Baton Rouge','Shreveport')
+```
+
+
+```{r}
+find3TableMedian('ME','Portland','Lewiston','Bangor')
+```
+
+
+```{r}
+find3TableMedian('MD','Baltimore','Columbia','Germantown')
+```
+
+
+```{r}
+find3TableMedian('MA','Boston','Worcester','Springfield')
+```
+
+
+```{r}
+find3TableMedian('MI','Detroit','Grand Rapids','Warren')
+```
+
+
+```{r}
+find3TableMedian('MN','Minneapolis','St. Paul','Rochester')
+```
+
+
+```{r}
+find3TableMedian('MS','Jackson','Gulfport','Southaven')
+```
+
+
+```{r}
+find3TableMedian('MO','Kansas City','St. Louis','Springfield')
+```
+
+
+```{r}
+find3TableMedian('MT','Billings','Missoula','Great Falls')
+```
+
+
+```{r}
+find3TableMedian('NE','Omaha','Lincoln','Bellevue')
+```
+
+
+```{r}
+find3TableMedian('NV','Las Vegas','Henderson','Reno')
+```
+
+
+```{r}
+find3TableMedian('NH','Manchester','Nashua','Concord')
+```
+
+
+```{r}
+find3TableMedian('NJ','Neward','Jersey City','Paterson')
+```
+
+
+```{r}
+find3TableMedian('NM','Albuquerque','Las Cruces','Rio Rancho')
+```
+
+
+```{r}
+find3TableMedian('NY','New York','Buffalo','Rochester')
+```
+
+
+```{r}
+find3TableMedian('NC','Charlotte','Raleigh','Greensboro')
+```
+
+
+```{r}
+find3TableMedian('ND','Fargo','Bismarck','Grand Forks')
+```
+
+
+```{r}
+find3TableMedian('OH','Columbus','Cleveland','Cincinnati')
+```
+
+
+```{r}
+find3TableMedian('OK','Oklahoma City','Tulsa','Norman')
+```
+
+
+```{r}
+find3TableMedian('OR','Portland','Salem','Eugene')
+```
+
+
+```{r}
+find3TableMedian('PA','Philadelphia','Pittsburgh','Allentown')
+```
+
+
+```{r}
+find3TableMedian('RI','Providence','Cranston','Warwick')
+```
+
+
+```{r}
+find3TableMedian('SC','Charleston','Columbia','North Charleston')
+```
+
+
+```{r}
+find3TableMedian('SD','Sioux Falls','Rapid City','Aberdeen')
+```
+
+
+```{r}
+find3TableMedian('TN','Nashville','Memphis','Knoxville')
+```
+
+
+```{r}
+find3TableMedian('TX','Houston','San Antonio','Dallas')
+```
+
+
+```{r}
+find3TableMedian('UT','Salt Lake City','West Valley City','Provo')
+```
+
+
+```{r}
+find3TableMedian('VT','Burlington','South Burlington','Rutland')
+```
+
+
+```{r}
+find3TableMedian('VA','Virginia Beach','Chesapeake','Norfolk')
+```
+
+
+```{r}
+find3TableMedian('WA','Seattle','Spokane','Tacoma')
+```
+
+
+```{r}
+find3TableMedian('WV','Charleston','Huntington','Morgantown')
+```
+
+
+```{r}
+find3TableMedian('WI','Milwaukee','Madison','Green Bay')
+```
+
+
+```{r}
+find3TableMedian('WY','Cheyenne','Casper','Laramie')
+```
+
+***
+
+Now that we have our table of the median home values from the cities available from our 3 most populated cities in each of the 50 US states, lets make it a file to pull into our state licensing data table.
+```{r}
+zillow3_medTable <- read.csv('./Zillow 2BR table/zillow3cities.csv', sep=',',
+                             header=FALSE, na.strings=c('',' ','NA'))
+zHeader <- read.csv('./Zillow 2BR table/zillowTableHeader.csv', sep=',',
+                             header=FALSE, na.strings=c('',' ','NA'))
+```
+
+```{r}
+head(zillow3_medTable)
+```
+
+```{r}
+head(zHeader)
+```
+
+```{r}
+namesZ <- as.character(zHeader$V1[2:4])
+namesZ
+```
+
+```{r}
+colnames(zillow3_medTable) <- namesZ
+head(zillow3_medTable)
+```
+
+```{r}
+Zillow <- zillow3_medTable %>% group_by(State) %>% summarise_at(vars('X2020.05.31'),mean)
+Zillow
+```
+
+Lets now write this file out to csv to use in our state licensing data table of updated information.
+```{r}
+write.csv(Zillow,'updatedZillow2BR.csv',row.names=FALSE)
+```
+

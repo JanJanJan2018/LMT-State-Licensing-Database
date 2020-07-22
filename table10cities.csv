@@ -1,0 +1,501 @@
+"state","topCity","population"
+"alabama","Birmingham",208940
+"alabama","Huntsville",202910
+"alabama","Montgomery",197282
+"alabama","Mobile",186804
+"alabama","Tuscaloosa",103369
+"alabama","Hoover",85740
+"alabama","Dothan",68259
+"alabama","Auburn",68138
+"alabama","Decatur",53602
+"alabama","Madison",52544
+"alaska","Anchorage",285634
+"alaska","Juneau",31435
+"alaska","Fairbanks",30996
+"alaska","Badger",18792
+"alaska","Knik-Fairview",17513
+"alaska","College",13709
+"alaska","Wasilla",11435
+"alaska","Tanaina",10520
+"alaska","Lakes",10098
+"alaska","Sitka",8543
+"arizona","Phoenix",1703080
+"arizona","Tucson",553871
+"arizona","Mesa",527666
+"arizona","Chandler",268675
+"arizona","Scottsdale",262222
+"arizona","Gilbert",258935
+"arizona","Glendale",254500
+"arizona","Tempe",194218
+"arizona","Peoria",180219
+"arizona","Surprise",142049
+"arkansas","Little Rock",197371
+"arkansas","Fayetteville",90757
+"arkansas","Fort Smith",88373
+"arkansas","Springdale",83249
+"arkansas","Jonesboro",79192
+"arkansas","Rogers",70278
+"arkansas","Conway",67828
+"arkansas","North Little Rock",65591
+"arkansas","Bentonville",55539
+"arkansas","Pine Bluff",40779
+"california","Los Angeles",4015940
+"california","San Diego",1447100
+"california","San Jose",1033670
+"california","San Francisco",896047
+"california","Fresno",538195
+"california","Sacramento",521769
+"california","Long Beach",463218
+"california","Oakland",435224
+"california","Bakersfield",390233
+"california","Anaheim",352911
+"colorado","Denver",734134
+"colorado","Colorado Springs",485946
+"colorado","Aurora",382742
+"colorado","Fort Collins",172862
+"colorado","Lakewood",158660
+"colorado","Thornton",143890
+"colorado","Arvada",123036
+"colorado","Westminster",113919
+"colorado","Pueblo",113662
+"colorado","Centennial",112151
+"connecticut","Bridgeport",143010
+"connecticut","Stamford",131593
+"connecticut","New Haven",130850
+"connecticut","Hartford",121033
+"connecticut","Waterbury",107701
+"connecticut","Norwalk",88871
+"connecticut","Danbury",84100
+"connecticut","New Britain",72045
+"connecticut","West Hartford",63127
+"connecticut","Bristol",59674
+"delaware","Wilmington",70139
+"delaware","Dover",38499
+"delaware","Newark",34493
+"delaware","Middletown",23744
+"delaware","Bear",21362
+"delaware","Glasgow",14342
+"delaware","Hockessin",13472
+"delaware","Brookside",13191
+"delaware","Smyrna",11940
+"delaware","Milford",11799
+"florida","Jacksonville",926371
+"florida","Miami",486388
+"florida","Tampa",413704
+"florida","Orlando",291739
+"florida","St. Petersburg",271842
+"florida","Hialeah",243208
+"florida","Port St. Lucie",206410
+"florida","Cape Coral",199503
+"florida","Tallahassee",199205
+"florida","Fort Lauderdale",184599
+"georgia","Atlanta",523738
+"georgia","Augusta",196303
+"georgia","Columbus",189296
+"georgia","Macon County",152519
+"georgia","Savannah",145754
+"georgia","Athens",129770
+"georgia","Sandy Springs",110779
+"georgia","South Fulton",98837
+"georgia","Roswell",94872
+"georgia","Johns Creek",84946
+"hawaii","Honolulu",342933
+"hawaii","East Honolulu",47770
+"hawaii","Hilo",46284
+"hawaii","Pearl City",46129
+"hawaii","Waipahu",40427
+"hawaii","Kailua",36662
+"hawaii","Kaneohe",33739
+"hawaii","Kahului",32312
+"hawaii","Mililani Town",27926
+"hawaii","Ewa Gentry",25752
+"idaho","Boise",234576
+"idaho","Meridian",115550
+"idaho","Nampa",101410
+"idaho","Idaho Falls",63543
+"idaho","Caldwell",59809
+"idaho","Pocatello",57166
+"idaho","Coeur d'Alene",52917
+"idaho","Twin Falls",51770
+"idaho","Post Falls",38145
+"idaho","Lewiston",33155
+"illinois","Chicago",2694240
+"illinois","Aurora",198870
+"illinois","Naperville",149196
+"illinois","Joliet",148227
+"illinois","Rockford",145020
+"illinois","Springfield",112990
+"illinois","Elgin",111401
+"illinois","Peoria",108194
+"illinois","Champaign",89149
+"illinois","Waukegan",85720
+"indiana","Indianapolis",875929
+"indiana","Fort Wayne",270989
+"indiana","Evansville",116709
+"indiana","South Bend",102028
+"indiana","Fishers",96992
+"indiana","Carmel",95964
+"indiana","Bloomington",85981
+"indiana","Hammond",74423
+"indiana","Gary",73966
+"indiana","Lafayette",72668
+"iowa","Des Moines",217891
+"iowa","Cedar Rapids",135502
+"iowa","Davenport",101965
+"iowa","Sioux City",81382
+"iowa","Iowa City",78440
+"iowa","Ankeny",72820
+"iowa","West Des Moines",68619
+"iowa","Ames",67962
+"iowa","Waterloo",67228
+"iowa","Council Bluffs",62289
+"kansas","Wichita",388771
+"kansas","Overland Park",196636
+"kansas","Kansas City",153600
+"kansas","Olathe",142841
+"kansas","Topeka",125092
+"kansas","Lawrence",99496
+"kansas","Shawnee",66215
+"kansas","Lenexa",56366
+"kansas","Manhattan",54749
+"kansas","Salina",45928
+"kentucky","Louisville",624890
+"kentucky","Lexington",328690
+"kentucky","Bowling Green",71623
+"kentucky","Owensboro",60323
+"kentucky","Covington",40136
+"kentucky","Richmond",37652
+"kentucky","Georgetown",36081
+"kentucky","Florence",33127
+"kentucky","Nicholasville",32113
+"kentucky","Elizabethtown",30837
+"louisiana","New Orleans",390128
+"louisiana","Baton Rouge",216701
+"louisiana","Shreveport",183819
+"louisiana","Metairie",143481
+"louisiana","Lafayette",124561
+"louisiana","Lake Charles",80169
+"louisiana","Bossier City",68915
+"louisiana","Kenner",66351
+"louisiana","Monroe",46737
+"louisiana","Alexandria",45808
+"maine","Portland",66067
+"maine","Lewiston",35868
+"maine","Bangor",32167
+"maine","South Portland",25474
+"maine","Auburn",23256
+"maine","Biddeford",21574
+"maine","Sanford",21335
+"maine","Saco",20352
+"maine","Westbrook",19760
+"maine","Augusta",18809
+"maryland","Baltimore",590479
+"maryland","Columbia",103663
+"maryland","Germantown",90844
+"maryland","Silver Spring",79750
+"maryland","Waldorf",74587
+"maryland","Frederick",74346
+"maryland","Ellicott City",72247
+"maryland","Rockville",70088
+"maryland","Glen Burnie",69813
+"maryland","Gaithersburg",69079
+"massachusetts","Boston",710195
+"massachusetts","Worcester",186433
+"massachusetts","Springfield",155472
+"massachusetts","Cambridge",121783
+"massachusetts","Lowell",112626
+"massachusetts","Brockton",96313
+"massachusetts","Lynn",96032
+"massachusetts","New Bedford",95155
+"massachusetts","Quincy",94948
+"massachusetts","Fall River",89633
+"michigan","Detroit",667272
+"michigan","Grand Rapids",205289
+"michigan","Warren",134375
+"michigan","Sterling Heights",133370
+"michigan","Ann Arbor",123062
+"michigan","Lansing",120921
+"michigan","Flint",94867
+"michigan","Dearborn",93587
+"michigan","Livonia",93375
+"michigan","Troy",84470
+"minnesota","Minneapolis",437069
+"minnesota","St. Paul",311895
+"minnesota","Rochester",119917
+"minnesota","Bloomington",85818
+"minnesota","Duluth",85728
+"minnesota","Brooklyn Park",81486
+"minnesota","Plymouth",81014
+"minnesota","Maple Grove",74063
+"minnesota","Woodbury",73404
+"minnesota","Lakeville",69295
+"mississippi","Jackson",160080
+"mississippi","Gulfport",72670
+"mississippi","Southaven",56792
+"mississippi","Biloxi",46370
+"mississippi","Hattiesburg",45309
+"mississippi","Olive Branch",39837
+"mississippi","Tupelo",38030
+"mississippi","Meridian",35949
+"mississippi","Greenville",28508
+"mississippi","Horn Lake",27479
+"missouri","Kansas City",505198
+"missouri","St. Louis",293792
+"missouri","Springfield",169552
+"missouri","Columbia",125976
+"missouri","Independence",116715
+"missouri","Lee's Summit",100683
+"missouri","O'Fallon",90684
+"missouri","St. Joseph",75399
+"missouri","St. Charles",72750
+"missouri","St. Peters",57167
+"montana","Billings",109868
+"montana","Missoula",77058
+"montana","Great Falls",58627
+"montana","Bozeman",52034
+"montana","Butte",34676
+"montana","Helena",33525
+"montana","Kalispell",25288
+"montana","Belgrade",9757
+"montana","Havre",9751
+"montana","Anaconda-Deer Lodge County",9201
+"nebraska","Omaha",470702
+"nebraska","Lincoln",293905
+"nebraska","Bellevue",53945
+"nebraska","Grand Island",51440
+"nebraska","Kearney",34301
+"nebraska","Fremont",26731
+"nebraska","Norfolk",25027
+"nebraska","Hastings",24972
+"nebraska","Columbus",23752
+"nebraska","North Platte",23522
+"nevada","Las Vegas",662000
+"nevada","Henderson",330084
+"nevada","Reno",260258
+"nevada","North Las Vegas",253923
+"nevada","Paradise",233689
+"nevada","Spring Valley",199722
+"nevada","Sunrise Manor",192934
+"nevada","Enterprise",164314
+"nevada","Sparks",108334
+"nevada","Carson City",56336
+"new-hampshire","Manchester",113441
+"new-hampshire","Nashua",90080
+"new-hampshire","Concord",43840
+"new-hampshire","Dover",32343
+"new-hampshire","Rochester",32224
+"new-hampshire","Keene",23146
+"new-hampshire","Derry",22381
+"new-hampshire","Portsmouth",22282
+"new-hampshire","Laconia",16532
+"new-hampshire","Lebanon",13582
+"new-jersey","Newark",282862
+"new-jersey","Jersey City",271099
+"new-jersey","Paterson",145871
+"new-jersey","Elizabeth",129147
+"new-jersey","Toms River",88712
+"new-jersey","Clifton",85279
+"new-jersey","Trenton",84386
+"new-jersey","Camden",73811
+"new-jersey","Passaic",69816
+"new-jersey","Union City",68718
+"new-mexico","Albuquerque",561188
+"new-mexico","Las Cruces",104148
+"new-mexico","Rio Rancho",101475
+"new-mexico","Santa Fe",85502
+"new-mexico","Roswell",46977
+"new-mexico","Farmington",44044
+"new-mexico","South Valley",41011
+"new-mexico","Clovis",38008
+"new-mexico","Hobbs",37465
+"new-mexico","Alamogordo",32205
+"new-york","New York",8323340
+"new-york","Buffalo",255244
+"new-york","Rochester",203792
+"new-york","Yonkers",199021
+"new-york","Syracuse",140987
+"new-york","Albany",96853
+"new-york","New Rochelle",77912
+"new-york","Cheektowaga",74026
+"new-york","Mount Vernon",66955
+"new-york","Schenectady",66107
+"north-carolina","Charlotte",905318
+"north-carolina","Raleigh",481958
+"north-carolina","Greensboro",299946
+"north-carolina","Durham",282737
+"north-carolina","Winston-Salem",251762
+"north-carolina","Fayetteville",205646
+"north-carolina","Cary",175102
+"north-carolina","Wilmington",126669
+"north-carolina","High Point",112900
+"north-carolina","Concord",98842
+"north-dakota","Fargo",129530
+"north-dakota","Bismarck",74162
+"north-dakota","Grand Forks",57060
+"north-dakota","Minot",45732
+"north-dakota","West Fargo",38718
+"north-dakota","Williston",25810
+"north-dakota","Mandan",22973
+"north-dakota","Dickinson",21835
+"north-dakota","Jamestown",15310
+"north-dakota","Wahpeton",7789
+"ohio","Columbus",922223
+"ohio","Cleveland",379233
+"ohio","Cincinnati",306487
+"ohio","Toledo",270651
+"ohio","Akron",198148
+"ohio","Dayton",139756
+"ohio","Parma",77755
+"ohio","Canton",69546
+"ohio","Youngstown",65422
+"ohio","Lorain",64170
+"oklahoma","Oklahoma City",655407
+"oklahoma","Tulsa",396543
+"oklahoma","Norman",126377
+"oklahoma","Broken Arrow",110135
+"oklahoma","Edmond",93849
+"oklahoma","Lawton",92543
+"oklahoma","Moore",63117
+"oklahoma","Midwest City",56883
+"oklahoma","Stillwater",50941
+"oklahoma","Enid",48015
+"oregon","Portland",664103
+"oregon","Salem",179944
+"oregon","Eugene",178329
+"oregon","Hillsboro",112489
+"oregon","Gresham",109216
+"oregon","Bend",105418
+"oregon","Beaverton",99102
+"oregon","Medford",84397
+"oregon","Springfield",64717
+"oregon","Corvallis",61027
+"pennsylvania","Philadelphia",1591800
+"pennsylvania","Pittsburgh",294860
+"pennsylvania","Allentown",122623
+"pennsylvania","Erie",94619
+"pennsylvania","Reading",88521
+"pennsylvania","Scranton",77218
+"pennsylvania","Bethlehem",76370
+"pennsylvania","Lancaster",59392
+"pennsylvania","Levittown",51726
+"pennsylvania","Harrisburg",49301
+"rhode-island","Providence",178901
+"rhode-island","Cranston",80966
+"rhode-island","Warwick",80487
+"rhode-island","Pawtucket",71581
+"rhode-island","East Providence",47314
+"rhode-island","Woonsocket",41585
+"rhode-island","Newport",24238
+"rhode-island","Central Falls",19028
+"rhode-island","Westerly",17435
+"rhode-island","Valley Falls",11828
+"south-carolina","Charleston",138458
+"south-carolina","Columbia",133031
+"south-carolina","North Charleston",115383
+"south-carolina","Mount Pleasant",94932
+"south-carolina","Rock Hill",76159
+"south-carolina","Greenville",71171
+"south-carolina","Summerville",54198
+"south-carolina","Goose Creek",44227
+"south-carolina","Hilton Head Island",39721
+"south-carolina","Sumter",39080
+"south-dakota","Sioux Falls",190519
+"south-dakota","Rapid City",77525
+"south-dakota","Aberdeen",29180
+"south-dakota","Brookings",25149
+"south-dakota","Watertown",22285
+"south-dakota","Mitchell",15568
+"south-dakota","Yankton",14676
+"south-dakota","Huron",14280
+"south-dakota","Pierre",14034
+"south-dakota","Spearfish",12084
+"tennessee","Nashville",673167
+"tennessee","Memphis",647374
+"tennessee","Knoxville",191060
+"tennessee","Chattanooga",184143
+"tennessee","Clarksville",164496
+"tennessee","Murfreesboro",151066
+"tennessee","Franklin",88004
+"tennessee","Jackson",66989
+"tennessee","Johnson City",66936
+"tennessee","Bartlett",59709
+"texas","Houston",2340890
+"texas","San Antonio",1578030
+"texas","Dallas",1382270
+"texas","Austin",988218
+"texas","Fort Worth",932116
+"texas","El Paso",685575
+"texas","Arlington",402762
+"texas","Corpus Christi",325406
+"texas","Plano",288539
+"texas","Laredo",264703
+"utah","Salt Lake City",213367
+"utah","West Valley City",135715
+"utah","Provo",118592
+"utah","West Jordan",117426
+"utah","Orem",99045
+"utah","Sandy",96943
+"utah","St. George",92828
+"utah","Ogden",88061
+"utah","Layton",79293
+"utah","South Jordan",79013
+"vermont","Burlington",43021
+"vermont","South Burlington",20100
+"vermont","Rutland",15087
+"vermont","Essex Junction",11597
+"vermont","Bennington",8836
+"vermont","Barre",8521
+"vermont","Winooski",7537
+"vermont","Montpelier",7356
+"vermont","Middlebury",6855
+"vermont","Brattleboro",6771
+"virginia","Virginia Beach",447841
+"virginia","Chesapeake",248106
+"virginia","Norfolk",242234
+"virginia","Richmond",232055
+"virginia","Arlington",231803
+"virginia","Newport News",177064
+"virginia","Alexandria",165748
+"virginia","Hamn",132999
+"virginia","Roanoke",99648
+"virginia","Portsmouth",93830
+"washington","Seattle",783137
+"washington","Spokane",223266
+"washington","Tacoma",222603
+"washington","Vancouver",186516
+"washington","Bellevue",154647
+"washington","Kent",131730
+"washington","Everett",113836
+"washington","Spokane Valley",103701
+"washington","Renton",103091
+"washington","Federal Way",97316
+"west-virginia","Charleston",45703
+"west-virginia","Huntington",44416
+"west-virginia","Morgantown",30983
+"west-virginia","Parkersburg",29123
+"west-virginia","Wheeling",25941
+"west-virginia","Fairmont",18349
+"west-virginia","Weirton",18059
+"west-virginia","Martinsburg",17431
+"west-virginia","Beckley",15547
+"west-virginia","Clarksburg",14990
+"wisconsin","Milwaukee",585589
+"wisconsin","Madison",264030
+"wisconsin","Green Bay",105413
+"wisconsin","Kenosha",101124
+"wisconsin","Racine",77536
+"wisconsin","Appleton",74832
+"wisconsin","Waukesha",72811
+"wisconsin","Eau Claire",69506
+"wisconsin","Oshkosh",66831
+"wisconsin","Janesville",65149
+"wyoming","Cheyenne",64165
+"wyoming","Casper",55293
+"wyoming","Laramie",33295
+"wyoming","Gillette",28357
+"wyoming","Rock Springs",22272
+"wyoming","Sheridan",17931
+"wyoming","Green River",11608
+"wyoming","Evanston",11412
+"wyoming","Riverton",10798
+"wyoming","Jackson",10427

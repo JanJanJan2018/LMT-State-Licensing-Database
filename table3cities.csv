@@ -1,0 +1,151 @@
+"state","topCity","population"
+"alabama","Birmingham",208940
+"alabama","Huntsville",202910
+"alabama","Montgomery",197282
+"alaska","Anchorage",285634
+"alaska","Juneau",31435
+"alaska","Fairbanks",30996
+"arizona","Phoenix",1703080
+"arizona","Tucson",553871
+"arizona","Mesa",527666
+"arkansas","Little Rock",197371
+"arkansas","Fayetteville",90757
+"arkansas","Fort Smith",88373
+"california","Los Angeles",4015940
+"california","San Diego",1447100
+"california","San Jose",1033670
+"colorado","Denver",734134
+"colorado","Colorado Springs",485946
+"colorado","Aurora",382742
+"connecticut","Bridgeport",143010
+"connecticut","Stamford",131593
+"connecticut","New Haven",130850
+"delaware","Wilmington",70139
+"delaware","Dover",38499
+"delaware","Newark",34493
+"florida","Jacksonville",926371
+"florida","Miami",486388
+"florida","Tampa",413704
+"georgia","Atlanta",523738
+"georgia","Augusta",196303
+"georgia","Columbus",189296
+"hawaii","Honolulu",342933
+"hawaii","East Honolulu",47770
+"hawaii","Hilo",46284
+"idaho","Boise",234576
+"idaho","Meridian",115550
+"idaho","Nampa",101410
+"illinois","Chicago",2694240
+"illinois","Aurora",198870
+"illinois","Naperville",149196
+"indiana","Indianapolis",875929
+"indiana","Fort Wayne",270989
+"indiana","Evansville",116709
+"iowa","Des Moines",217891
+"iowa","Cedar Rapids",135502
+"iowa","Davenport",101965
+"kansas","Wichita",388771
+"kansas","Overland Park",196636
+"kansas","Kansas City",153600
+"kentucky","Louisville",624890
+"kentucky","Lexington",328690
+"kentucky","Bowling Green",71623
+"louisiana","New Orleans",390128
+"louisiana","Baton Rouge",216701
+"louisiana","Shreveport",183819
+"maine","Portland",66067
+"maine","Lewiston",35868
+"maine","Bangor",32167
+"maryland","Baltimore",590479
+"maryland","Columbia",103663
+"maryland","Germantown",90844
+"massachusetts","Boston",710195
+"massachusetts","Worcester",186433
+"massachusetts","Springfield",155472
+"michigan","Detroit",667272
+"michigan","Grand Rapids",205289
+"michigan","Warren",134375
+"minnesota","Minneapolis",437069
+"minnesota","St. Paul",311895
+"minnesota","Rochester",119917
+"mississippi","Jackson",160080
+"mississippi","Gulfport",72670
+"mississippi","Southaven",56792
+"missouri","Kansas City",505198
+"missouri","St. Louis",293792
+"missouri","Springfield",169552
+"montana","Billings",109868
+"montana","Missoula",77058
+"montana","Great Falls",58627
+"nebraska","Omaha",470702
+"nebraska","Lincoln",293905
+"nebraska","Bellevue",53945
+"nevada","Las Vegas",662000
+"nevada","Henderson",330084
+"nevada","Reno",260258
+"new-hampshire","Manchester",113441
+"new-hampshire","Nashua",90080
+"new-hampshire","Concord",43840
+"new-jersey","Newark",282862
+"new-jersey","Jersey City",271099
+"new-jersey","Paterson",145871
+"new-mexico","Albuquerque",561188
+"new-mexico","Las Cruces",104148
+"new-mexico","Rio Rancho",101475
+"new-york","New York",8323340
+"new-york","Buffalo",255244
+"new-york","Rochester",203792
+"north-carolina","Charlotte",905318
+"north-carolina","Raleigh",481958
+"north-carolina","Greensboro",299946
+"north-dakota","Fargo",129530
+"north-dakota","Bismarck",74162
+"north-dakota","Grand Forks",57060
+"ohio","Columbus",922223
+"ohio","Cleveland",379233
+"ohio","Cincinnati",306487
+"oklahoma","Oklahoma City",655407
+"oklahoma","Tulsa",396543
+"oklahoma","Norman",126377
+"oregon","Portland",664103
+"oregon","Salem",179944
+"oregon","Eugene",178329
+"pennsylvania","Philadelphia",1591800
+"pennsylvania","Pittsburgh",294860
+"pennsylvania","Allentown",122623
+"rhode-island","Providence",178901
+"rhode-island","Cranston",80966
+"rhode-island","Warwick",80487
+"south-carolina","Charleston",138458
+"south-carolina","Columbia",133031
+"south-carolina","North Charleston",115383
+"south-dakota","Sioux Falls",190519
+"south-dakota","Rapid City",77525
+"south-dakota","Aberdeen",29180
+"tennessee","Nashville",673167
+"tennessee","Memphis",647374
+"tennessee","Knoxville",191060
+"texas","Houston",2340890
+"texas","San Antonio",1578030
+"texas","Dallas",1382270
+"utah","Salt Lake City",213367
+"utah","West Valley City",135715
+"utah","Provo",118592
+"vermont","Burlington",43021
+"vermont","South Burlington",20100
+"vermont","Rutland",15087
+"virginia","Virginia Beach",447841
+"virginia","Chesapeake",248106
+"virginia","Norfolk",242234
+"washington","Seattle",783137
+"washington","Spokane",223266
+"washington","Tacoma",222603
+"west-virginia","Charleston",45703
+"west-virginia","Huntington",44416
+"west-virginia","Morgantown",30983
+"wisconsin","Milwaukee",585589
+"wisconsin","Madison",264030
+"wisconsin","Green Bay",105413
+"wyoming","Cheyenne",64165
+"wyoming","Casper",55293
+"wyoming","Laramie",33295
