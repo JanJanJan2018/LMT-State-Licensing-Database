@@ -1,0 +1,552 @@
+---
+title: "number of 2BR/2BA each state"
+author: "Janis Corona"
+date: "7/20/2020"
+output: html_document
+---
+
+
+This function scrapes the web pages of apartments.com for a city (out of the 10 most populated cities in each state) and state searched that has a two bedroom and two bathroom both cat and dog friendly apartment available to rent, and return a table of the rent prices and stars reviewers gave the apartment listed. It uses the rvest webscrape package and the selector gadget, https://selectorgadget.com/ or the CSS selector when the selector gadget is wonky at https://github.com/CharltonC/chrome-css-selector-capture, these are chrome extensions for highlighting html and getting the tag location. 
+
+Create a directory.
+```{r}
+Business_Path <- './twoBedtwoBath'
+businessType <- 'TwoBedroomApartment'
+```
+
+
+```{r}
+#Loading the rvest package
+library(rvest)
+library(lubridate)
+library(dplyr)
+```
+
+
+```{r}
+if (dir.exists(Business_Path)){
+  unlink(Business_Path, recursive=TRUE)
+  dir.create(Business_Path)
+} else {
+  dir.create(Business_Path)
+}
+
+```
+
+This funciton won't return the tables to look at, but will write all results to a csv file to read in when done importing the 150 cities of the three most populated city in each US state other than the newly added District of Columbia.This function will take two arguments and return the prices for listings in a table and on screen for a 2-3 bedroom, 2 bathroom and dog/cat friendly apartment for rent as well as the date, city, and state next to each listing in the table.
+```{r}
+# writeRentPriceStars <- function(cityName,stateAbb){
+writeRentPrice <- function(cityStateAbb){
+  url <- 'https://www.apartments.com/apartments/CITY-STATE/2-to-3-bedrooms-2-bathrooms-pet-friendly/'
+  url2 <- 'https://www.apartments.com/apartments/CITY-STATE/2-to-3-bedrooms-2-bathrooms-pet-friendly/2/'
+  url3 <- 'https://www.apartments.com/apartments/CITY-STATE/2-to-3-bedrooms-2-bathrooms-pet-friendly/3/'
+  url4 <- 'https://www.apartments.com/apartments/CITY-STATE/2-to-3-bedrooms-2-bathrooms-pet-friendly/4/'
+  url5 <- 'https://www.apartments.com/apartments/CITY-STATE/2-to-3-bedrooms-2-bathrooms-pet-friendly/5/'
+  
+  inputs <- strsplit(cityStateAbb, split=',')
+  cityName <- lapply(inputs, '[',1)
+  city <- as.character(cityName)
+  stateAbb <- lapply(inputs,'[',2)
+  stateAbb <- as.character(stateAbb)
+  stateAbb <- trimws(stateAbb, which='left', whitespace="[\t\r\n]")
+  
+  city <- tolower(city)
+  cityOne <- gsub(' ','-',city)
+  state <- tolower(stateAbb)
+
+  url <- gsub('CITY',cityOne, url)
+  url <- gsub('STATE',state, url)
+  
+  url2 <- gsub('CITY',cityOne, url2)
+  url2 <- gsub('STATE',state, url2)
+  
+  url3 <- gsub('CITY',cityOne, url3)
+  url3 <- gsub('STATE',state, url3)
+
+  url4 <- gsub('CITY',cityOne, url4)
+  url4 <- gsub('STATE',state, url4)
+
+  url5 <- gsub('CITY',cityOne, url5)
+  url5 <- gsub('STATE',state, url5)
+
+  webpage <- read_html(url)
+  webpage2 <- read_html(url2)
+  webpage3 <- read_html(url3)
+  webpage4 <- read_html(url4)
+  webpage5 <- read_html(url5)
+  
+  price_html <- html_nodes(webpage,'.altRentDisplay')
+  price1 <- html_text(price_html)
+  
+  price_html2 <- html_nodes(webpage2,'.altRentDisplay')
+  price2 <- html_text(price_html2)
+
+  price_html3 <- html_nodes(webpage3,'.altRentDisplay')
+  price3 <- html_text(price_html3)
+
+  price_html4 <- html_nodes(webpage4,'.altRentDisplay')
+  price4 <- html_text(price_html4)
+
+  price_html5 <- html_nodes(webpage5,'.altRentDisplay')
+  price5 <- html_text(price_html5)
+
+  price <- as.data.frame(c(price1,price2, price3, price4, price5))
+  colnames(price) <- 'price'
+  price$price <- as.character(paste(price$price))
+  price$price <- gsub('\n','',price$price)
+  price$price <- gsub('[$]','',price$price, perl=TRUE)
+  price$price <- gsub('[+]','',price$price,perl=TRUE)
+  price$price <- gsub(',','',price$price)
+
+  dateAvailable_html <- html_nodes(webpage,'.availabilityDisplay')
+  dateAvailable1 <- html_text(dateAvailable_html)
+  
+  dateAvailable_html2 <- html_nodes(webpage2,'.availabilityDisplay')
+  dateAvailable2 <- html_text(dateAvailable_html2)
+
+  dateAvailable_html3 <- html_nodes(webpage3,'.availabilityDisplay')
+  dateAvailable3 <- html_text(dateAvailable_html3)
+
+  dateAvailable_html4 <- html_nodes(webpage4,'.availabilityDisplay')
+  dateAvailable4 <- html_text(dateAvailable_html4)
+
+  dateAvailable_html5 <- html_nodes(webpage5,'.availabilityDisplay')
+  dateAvailable5 <- html_text(dateAvailable_html5)
+
+  dateAvailable <- as.data.frame(c(dateAvailable1,dateAvailable2,
+          dateAvailable3, dateAvailable4, dateAvailable5))
+  colnames(dateAvailable) <- 'dateAvailable'
+
+  
+  cityDF <- as.data.frame(rep(cityOne,length(price$price)))
+  colnames(cityDF) <- "city"
+  
+  stateDF <- as.data.frame(rep(stateAbb,length(price$price)))
+  colnames(stateDF) <- 'state'
+  
+  date <- as.data.frame(rep(date(),length(price$price)))
+  colnames(date) <- 'todaysDate'
+  
+  tablePrices <- cbind(cityDF,stateDF,price,date)
+  
+  setwd(Business_Path)
+  
+  business2 <- gsub(' ','-',businessType)
+  city2 <- gsub(' ','-',city)
+  
+  write.csv(tablePrices,paste(business2,city2,state,".csv",sep='_'),row.names = FALSE)
+  write.table(tablePrices[2:length(tablePrices$price),], 
+              paste(businessType,".csv",sep=''), append=TRUE,
+              col.names=FALSE, sep=",", quote=TRUE,qmethod="double",
+              row.names=FALSE)
+  names <- colnames(tablePrices)
+  write.csv(names,paste('tablePricesHeader_',businessType,'.csv',sep=''),row.names=FALSE)
+  
+  setwd('../')
+  # print('is dateAvailable same length as price per listing?')
+  # print(length(dateAvailable$dateAvailable)==length(price$price))
+  # return(list(tablePrices,dateAvailable))
+}
+```
+
+***
+
+Retrieve all the states' ten largest cities' list of advertised two bedroom, two bath, and dog and cat friendly apartments. There will be 50X10=500 runs of this function.
+```{r}
+table10 <- read.csv('../table10cities-altered.csv',sep=',', header=TRUE, na.strings=c('',' ','NA'))
+```
+
+```{r}
+head(table10)
+```
+
+```{r}
+Table10 <- table10[,c(2,4)]
+Table10$functionInput <- paste(Table10$topCity, Table10$stateAbbreviations, sep=',')
+head(Table10)
+```
+This site, booted me out with too many scrapes, worked great in the morning, then booted my server off. Coincidentally, VirtualBox, Azure, and AWS were being little b**Tes on creating or reopening my accounts. 
+
+
+```{r}
+for (i in Table10$functionInput[1:16]){
+  writeRentPrice(i)
+}
+```
+
+```{r}
+# writeRentPrice('Wasilla,AK')
+```
+
+
+```{r}
+# for (i in Table10$functionInput[17:17]){
+#   writeRentPrice(i)
+#}
+```
+
+```{r}
+for (i in Table10$functionInput[18:19]){
+  writeRentPrice(i)
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[21:93]){
+  writeRentPrice(i)
+}
+
+#Sitka, AK (20) and (17) Wasilla, AK 
+# Macon County, GA (94) have no apartments.com entries throws off f()
+```
+
+```{r}
+for (i in Table10$functionInput[95:100]){
+  writeRentPrice(i)
+}
+
+```
+
+
+```{r}
+for (i in Table10$functionInput[101:103]){
+  writeRentPrice(i)
+}
+# (104) Pearl City, HI is missing
+```
+
+```{r}
+for (i in Table10$functionInput[105:130]){
+  writeRentPrice(i)
+}
+
+```
+
+```{r}
+for (i in Table10$functionInput[131:160]){
+  writeRentPrice(i)
+}
+
+```
+
+
+```{r}
+for (i in Table10$functionInput[161:182]){
+  writeRentPrice(i)
+}
+
+# (183) Bangor, ME missing
+```
+
+
+
+```{r}
+for (i in Table10$functionInput[184:187]){
+  writeRentPrice(i)
+}
+# (188) Saco, ME missing
+```
+
+```{r}
+for (i in Table10$functionInput[189:189]){
+  writeRentPrice(i)
+}
+
+# (190) August, ME missing
+```
+
+```{r}
+for (i in Table10$functionInput[191:200]){
+  writeRentPrice(i)
+}
+
+```
+
+```{r}
+for (i in Table10$functionInput[201:213]){
+  writeRentPrice(i)
+}
+
+```
+
+
+```{r}
+for (i in Table10$functionInput[214:227]){
+  writeRentPrice(i)
+}
+
+```
+
+```{r}
+for (i in Table10$functionInput[228:242]){
+  writeRentPrice(i)
+}
+
+```
+
+```{r}
+for (i in Table10$functionInput[243:259]){
+  writeRentPrice(i)
+}
+# (260) Anaconda-Deer Lodge County, MT or http 404, booted IP
+
+```
+
+
+```{r}
+for (i in Table10$functionInput[261:265]){
+  writeRentPrice(i)
+}
+# (266) Fremont, NE 
+```
+
+```{r}
+for (i in Table10$functionInput[267:274]){
+  writeRentPrice(i)
+}
+
+# (275) Paradise, NV
+```
+
+```{r}
+for (i in Table10$functionInput[276:286]){
+  writeRentPrice(i)
+}
+
+```
+
+
+```{r}
+for (i in Table10$functionInput[287:300]){
+  writeRentPrice(i)
+}
+
+```
+
+```{r}
+for (i in Table10$functionInput[301:314]){
+  writeRentPrice(i)
+}
+
+```
+
+
+```{r}
+for (i in Table10$functionInput[315:324]){
+  writeRentPrice(i)
+}
+
+```
+
+
+```{r}
+for (i in Table10$functionInput[325:343]){
+  writeRentPrice(i)
+}
+
+```
+
+
+```{r}
+for (i in Table10$functionInput[344:367]){
+  writeRentPrice(i)
+}
+
+# (368) Medford, OR
+```
+
+```{r}
+for (i in Table10$functionInput[369:387]){
+  writeRentPrice(i)
+}
+#(388) Central Falls, RI
+```
+
+
+```{r}
+for (i in Table10$functionInput[389:400]){
+  writeRentPrice(i)
+}
+
+```
+
+```{r}
+for (i in Table10$functionInput[401:424]){
+  writeRentPrice(i)
+}
+
+```
+
+
+```{r}
+for (i in Table10$functionInput[425:427]){
+  writeRentPrice(i)
+}
+
+```
+
+
+```{r}
+for (i in Table10$functionInput[428:440]){
+  writeRentPrice(i)
+}
+
+```
+
+
+```{r}
+for (i in Table10$functionInput[441:457]){
+  writeRentPrice(i)
+}
+
+# (458) Hamn, VA
+```
+
+```{r}
+for (i in Table10$functionInput[459:480]){
+  writeRentPrice(i)
+}
+
+```
+
+
+```{r}
+for (i in Table10$functionInput[481:500]){
+  writeRentPrice(i)
+}
+
+```
+
+
+***
+
+When done pulling every city and state, read in the table data to get the statistics needed.
+```{r}
+allCities <- read.csv(paste(Business_Path,'/',businessType,'.csv',sep=''), sep=",", header=FALSE, na.strings=c('',' ','NA'))
+```
+
+```{r}
+header <- read.csv(paste(Business_Path,'/tablePricesHeader_',businessType,'.csv',
+                         sep=''), sep=',')
+```
+
+```{r}
+names <- header$x
+names
+```
+
+There was an error in the write.table function that copied 113 city names but, it can be saved, only V114:V117 are needed.
+```{r}
+head(allCities)
+```
+
+```{r}
+All_cities <- allCities[!duplicated(allCities),]
+```
+
+```{r}
+colnames(All_cities) <- names
+colnames(All_cities)
+```
+
+
+
+```{r}
+str(All_cities)
+```
+
+```{r}
+callForRent <- grep('Call',All_cities$price)
+callForRent
+```
+
+```{r}
+All_cities2 <- All_cities[-callForRent,]
+```
+
+
+
+```{r}
+head(All_cities2)
+```
+
+```{r}
+tail(All_cities2)
+```
+
+```{r}
+prices <- strsplit(as.character(All_cities2$price),split='[-]')
+minPrice <- lapply(prices,'[',1)
+maxPrice <- lapply(prices,'[',2)
+minPrice <- gsub(' ','',minPrice)
+maxPrice <- gsub(' ','',maxPrice)
+
+MinPrice <- as.numeric(paste(minPrice))
+MaxPrice <- as.numeric(paste(maxPrice))
+
+```
+
+```{r}
+All_cities2$MinPrice <- MinPrice
+All_cities2$MaxPrice <- MaxPrice
+All_cities2$AvgPrice <- rowMeans(All_cities2[,5:6],1,na.rm=TRUE)
+```
+
+```{r}
+write.csv(All_cities2,'pricingAvgAllStates2BR2BA.csv', row.names=FALSE)
+```
+
+Group by state, and get the count of two bedroom, two bathroom apartments listed for rent in each state's three most populated cities.
+```{r}
+All_cities$state <- as.factor(All_cities$state)#includes those without prices, but a 
+# 'Call for Rent' option that were excluded in table of average, min, and max prices 
+# per listing
+
+businessCounts <- All_cities %>% group_by(state) %>% count(state)
+colnames(businessCounts)[2] <- paste(businessType,'Listings',sep='_')
+businessCounts
+```
+
+
+```{r}
+write.csv(businessCounts,paste('states3CityListings-',businessType,'.csv'), row.names=FALSE)
+```
+
+```{r}
+avgStatePrice2BR2BA <- All_cities2 %>% group_by(state) %>% 
+  summarise_at(vars('AvgPrice'), mean,na.rm=TRUE)
+```
+
+```{r}
+avgMinStatePrice2BR2BA <- All_cities2 %>% group_by(state) %>% 
+  summarise_at(vars('MinPrice'), mean,na.rm=TRUE)
+```
+
+```{r}
+avgMaxStatePrice2BR2BA <- All_cities2 %>% group_by(state) %>% 
+  summarise_at(vars('MaxPrice'), mean,na.rm=TRUE)
+```
+
+Lets combine all these state average prices for the minimum, maximum, and average of the two price boundaries for two bedroom and two bathroom apartments for rent in the three top populated cities in each state with apartments.com data.
+```{r}
+stats2BR2BA <- merge(businessCounts,avgMinStatePrice2BR2BA, by.x='state',by.y='state')
+stats2BR2BA <- merge(stats2BR2BA,avgMaxStatePrice2BR2BA, by.x='state', by.y='state')
+stats2BR2BA <- merge(stats2BR2BA,avgStatePrice2BR2BA, by.x='state',by.y='state')
+head(stats2BR2BA)
+```
+
+```{r}
+price2BR2BA <- stats2BR2BA[complete.cases(stats2BR2BA),]
+dim(price2BR2BA)
+```
+
+```{r}
+colnames(price2BR2BA)[3:5] <- paste('Rent2BR2BA',colnames(price2BR2BA)[3:5],sep='_')
+head(price2BR2BA,10)
+```
+
+```{r}
+write.csv(price2BR2BA,'apts_2BR2BA_prices.csv',row.names=FALSE)
+```
+

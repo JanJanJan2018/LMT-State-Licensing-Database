@@ -1,0 +1,149 @@
+---
+title: "Three top populated Cities"
+author: "Janis Corona"
+date: "7/20/2020"
+output: html_document
+---
+
+
+
+This will take the ten most populated cities from the site: https://worldpopulationreview.com/states/cities/
+
+with the state name spelled out for 50 US states other than districts and the new DC state.
+
+```{r}
+library('rvest')
+library('lubridate')
+library('dplyr')
+
+```
+
+
+```{r}
+if (dir.exists('./Top 10 Cities')){
+  unlink('./Top 10 Cities', recursive=TRUE)
+  dir.create('./Top 10 Cities')
+} else {
+  dir.create('./Top 10 Cities')
+}
+```
+
+```{r}
+writeTopCities <- function(state,n){
+  url <- 'https://worldpopulationreview.com/states/cities/STATENAME'
+  
+  N <- as.integer(n)
+  
+  state <- as.character(state)
+
+  url <- gsub('STATENAME',state, url)
+
+  webpage <- read_html(url)
+
+  stateCities_html <- html_nodes(webpage,'td:nth-child(2)') # city in table
+  state_top <- html_text(stateCities_html)
+  population_html <- html_nodes(webpage,'td:nth-child(3)') # population of city in table
+  population <- html_text(population_html)
+
+  TopCities <- as.data.frame(state_top)
+  colnames(TopCities) <- 'topCity'
+  TopPopulation <- as.data.frame(population)
+  colnames(TopPopulation) <- 'population'
+  stateName <- as.data.frame(rep(state,length(TopCities$topCity)))
+  colnames(stateName) <- 'state'
+  
+  table <- cbind(stateName,TopCities,TopPopulation)
+  
+  setwd('./Top 10 Cities')
+  
+  write.table(table[1:N,], "Top10Cities.csv", append=TRUE, 
+              col.names=FALSE, sep=",",
+              row.names=FALSE)
+  names <- colnames(table)
+  write.csv(names,'tableTop10CitiesHeader.csv',row.names=FALSE)
+  
+  setwd('../')
+
+}
+
+```
+
+
+```{r}
+slr <- read.csv('stateLicensingRequirements.csv', sep=',',header=TRUE, na.strings=c('',' ','NA'))
+colnames(slr)
+```
+
+```{r}
+slr_char <- tolower(as.character(slr$state))
+slr_char <- gsub(' ','-',slr_char)
+slr_char
+```
+
+```{r}
+for (i in slr_char){
+  writeTopCities(i,10)
+}
+```
+
+```{r}
+table10cities <- read.delim('./Top 10 Cities/Top10Cities.csv',sep=',',header=FALSE, stringsAsFactors = FALSE, na.strings=c('',' ','NA'))
+```
+
+```{r}
+table10cities_header <- read.csv('./Top 10 Cities/tableTop10CitiesHeader.csv', sep=',',
+                               header=T, na.strings=c('',' ','NA'))
+```
+
+```{r}
+header <- table10cities_header$x
+
+colnames(table10cities) <- header
+
+table10cities$population <- gsub(',','',table10cities$population)
+table10cities$population <- as.integer(table10cities$population)
+head(table10cities)
+```
+
+```{r}
+write.csv(table10cities,'table10cities.csv', row.names=FALSE)
+```
+
+```{r}
+stateAbbreviations <- c("AL", "AL", "AL", "AL", "AL", "AL", "AL", "AL", "AL", "AL", "AK", "AK", "AK", "AK", "AK", "AK", "AK", "AK",
+  "AK", "AK", "AZ", "AZ", "AZ", "AZ", "AZ", "AZ", "AZ", "AZ", "AZ", "AZ", "AR", "AR", "AR", "AR", "AR", "AR",
+  "AR", "AR", "AR", "AR", "CA", "CA", "CA", "CA", "CA", "CA", "CA", "CA", "CA", "CA", "CO", "CO", "CO", "CO",
+  "CO", "CO", "CO", "CO", "CO", "CO", "CT", "CT", "CT", "CT", "CT", "CT", "CT", "CT", "CT", "CT", "DE", "DE",
+  "DE", "DE", "DE", "DE", "DE", "DE", "DE", "DE", "FL", "FL", "FL", "FL", "FL", "FL", "FL", "FL", "FL", "FL",
+  "GA", "GA", "GA", "GA", "GA", "GA", "GA", "GA", "GA", "GA", "HI", "HI", "HI", "HI", "HI", "HI", "HI", "HI",
+ "HI", "HI", "ID", "ID", "ID", "ID", "ID", "ID", "ID", "ID", "ID", "ID", "IL", "IL", "IL", "IL", "IL", "IL",
+ "IL", "IL", "IL", "IL", "IN", "IN", "IN", "IN", "IN", "IN", "IN", "IN", "IN", "IN", "IA", "IA", "IA", "IA",
+ "IA", "IA", "IA", "IA", "IA", "IA", "KS", "KS", "KS", "KS", "KS", "KS", "KS", "KS", "KS", "KS", "KY", "KY",
+ "KY", "KY", "KY", "KY", "KY", "KY", "KY", "KY", "LA", "LA", "LA", "LA", "LA", "LA", "LA", "LA", "LA", "LA",
+ "ME", "ME", "ME", "ME", "ME", "ME", "ME", "ME", "ME", "ME", "MD", "MD", "MD", "MD", "MD", "MD", "MD", "MD",
+ "MD", "MD", "MA", "MA", "MA", "MA", "MA", "MA", "MA", "MA", "MA", "MA", "MI", "MI", "MI", "MI", "MI", "MI",
+ "MI", "MI", "MI", "MI", "MN", "MN", "MN", "MN", "MN", "MN", "MN", "MN", "MN", "MN", "MS", "MS", "MS", "MS",
+ "MS", "MS", "MS", "MS", "MS", "MS", "MO", "MO", "MO", "MO", "MO", "MO", "MO", "MO", "MO", "MO", "MT", "MT",
+ "MT", "MT", "MT", "MT", "MT", "MT", "MT", "MT", "NE", "NE", "NE", "NE", "NE", "NE", "NE", "NE", "NE", "NE",
+ "NV", "NV", "NV", "NV", "NV", "NV", "NV", "NV", "NV", "NV", "NH", "NH", "NH", "NH", "NH", "NH", "NH", "NH",
+ "NH", "NH", "NJ", "NJ", "NJ", "NJ", "NJ", "NJ", "NJ", "NJ", "NJ", "NJ", "NM", "NM", "NM", "NM", "NM", "NM",
+ "NM", "NM", "NM", "NM", "NY", "NY", "NY", "NY", "NY", "NY", "NY", "NY", "NY", "NY", "NC", "NC", "NC", "NC",
+ "NC", "NC", "NC", "NC", "NC", "NC", "ND", "ND", "ND", "ND", "ND", "ND", "ND", "ND", "ND", "ND", "OH", "OH",
+ "OH", "OH", "OH", "OH", "OH", "OH", "OH", "OH", "OK", "OK", "OK", "OK", "OK", "OK", "OK", "OK", "OK", "OK",
+ "OR", "OR", "OR", "OR", "OR", "OR", "OR", "OR", "OR", "OR", "PA", "PA", "PA", "PA", "PA", "PA", "PA", "PA",
+ "PA", "PA", "RI", "RI", "RI", "RI", "RI", "RI", "RI", "RI", "RI", "RI", "SC", "SC", "SC", "SC", "SC", "SC",
+ "SC", "SC", "SC", "SC", "SD", "SD", "SD", "SD", "SD", "SD", "SD", "SD", "SD", "SD", "TN", "TN", "TN", "TN",
+ "TN", "TN", "TN", "TN", "TN", "TN", "TX", "TX", "TX", "TX", "TX", "TX", "TX", "TX", "TX", "TX", "UT", "UT",
+ "UT", "UT", "UT", "UT", "UT", "UT", "UT", "UT", "VT", "VT", "VT", "VT", "VT", "VT", "VT", "VT", "VT", "VT",
+ "VA", "VA", "VA", "VA", "VA", "VA", "VA", "VA", "VA", "VA", "WA", "WA", "WA", "WA", "WA", "WA", "WA", "WA",
+ "WA", "WA", "WV", "WV", "WV", "WV", "WV", "WV", "WV", "WV", "WV", "WV", "WI", "WI", "WI", "WI", "WI", "WI",
+ "WI", "WI", "WI", "WI", "WY", "WY", "WY", "WY", "WY", "WY", "WY", "WY", "WY", "WY")
+```
+
+```{r}
+table10cities$stateAbbreviations <- stateAbbreviations
+```
+
+```{r}
+write.csv(table10cities,'table10cities-altered.csv', row.names=FALSE)
+```

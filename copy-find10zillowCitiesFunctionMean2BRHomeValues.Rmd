@@ -1,0 +1,677 @@
+---
+title: "2 bedroom zillow median home value function 10 cities"
+author: "Janis Corona"
+date: "7/20/2020"
+output: html_document
+---
+
+
+# https://www.zillow.com/research/data/ 
+
+
+The original had May data, this has June prices, and it begins with 'Zip_' instead of 'City_', with some indicies names/location changes and at the end the mean var summarized by is changed to June's data.
+
+The table was downloaded for Home values searching 'ZHVI 2-Bedroom Time Series ($)' for 'state': http://files.zillowstatic.com/research/public_v2/zhvi/Zip_zhvi_bdrmcnt_2_uc_sfrcondo_tier_0.33_0.67_sm_sa_mon.csv
+
+
+```{r}
+library(dplyr)
+```
+
+Create a directory named 'Zillow 2BR table'
+```{r}
+if (dir.exists('./Zillow 2BR table 10 cities')){
+  unlink('./Zillow 2BR table 10 cities', recursive=TRUE)
+  dir.create('./Zillow 2BR table 10 cities')
+} else {
+  dir.create('./Zillow 2BR table 10 cities')
+}
+
+
+```
+
+```{r}
+house_2_BR <- read.csv('Zip_zhvi_bdrmcnt_2_uc_sfrcondo_tier_0.33_0.67_sm_sa_mon.csv', header=TRUE, sep=',', na.strings=c('',' ','NA'))
+
+colnames(house_2_BR)
+```
+
+```{r}
+BR_2 <- house_2_BR[,c(1:9,303)]
+
+head(BR_2)
+```
+
+```{r}
+colnames(BR_2)
+```
+
+
+```{r}
+find10TableMedian <- function(state,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10){
+  s <- BR_2[BR_2$State==state,]
+  c3 <- subset(s, s$City==n1 |
+                 s$City==n2 |
+                 s$City==n3 |
+                 s$City==n4 |
+                 s$City==n5 |
+                 s$City==n6 |
+                 s$City==n7 |
+                 s$City==n8 |
+                 s$City==n9 |
+                 s$City==n10)
+  
+  setwd('./Zillow 2BR table 10 cities')
+  
+  write.table(c3[2:length(c3$State),c(6,7,10)], "zillow10cities.csv", append=TRUE, 
+              col.names=FALSE, sep=",",
+              row.names=FALSE)
+  
+  names <- colnames(c3)[c(6,7,10)]
+  
+  write.csv(names,'zillow10TableHeader.csv',row.names=FALSE)
+  
+  setwd('../')
+  
+}
+
+```
+
+```{r}
+t10 <- read.csv('table10cities-altered.csv', sep=',', header=T, na.strings=c('',' ','NA'))
+```
+
+```{r}
+head(t10)
+```
+
+```{r}
+AL <- subset(t10, t10$stateAbbreviations=='AL')
+as.character(AL$topCity)
+```
+
+```{r}
+find10TableMedian('AL',"Birmingham", "Huntsville", "Montgomery", "Mobile",     "Tuscaloosa","Hoover" ,"Dothan" ,"Auburn", "Decatur" , "Madison")
+```
+
+```{r}
+AK <- subset(t10, t10$stateAbbreviations=='AK')
+as.character(AK$topCity)
+```
+
+```{r}
+find10TableMedian('AK',"Anchorage"  ,   "Juneau"   ,     "Fairbanks" ,    "Badger" , "Knik-Fairview" ,"College"     ,  "Wasilla"    ,   "Tanaina"  ,    
+ "Lakes"     ,    "Sitka" )
+```
+
+```{r}
+AZ <- subset(t10, t10$stateAbbreviations=='AZ')
+as.character(AZ$topCity)
+```
+
+```{r}
+find10TableMedian('AZ', "Phoenix" ,   "Tucson" ,    "Mesa" ,      "Chandler" ,  "Scottsdale","Gilbert" ,   "Glendale" ,  "Tempe"    ,  "Peoria" ,    "Surprise"  )
+```
+
+
+
+```{r}
+AR <- subset(t10, t10$stateAbbreviations=='AR')
+as.character(AR$topCity)
+```
+
+```{r}
+find10TableMedian('AR', "Little Rock"  ,     "Fayetteville"    ,  "Fort Smith",   "Springdale"     ,   "Jonesboro"    ,     "Rogers" ,          
+ "Conway"     ,       "North Little Rock", "Bentonville" ,     
+ "Pine Bluff" )
+```
+
+
+```{r}
+CA <- subset(t10, t10$stateAbbreviations=='CA')
+as.character(CA$topCity)
+```
+
+```{r}
+find10TableMedian('CA', "Los Angeles" ,  "San Diego" ,    "San Jose",      "San Francisco", "Fresno" ,       "Sacramento" ,   "Long Beach"  ,  "Oakland" ,     
+"Bakersfield"  , "Anaheim" )
+```
+
+
+
+```{r}
+CO <- subset(t10, t10$stateAbbreviations=='CO')
+as.character(CO$topCity)
+```
+
+```{r}
+find10TableMedian('CO', "Denver" ,  "Colorado Springs", "Aurora" ,  "Fort Collins"  ,   "Lakewood"   ,"Thornton", "Arvada" ,  "Westminster"  ,    "Pueblo"  ,"Centennial"  )
+```
+
+
+
+```{r}
+CT <- subset(t10, t10$stateAbbreviations=='CT')
+as.character(CT$topCity)
+```
+
+```{r}
+find10TableMedian('CT',  "Bridgeport" ,   "Stamford"  ,    "New Haven"  ,   "Hartford", "Waterbury"  ,   "Norwalk" ,      "Danbury"  ,     "New Britain" , 
+"West Hartford", "Bristol" )
+```
+
+
+```{r}
+DE <- subset(t10, t10$stateAbbreviations=='DE')
+as.character(DE$topCity)
+```
+
+```{r}
+find10TableMedian('DE',  "Wilmington" ,"Dover" ,     "Newark"  ,   "Middletown", "Bear" , "Glasgow"  ,  "Hockessin",  "Brookside",  "Smyrna"  ,   "Milford" )
+```
+
+
+```{r}
+FL <- subset(t10, t10$stateAbbreviations=='FL')
+as.character(FL$topCity)
+```
+
+```{r}
+find10TableMedian('FL',  "Jacksonville",  "Miami"  ,   "Tampa" ,        "Orlando"     ,    "St. Petersburg",  "Hialeah"  ,      
+ "Port St. Lucie" , "Cape Coral" ,     "Tallahassee"   , 
+"Fort Lauderdale" )
+```
+
+```{r}
+GA <- subset(t10, t10$stateAbbreviations=='GA')
+as.character(GA$topCity)
+```
+
+```{r}
+find10TableMedian('GA', "Atlanta" ,      "Augusta"    ,   "Columbus" ,     "Macon County", "Savannah"   ,   "Athens"  ,      "Sandy Springs" ,"South Fulton" ,"Roswell"   ,    "Johns Creek"   )
+```
+
+
+```{r}
+HI <- subset(t10, t10$stateAbbreviations=='HI')
+as.character(HI$topCity)
+```
+
+```{r}
+find10TableMedian('HI', "Honolulu"   ,   "East Honolulu", "Hilo" ,         "Pearl City","Waipahu"    ,   "Kailua"     ,   "Kaneohe"    ,   "Kahului" ,     "Mililani Town", "Ewa Gentry"    )
+```
+
+
+
+```{r}
+ID <- subset(t10, t10$stateAbbreviations=='ID')
+as.character(ID$topCity)
+```
+
+```{r}
+find10TableMedian('ID', "Boise" ,        "Meridian"  ,    "Nampa"  ,       "Idaho Falls", "Caldwell"   ,   "Pocatello"  ,   "Coeur d'Alene" ,
+"Twin Falls" , "Post Falls"  ,  "Lewiston"     )
+```
+
+
+```{r}
+IL <- subset(t10, t10$stateAbbreviations=='IL')
+as.character(IL$topCity)
+```
+
+```{r}
+find10TableMedian('IL',  "Chicago"  ,   "Aurora" ,     "Naperville" , "Joliet",      "Rockford"  , "Springfield", "Elgin"    ,   "Peoria"   ,   "Champaign" ,  "Waukegan"      )
+```
+
+
+```{r}
+IN <- subset(t10, t10$stateAbbreviations=='IN')
+as.character(IN$topCity)
+```
+
+```{r}
+find10TableMedian('IN',   "Indianapolis", "Fort Wayne"  , "Evansville" ,  "South Bend", "Fishers" ,     "Carmel"  ,     "Bloomington" , "Hammond" ,    
+ "Gary"     ,    "Lafayette"   )
+```
+
+
+```{r}
+IA <- subset(t10, t10$stateAbbreviations=='IA')
+as.character(IA$topCity)
+```
+
+```{r}
+find10TableMedian('IA',  "Des Moines" ,     "Cedar Rapids",    "Davenport"  ,    "Sioux City" ,     "Iowa City"   ,    "Ankeny",         
+ "West Des Moines", "Ames"     ,       "Waterloo" ,      
+"Council Bluffs"     )
+```
+
+
+```{r}
+KS <- subset(t10, t10$stateAbbreviations=='KS')
+as.character(KS$topCity)
+```
+
+```{r}
+find10TableMedian('KS',  "Wichita"    ,   "Overland Park" ,"Kansas City" ,  "Olathe", "Topeka"   ,     "Lawrence"    ,  "Shawnee"   ,    "Lenexa" ,      
+  "Manhattan"    , "Salina"  )
+```
+
+
+
+```{r}
+KY <- subset(t10, t10$stateAbbreviations=='KY')
+as.character(KY$topCity)
+```
+
+```{r}
+find10TableMedian('KY',  "Louisville"  ,  "Lexington"  ,   "Bowling Green", "Owensboro", "Covington" ,    "Richmond"  ,    "Georgetown"  ,  "Florence" ,    "Nicholasville", "Elizabethtown"  )
+```
+
+```{r}
+LA <- subset(t10, t10$stateAbbreviations=='LA')
+as.character(LA$topCity)
+```
+
+```{r}
+find10TableMedian('LA',  "New Orleans" , "Baton Rouge" , "Shreveport" ,  "Metairie" , "Lafayette" ,   "Lake Charles" ,"Bossier City" ,"Kenner" ,     
+"Monroe"   ,    "Alexandria"   )
+```
+
+
+
+```{r}
+ME <- subset(t10, t10$stateAbbreviations=='ME')
+as.character(ME$topCity)
+```
+
+```{r}
+find10TableMedian('ME',  "Portland"  ,     "Lewiston"    ,   "Bangor"  ,       "South Portland", "Auburn" ,        "Biddeford" ,     "Sanford"  ,      "Saco" ,     "Westbrook"   ,   "Augusta"    )
+```
+
+
+```{r}
+MD <- subset(t10, t10$stateAbbreviations=='MD')
+as.character(MD$topCity)
+```
+
+```{r}
+find10TableMedian('MD',  "Baltimore",     "Columbia" ,     "Germantown" ,   "Silver Spring", "Waldorf" ,      "Frederick"  ,   "Ellicott City", "Rockville",  "Glen Burnie"  , "Gaithersburg"  )
+```
+
+
+```{r}
+MA <- subset(t10, t10$stateAbbreviations=='MA')
+as.character(MA$topCity)
+```
+
+```{r}
+find10TableMedian('MA',  "Boston"   ,   "Worcester"   ,"Springfield", "Cambridge"  , "Lowell"  ,"Brockton"  ,  "Lynn"     ,   "New Bedford", "Quincy"   ,   "Fall River"   )
+```
+
+
+```{r}
+MI <- subset(t10, t10$stateAbbreviations=='MI')
+as.character(MI$topCity)
+```
+
+```{r}
+find10TableMedian('MI',  "Detroit"  ,        "Grand Rapids"   ,  "Warren" ,         "Sterling Heights" ,"Ann Arbor"   ,     "Lansing"    ,     
+  "Flint"       ,     "Dearborn"     ,    "Livonia"  ,       
+ "Troy"  )
+```
+
+
+```{r}
+MN <- subset(t10, t10$stateAbbreviations=='MN')
+as.character(MN$topCity)
+```
+
+```{r}
+find10TableMedian('MN',  "Minneapolis"  , "St. Paul"  ,    "Rochester" ,    "Bloomington" ,"Duluth"   ,     "Brooklyn Park", "Plymouth"   ,   "Maple Grove"  , "Woodbury"    ,  "Lakeville"  )
+```
+
+
+```{r}
+MS <- subset(t10, t10$stateAbbreviations=='MS')
+as.character(MS$topCity)
+```
+
+```{r}
+find10TableMedian('MS',   "Jackson"   ,   "Gulfport" ,    "Southaven" ,   "Biloxi" ,  "Hattiesburg",  "Olive Branch", "Tupelo" ,      "Meridian" ,   
+  "Greenville"  , "Horn Lake"  )
+```
+
+
+```{r}
+MO <- subset(t10, t10$stateAbbreviations=='MO')
+as.character(MO$topCity)
+```
+
+```{r}
+find10TableMedian('MO',   "Kansas City" , "St. Louis"  ,  "Springfield" , "Columbia",  "Independence", "Lee's Summit", "O'Fallon" ,    "St. Joseph" , 
+   "St. Charles" , "St. Peters"   )
+```
+
+
+```{r}
+MT <- subset(t10, t10$stateAbbreviations=='MT')
+as.character(MT$topCity)
+```
+
+```{r}
+find10TableMedian('MT',   "Billings"    ,               "Missoula"  ,              "Great Falls"       ,         "Bozeman"     ,              
+   "Butte"       ,               "Helena"   ,                 
+   "Kalispell"   ,               "Belgrade" ,                 
+   "Havre"       ,               "Anaconda-Deer Lodge County"  )
+```
+
+```{r}
+NE <- subset(t10, t10$stateAbbreviations=='NE')
+as.character(NE$topCity)
+```
+
+```{r}
+find10TableMedian('NE',   "Omaha"  ,      "Lincoln"  ,    "Bellevue" ,    "Grand Island", "Kearney" ,     "Fremont" ,     "Norfolk"  ,    "Hastings" ,   
+  "Columbus"  ,   "North Platte" )
+```
+
+
+```{r}
+NV <- subset(t10, t10$stateAbbreviations=='NV')
+as.character(NV$topCity)
+```
+
+```{r}
+find10TableMedian('NV',    "Las Vegas" ,      "Henderson"   ,    "Reno" ,           "North Las Vegas", "Paradise"   ,     "Spring Valley" , 
+   "Sunrise Manor" ,  "Enterprise" ,     "Sparks" ,        
+  "Carson City"    )
+```
+
+
+
+```{r}
+NH <- subset(t10, t10$stateAbbreviations=='NH')
+as.character(NH$topCity)
+```
+
+```{r}
+find10TableMedian('NH', "Manchester" ,"Nashua"   ,  "Concord"   , "Dover" ,     "Rochester" , "Keene"   ,   "Derry" ,     "Portsmouth", "Laconia"  ,  "Lebanon"   )
+```
+
+
+```{r}
+NJ <- subset(t10, t10$stateAbbreviations=='NJ')
+as.character(NJ$topCity)
+```
+
+```{r}
+find10TableMedian('NJ', "Newark" ,     "Jersey City" ,"Paterson"  ,  "Elizabeth" ,  "Toms River" , "Clifton"  ,   "Trenton"   ,  "Camden" ,     "Passaic"   ,  "Union City" )
+```
+
+
+
+```{r}
+NM <- subset(t10, t10$stateAbbreviations=='NM')
+as.character(NM$topCity)
+```
+
+```{r}
+find10TableMedian('NM', "Albuquerque" , "Las Cruces"  , "Rio Rancho",   "Santa Fe",   "Roswell"  ,    "Farmington" ,  "South Valley" ,"Clovis"  ,    
+   "Hobbs"     ,   "Alamogordo" )
+```
+
+
+
+```{r}
+NY <- subset(t10, t10$stateAbbreviations=='NY')
+as.character(NY$topCity)
+```
+
+```{r}
+find10TableMedian('NY', "New York"  ,   "Buffalo"   ,   "Rochester" ,   "Yonkers" ,  "Syracuse"    , "Albany"   ,    "New Rochelle" ,"Cheektowaga" ,
+   "Mount Vernon", "Schenectady" )
+```
+
+
+
+```{r}
+NC <- subset(t10, t10$stateAbbreviations=='NC')
+as.character(NC$topCity)
+```
+
+```{r}
+find10TableMedian('NC', "Charlotte" ,    "Raleigh"  ,     "Greensboro",    "Durham"  , "Winston-Salem" ,"Fayetteville" , "Cary"     ,     "Wilmington",   
+ "High Point"  ,  "Concord"  )
+```
+
+
+```{r}
+ND <- subset(t10, t10$stateAbbreviations=='ND')
+as.character(ND$topCity)
+```
+
+```{r}
+find10TableMedian('ND', "Fargo"  ,     "Bismarck" ,   "Grand Forks", "Minot",       "West Fargo",  "Williston" ,  "Mandan" ,     "Dickinson" ,  "Jamestown" ,  "Wahpeton"  )
+```
+
+
+
+```{r}
+OH <- subset(t10, t10$stateAbbreviations=='OH')
+as.character(OH$topCity)
+```
+
+```{r}
+find10TableMedian('OH',  "Columbus"  , "Cleveland",  "Cincinnati" ,"Toledo",     "Akron" , "Dayton" ,    "Parma"   ,   "Canton"  ,   "Youngstown", "Lorain"  )
+```
+
+
+
+```{r}
+OK <- subset(t10, t10$stateAbbreviations=='OK')
+as.character(OK$topCity)
+```
+
+```{r}
+find10TableMedian('OK',  "Oklahoma City", "Tulsa" ,        "Norman" ,       "Broken Arrow" ,  "Edmond"  ,      "Lawton"  ,      "Moore"   ,     
+                  "Midwest City",   "Stillwater"  ,  "Enid" )
+```
+
+
+
+```{r}
+OR <- subset(t10, t10$stateAbbreviations=='OR')
+as.character(OR$topCity)
+```
+
+```{r}
+find10TableMedian('OR',  "Portland"  ,  "Salem"  ,     "Eugene",      "Hillsboro",   "Gresham", "Bend",        "Beaverton"   ,"Medford"   ,  "Springfield" ,"Corvallis"   )
+```
+
+
+```{r}
+PA <- subset(t10, t10$stateAbbreviations=='PA')
+as.character(PA$topCity)
+```
+
+```{r}
+find10TableMedian('PA',  "Philadelphia" ,"Pittsburgh" ,  "Allentown" ,   "Erie",     "Reading" ,     "Scranton",     "Bethlehem" ,   "Lancaster" ,  
+  "Levittown"  ,  "Harrisburg"  )
+```
+
+
+```{r}
+RI <- subset(t10, t10$stateAbbreviations=='RI')
+as.character(RI$topCity)
+```
+
+```{r}
+find10TableMedian('RI',  "Providence"  ,    "Cranston"  ,      "Warwick",        "Pawtucket"   ,    "East Providence", "Woonsocket"  ,   
+  "Newport"     ,    "Central Falls" ,  "Westerly" ,  "Valley Falls"   )
+```
+
+
+```{r}
+SC <- subset(t10, t10$stateAbbreviations=='SC')
+as.character(SC$topCity)
+```
+
+```{r}
+find10TableMedian('SC', "Charleston"  ,       "Columbia"  ,         "North, Charleston" ,"Mount Pleasant" ,    "Rock Hill"     ,     "Greenville" ,       
+ "Summerville"     ,   "Goose Creek"    ,    "Hilton Head Island",
+ "Sumter"    )
+```
+
+
+```{r}
+SD <- subset(t10, t10$stateAbbreviations=='SD')
+as.character(SD$topCity)
+```
+
+```{r}
+find10TableMedian('SD', "Sioux Falls" ,"Rapid City",  "Aberdeen"   , "Brookings" ,  "Watertown" ,"Mitchell" ,   "Yankton"  ,   "Huron" ,      "Pierre"   ,   "Spearfish"   )
+```
+
+```{r}
+TN <- subset(t10, t10$stateAbbreviations=='TN')
+as.character(TN$topCity)
+```
+
+```{r}
+find10TableMedian('TN', "Nashville" ,   "Memphis"   ,   "Knoxville" ,   "Chattanooga" ,  "Clarksville" , "Murfreesboro", "Franklin"   ,  "Jackson" ,      "Johnson City", "Bartlett"  )
+```
+
+
+
+```{r}
+TX <- subset(t10, t10$stateAbbreviations=='TX')
+as.character(TX$topCity)
+```
+
+```{r}
+find10TableMedian('TX', "Houston"   ,     "San Antonio"  ,  "Dallas" ,        "Austin"  , "Fort Worth"   ,  "El Paso"   ,     "Arlington"    ,  "Corpus Christi", "Plano"    ,      "Laredo"    )
+```
+
+
+```{r}
+UT <- subset(t10, t10$stateAbbreviations=='UT')
+as.character(UT$topCity)
+```
+
+```{r}
+find10TableMedian('UT',  "Salt Lake City",   "West Valley City", "Provo" ,          "West Jordan"   ,   "Orem"        ,     "Sandy"   ,        
+  "St. George"    ,   "Ogden"   ,         "Layton"  ,        
+  "South Jordan"  )
+```
+
+
+```{r}
+VT <- subset(t10, t10$stateAbbreviations=='VT')
+as.character(VT$topCity)
+```
+
+```{r}
+find10TableMedian('VT',   "Burlington" ,      "South Burlington", "Rutland",       "Essex Junction"  , "Bennington"  ,     "Barre",           
+   "Winooski"  ,       "Montpelier" ,      "Middlebury" ,     
+  "Brattleboro" )
+```
+
+
+```{r}
+VA <- subset(t10, t10$stateAbbreviations=='VA')
+as.character(VA$topCity)
+```
+
+```{r}
+find10TableMedian('VA',   "Virginia Beach" ,"Chesapeake"  ,   "Norfolk" ,       "Richmond"  ,"Arlington" ,     "Newport News"  , "Alexandria"  ,   "Hamn" ,      "Roanoke"  ,      "Portsmouth" )
+```
+
+
+
+```{r}
+WA <- subset(t10, t10$stateAbbreviations=='WA')
+as.character(WA$topCity)
+```
+
+```{r}
+find10TableMedian('WA',   "Seattle"    ,    "Spokane"     ,   "Tacoma"  ,       "Vancouver"  , "Bellevue"   ,    "Kent"  ,         "Everett"   ,   
+  "Spokane Valley" , "Renton"     ,    "Federal Way"    )
+```
+
+
+
+```{r}
+WV <- subset(t10, t10$stateAbbreviations=='WV')
+as.character(WV$topCity)
+```
+
+```{r}
+find10TableMedian('WV',  "Charleston" , "Huntington" , "Morgantown" , "Parkersburg" ,"Wheeling"  , "Fairmont" ,   "Weirton"  ,   
+"Martinsburg" ,"Beckley",     "Clarksburg"    )
+```
+
+
+
+```{r}
+WI <- subset(t10, t10$stateAbbreviations=='WI')
+as.character(WI$topCity)
+```
+
+```{r}
+find10TableMedian('WI',  "Milwaukee" , "Madison"  ,  "Green Bay" , "Kenosha",    "Racine" , "Appleton" ,  "Waukesha" ,  "Eau Claire" ,"Oshkosh",    "Janesville"  )
+```
+
+
+```{r}
+WY <- subset(t10, t10$stateAbbreviations=='WY')
+as.character(WY$topCity)
+```
+
+```{r}
+find10TableMedian('WY',  "Cheyenne"  ,   "Casper"   ,    "Laramie"  ,    "Gillette" , "Rock Springs", "Sheridan" ,    "Green River" , "Evanston" ,   
+  "Riverton"   ,  "Jackson" )
+```
+
+***
+
+
+
+
+
+Now that we have our table of the median home values from the cities available from our 3 most populated cities in each of the 50 US states, lets make it a file to pull into our state licensing data table.
+```{r}
+zillow10_medTable <- read.csv('./Zillow 2BR table 10 cities/zillow10cities.csv', sep=',',
+                             header=FALSE, na.strings=c('',' ','NA'))
+zHeader <- read.csv('./Zillow 2BR table 10 cities/zillow10TableHeader.csv', sep=',',
+                             header=FALSE, na.strings=c('',' ','NA'))
+```
+
+```{r}
+head(zillow10_medTable)
+```
+
+```{r}
+head(zHeader)
+```
+
+```{r}
+namesZ <- as.character(zHeader$V1[2:4])
+namesZ
+```
+
+```{r}
+colnames(zillow10_medTable) <- namesZ
+head(zillow10_medTable)
+```
+
+```{r}
+Zillow <- zillow10_medTable %>% group_by(State) %>% summarise_at(vars('X6.30.2020'),mean)
+Zillow
+```
+
+Lets now write this file out to csv to use in our state licensing data table of updated information.
+```{r}
+write.csv(Zillow,'updatedZillow2BR-10.csv',row.names=FALSE)
+```
+

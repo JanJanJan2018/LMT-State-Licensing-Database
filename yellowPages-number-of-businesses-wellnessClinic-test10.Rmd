@@ -1,0 +1,636 @@
+---
+title: "number of businesses each state"
+author: "Janis Corona"
+date: "7/20/2020"
+output: html_document
+---
+
+This function will do similar to the other function that scrapes Indeed for job searched, city, and state, but instead with yellowpages.com.It will append the retrieved data to a table, for the data on advertised pay if available for a job title, city, and state searched in Indeed with this function, the rvest webscrape package and the selector gadget, https://selectorgadget.com/ , the chrome extension for highlighting html and getting the tag location. 
+
+Create a directory named with the business type your looking for, like massage, chiropractor, gym, etc.
+```{r}
+BUSINESS <- 'wellness clinic'
+Business_Path <- './wellness clinic'
+```
+
+
+```{r}
+#Loading the rvest package
+library(rvest)
+library(lubridate)
+library(dplyr)
+```
+
+
+```{r}
+if (dir.exists(Business_Path)){
+  unlink(Business_Path, recursive=TRUE)
+  dir.create(Business_Path)
+} else {
+  dir.create(Business_Path)
+}
+
+```
+
+This funciton won't return the tables to look at, but will write all results to a csv file to read in when done importing the 150 cities of the three most populated city in each US state other than the newly added District of Columbia.
+```{r}
+
+writeYellowPageBusinessTypes <- function(businessCityState){
+  url <- 'https://www.yellowpages.com/search?search_terms=businessType&geo_location_terms=CityName%2C+stateAbb'
+  url2 <- 'https://www.yellowpages.com/search?search_terms=businessType&geo_location_terms=CityName%2C%20stateAbb&page=2'
+  url3 <- 'https://www.yellowpages.com/search?search_terms=businessType&geo_location_terms=CityName%2C%20stateAbb&page=3'
+  url4 <- 'https://www.yellowpages.com/search?search_terms=businessType&geo_location_terms=CityName%2C%20stateAbb&page=4'
+  url5 <- 'https://www.yellowpages.com/search?search_terms=businessType&geo_location_terms=CityName%2C%20stateAbb&page=5'
+  
+  inputs <- strsplit(businessCityState, split=',')
+  
+  businessType <- lapply(inputs, '[', 1)
+  business <- as.character(businessType)
+  business <- trimws(business, which='left', whitespace='[\t\r\n]')
+  business <- trimws(business, which='right',whitespace='[\t\r\n]')
+  businessOne <- gsub(' ','+',business)
+  businessPlus <- gsub(' ','%20',business)
+  
+  cityName <- lapply(inputs,'[',2)
+  cityName <- as.character(cityName)
+  cityName <- trimws(cityName, which='left',whitespace='[\t\r\n]')
+  cityName <- trimws(cityName, which='right',whitespace='[\t\r\n]')
+  city <- cityName
+  cityOne <- gsub(' ','+',city)
+  cityPlus <- gsub(' ','%20',city)
+  
+  stateAbb <- lapply(inputs, '[',3)
+  stateAbb <- as.character(stateAbb)
+  stateAbb <- trimws(stateAbb, which='left', whitespace='[\t\r\n]')
+  stateAbb <- trimws(stateAbb, which='right',whitespace='[\t\r\n]')
+  state <- stateAbb
+  
+  url <- gsub('businessType',businessOne, url)
+  url <- gsub('CityName',cityOne, url)
+  url <- gsub('stateAbb',state, url)
+  
+  url2 <- gsub('businessType',businessPlus, url2)
+  url2 <- gsub('CityName',cityPlus, url2)
+  url2 <- gsub('stateAbb',state, url2)
+  
+  url3 <- gsub('businessType',businessPlus, url3)
+  url3 <- gsub('CityName',cityPlus, url3)
+  url3 <- gsub('stateAbb',state, url3)
+
+  url4 <- gsub('businessType',businessPlus, url4)
+  url4 <- gsub('CityName',cityPlus, url4)
+  url4 <- gsub('stateAbb',state, url4)
+
+  url5 <- gsub('businessType',businessPlus, url5)
+  url5 <- gsub('CityName',cityPlus, url5)
+  url5 <- gsub('stateAbb',state, url5)
+
+  webpage <- read_html(url)
+  webpage2 <- read_html(url2)
+  webpage3 <- read_html(url3)
+  webpage4 <- read_html(url4)
+  webpage5 <- read_html(url5)
+  
+  business_html <- html_nodes(webpage,'h2.n:nth-child(1)')
+  business1 <- html_text(business_html)
+  
+  business_html2 <- html_nodes(webpage2,'h2.n:nth-child(1)')
+  business2 <- html_text(business_html2)
+
+  business_html3 <- html_nodes(webpage3,'h2.n:nth-child(1)')
+  business3 <- html_text(business_html3)
+
+  business_html4 <- html_nodes(webpage4,'h2.n:nth-child(1)')
+  business4 <- html_text(business_html4)
+
+  business_html5 <- html_nodes(webpage5,'h2.n:nth-child(1)')
+  business5 <- html_text(business_html5)
+
+  Business <- as.data.frame(c(business1,business2, business3, business4, business5))
+  colnames(Business) <- 'businessType'
+  Business$businessType <- as.character(paste(Business$businessType))
+  Business$businessType <- gsub('\n','',Business$businessType)
+
+
+  cityDF <- as.data.frame(rep(cityName,length(Business$businessType)))
+  colnames(cityDF) <- "city"
+  
+  stateDF <- as.data.frame(rep(state,length(Business$businessType)))
+  colnames(stateDF) <- 'state'
+  
+  businessSearchDF <- as.data.frame(rep(Business$businessType,
+                                        length(Business$businessType)))
+  colnames(businessSearchDF) <- 'businessType'
+  
+  date <- as.data.frame(rep(date(),length(Business$businessType)))
+  colnames(date) <- 'todaysDate'
+  
+  tableBusinesses <- cbind(cityDF,stateDF,businessSearchDF,date)
+  
+  setwd(Business_Path)
+  
+  business2 <- gsub(' ','-',business)
+  city2 <- gsub(' ','-',cityName)
+  
+  write.csv(tableBusinesses,paste(business2,city2,state,".csv",sep='_'),row.names = FALSE)
+  write.table(tableBusinesses, 
+              paste(businessType,".csv",sep=''), append=TRUE,
+              col.names=FALSE, sep=",", quote=TRUE,qmethod="double",
+              row.names=FALSE)
+  names <- colnames(tableBusinesses)
+  write.csv(names,paste('tableBusinessesHeader_',businessType,'.csv',sep=''),row.names=FALSE)
+  
+  setwd('../')
+  
+}
+```
+
+***
+
+table10cities-altered.csv and read it in.
+```{r}
+table10 <- read.csv('../table10cities-altered.csv',sep=',', header=TRUE, na.strings=c('',' ','NA'))
+```
+
+```{r}
+head(table10)
+```
+
+```{r}
+Table10 <- table10[,c(2,4)]
+Table10$businessType <- BUSINESS
+Table10$functionInput <- paste(Table10$businessType,Table10$topCity,
+                               Table10$stateAbbreviations, sep=',')
+Table10$functionInput <- as.character(Table10$functionInput)
+head(Table10)
+```
+
+```{r}
+for (i in Table10$functionInput[1:25]){
+  writeYellowPageBusinessTypes(i)
+      somethingToDo <-  read.csv(paste(Business_Path,'/',BUSINESS,'.csv',sep=''),
+                                 sep=",", header=FALSE, 
+                                 na.strings=c('',' ','NA'))
+      header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
+                         sep=''), sep=',')
+      names <- header$x
+      All <- somethingToDo[!duplicated(somethingToDo),]
+      colnames(All) <- names
+      colnames(All)[3] <- paste(BUSINESS,colnames(All)[3],sep='_')
+      write.csv(All,paste(BUSINESS,'All.csv',sep=''),row.names=FALSE)
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[26:50]){
+  writeYellowPageBusinessTypes(i)
+      somethingToDo <-  read.csv(paste(Business_Path,'/',BUSINESS,'.csv',sep=''),
+                                 sep=",", header=FALSE, 
+                                 na.strings=c('',' ','NA'))
+      header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
+                         sep=''), sep=',')
+      names <- header$x
+      All <- somethingToDo[!duplicated(somethingToDo),]
+      colnames(All) <- names
+      colnames(All)[3] <- paste(BUSINESS,colnames(All)[3],sep='_')
+      write.csv(All,paste(BUSINESS,'All.csv',sep=''),row.names=FALSE)
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[51:75]){
+  writeYellowPageBusinessTypes(i)
+      somethingToDo <-  read.csv(paste(Business_Path,'/',BUSINESS,'.csv',sep=''),
+                                 sep=",", header=FALSE, 
+                                 na.strings=c('',' ','NA'))
+      header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
+                         sep=''), sep=',')
+      names <- header$x
+      All <- somethingToDo[!duplicated(somethingToDo),]
+      colnames(All) <- names
+      colnames(All)[3] <- paste(BUSINESS,colnames(All)[3],sep='_')
+      write.csv(All,paste(BUSINESS,'All.csv',sep=''),row.names=FALSE)
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[76:100]){
+  writeYellowPageBusinessTypes(i)
+      somethingToDo <-  read.csv(paste(Business_Path,'/',BUSINESS,'.csv',sep=''),
+                                 sep=",", header=FALSE, 
+                                 na.strings=c('',' ','NA'))
+      header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
+                         sep=''), sep=',')
+      names <- header$x
+      All <- somethingToDo[!duplicated(somethingToDo),]
+      colnames(All) <- names
+      colnames(All)[3] <- paste(BUSINESS,colnames(All)[3],sep='_')
+      write.csv(All,paste(BUSINESS,'All.csv',sep=''),row.names=FALSE)
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[101:125]){
+  writeYellowPageBusinessTypes(i)
+      somethingToDo <-  read.csv(paste(Business_Path,'/',BUSINESS,'.csv',sep=''),
+                                 sep=",", header=FALSE, 
+                                 na.strings=c('',' ','NA'))
+      header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
+                         sep=''), sep=',')
+      names <- header$x
+      All <- somethingToDo[!duplicated(somethingToDo),]
+      colnames(All) <- names
+      colnames(All)[3] <- paste(BUSINESS,colnames(All)[3],sep='_')
+      write.csv(All,paste(BUSINESS,'All.csv',sep=''),row.names=FALSE)
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[126:140]){
+  writeYellowPageBusinessTypes(i)
+      somethingToDo <-  read.csv(paste(Business_Path,'/',BUSINESS,'.csv',sep=''),
+                                 sep=",", header=FALSE, 
+                                 na.strings=c('',' ','NA'))
+      header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
+                         sep=''), sep=',')
+      names <- header$x
+      All <- somethingToDo[!duplicated(somethingToDo),]
+      colnames(All) <- names
+      colnames(All)[3] <- paste(BUSINESS,colnames(All)[3],sep='_')
+      write.csv(All,paste(BUSINESS,'All.csv',sep=''),row.names=FALSE)
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[140:150]){
+  writeYellowPageBusinessTypes(i)
+      somethingToDo <-  read.csv(paste(Business_Path,'/',BUSINESS,'.csv',sep=''),
+                                 sep=",", header=FALSE, 
+                                 na.strings=c('',' ','NA'))
+      header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
+                         sep=''), sep=',')
+      names <- header$x
+      All <- somethingToDo[!duplicated(somethingToDo),]
+      colnames(All) <- names
+      colnames(All)[3] <- paste(BUSINESS,colnames(All)[3],sep='_')
+      write.csv(All,paste(BUSINESS,'All.csv',sep=''),row.names=FALSE)
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[151:175]){
+  writeYellowPageBusinessTypes(i)
+      somethingToDo <-  read.csv(paste(Business_Path,'/',BUSINESS,'.csv',sep=''),
+                                 sep=",", header=FALSE, 
+                                 na.strings=c('',' ','NA'))
+      header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
+                         sep=''), sep=',')
+      names <- header$x
+      All <- somethingToDo[!duplicated(somethingToDo),]
+      colnames(All) <- names
+      colnames(All)[3] <- paste(BUSINESS,colnames(All)[3],sep='_')
+      write.csv(All,paste(BUSINESS,'All.csv',sep=''),row.names=FALSE)
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[176:200]){
+  writeYellowPageBusinessTypes(i)
+      somethingToDo <-  read.csv(paste(Business_Path,'/',BUSINESS,'.csv',sep=''),
+                                 sep=",", header=FALSE, 
+                                 na.strings=c('',' ','NA'))
+      header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
+                         sep=''), sep=',')
+      names <- header$x
+      All <- somethingToDo[!duplicated(somethingToDo),]
+      colnames(All) <- names
+      colnames(All)[3] <- paste(BUSINESS,colnames(All)[3],sep='_')
+      write.csv(All,paste(Business_Path,'All.csv',sep=''),row.names=FALSE)
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[201:225]){
+  writeYellowPageBusinessTypes(i)
+      somethingToDo <-  read.csv(paste(Business_Path,'/',BUSINESS,'.csv',sep=''),
+                                 sep=",", header=FALSE, 
+                                 na.strings=c('',' ','NA'))
+      header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
+                         sep=''), sep=',')
+      names <- header$x
+      All <- somethingToDo[!duplicated(somethingToDo),]
+      colnames(All) <- names
+      colnames(All)[3] <- paste(BUSINESS,colnames(All)[3],sep='_')
+      write.csv(All,paste(BUSINESS,'All.csv',sep=''),row.names=FALSE)
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[226:237]){
+  writeYellowPageBusinessTypes(i)
+      somethingToDo <-  read.csv(paste(Business_Path,'/',BUSINESS,'.csv',sep=''),
+                                 sep=",", header=FALSE, 
+                                 na.strings=c('',' ','NA'))
+      header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
+                         sep=''), sep=',')
+      names <- header$x
+      All <- somethingToDo[!duplicated(somethingToDo),]
+      colnames(All) <- names
+      colnames(All)[3] <- paste(BUSINESS,colnames(All)[3],sep='_')
+      write.csv(All,paste(BUSINESS,'All.csv',sep=''),row.names=FALSE)
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[238:248]){
+  writeYellowPageBusinessTypes(i)
+      somethingToDo <-  read.csv(paste(Business_Path,'/',BUSINESS,'.csv',sep=''),
+                                 sep=",", header=FALSE, 
+                                 na.strings=c('',' ','NA'))
+      header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
+                         sep=''), sep=',')
+      names <- header$x
+      All <- somethingToDo[!duplicated(somethingToDo),]
+      colnames(All) <- names
+      colnames(All)[3] <- paste(BUSINESS,colnames(All)[3],sep='_')
+      write.csv(All,paste(BUSINESS,'All.csv',sep=''),row.names=FALSE)
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[249:250]){
+  writeYellowPageBusinessTypes(i)
+      somethingToDo <-  read.csv(paste(Business_Path,'/',BUSINESS,'.csv',sep=''),
+                                 sep=",", header=FALSE, 
+                                 na.strings=c('',' ','NA'))
+      header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
+                         sep=''), sep=',')
+      names <- header$x
+      All <- somethingToDo[!duplicated(somethingToDo),]
+      colnames(All) <- names
+      colnames(All)[3] <- paste(BUSINESS,colnames(All)[3],sep='_')
+      write.csv(All,paste(BUSINESS,'All.csv',sep=''),row.names=FALSE)
+}
+```
+
+```{r}
+for (i in Table10$functionInput[251:275]){
+  writeYellowPageBusinessTypes(i)
+      somethingToDo <-  read.csv(paste(Business_Path,'/',BUSINESS,'.csv',sep=''),
+                                 sep=",", header=FALSE, 
+                                 na.strings=c('',' ','NA'))
+      header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
+                         sep=''), sep=',')
+      names <- header$x
+      All <- somethingToDo[!duplicated(somethingToDo),]
+      colnames(All) <- names
+      colnames(All)[3] <- paste(BUSINESS,colnames(All)[3],sep='_')
+      write.csv(All,paste(BUSINESS,'All.csv',sep=''),row.names=FALSE)
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[276:300]){
+  writeYellowPageBusinessTypes(i)
+      somethingToDo <-  read.csv(paste(Business_Path,'/',BUSINESS,'.csv',sep=''),
+                                 sep=",", header=FALSE, 
+                                 na.strings=c('',' ','NA'))
+      header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
+                         sep=''), sep=',')
+      names <- header$x
+      All <- somethingToDo[!duplicated(somethingToDo),]
+      colnames(All) <- names
+      colnames(All)[3] <- paste(BUSINESS,colnames(All)[3],sep='_')
+      write.csv(All,paste(BUSINESS,'All.csv',sep=''),row.names=FALSE)
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[301:325]){
+  writeYellowPageBusinessTypes(i)
+      somethingToDo <-  read.csv(paste(Business_Path,'/',BUSINESS,'.csv',sep=''),
+                                 sep=",", header=FALSE, 
+                                 na.strings=c('',' ','NA'))
+      header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
+                         sep=''), sep=',')
+      names <- header$x
+      All <- somethingToDo[!duplicated(somethingToDo),]
+      colnames(All) <- names
+      colnames(All)[3] <- paste(BUSINESS,colnames(All)[3],sep='_')
+      write.csv(All,paste(BUSINESS,'All.csv',sep=''),row.names=FALSE)
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[326:350]){
+  writeYellowPageBusinessTypes(i)
+      somethingToDo <-  read.csv(paste(Business_Path,'/',BUSINESS,'.csv',sep=''),
+                                 sep=",", header=FALSE, 
+                                 na.strings=c('',' ','NA'))
+      header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
+                         sep=''), sep=',')
+      names <- header$x
+      All <- somethingToDo[!duplicated(somethingToDo),]
+      colnames(All) <- names
+      colnames(All)[3] <- paste(BUSINESS,colnames(All)[3],sep='_')
+      write.csv(All,paste(BUSINESS,'All.csv',sep=''),row.names=FALSE)
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[351:375]){
+  writeYellowPageBusinessTypes(i)
+      somethingToDo <-  read.csv(paste(Business_Path,'/',BUSINESS,'.csv',sep=''),
+                                 sep=",", header=FALSE, 
+                                 na.strings=c('',' ','NA'))
+      header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
+                         sep=''), sep=',')
+      names <- header$x
+      All <- somethingToDo[!duplicated(somethingToDo),]
+      colnames(All) <- names
+      colnames(All)[3] <- paste(BUSINESS,colnames(All)[3],sep='_')
+      write.csv(All,paste(BUSINESS,'All.csv',sep=''),row.names=FALSE)
+
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[376:400]){
+  writeYellowPageBusinessTypes(i)
+      somethingToDo <-  read.csv(paste(Business_Path,'/',BUSINESS,'.csv',sep=''),
+                                 sep=",", header=FALSE, 
+                                 na.strings=c('',' ','NA'))
+      header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
+                         sep=''), sep=',')
+      names <- header$x
+      All <- somethingToDo[!duplicated(somethingToDo),]
+      colnames(All) <- names
+      colnames(All)[3] <- paste(BUSINESS,colnames(All)[3],sep='_')
+      write.csv(All,paste(BUSINESS,'All.csv',sep=''),row.names=FALSE)
+
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[401:425]){
+  writeYellowPageBusinessTypes(i)
+      somethingToDo <-  read.csv(paste(Business_Path,'/',BUSINESS,'.csv',sep=''),
+                                 sep=",", header=FALSE, 
+                                 na.strings=c('',' ','NA'))
+      header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
+                         sep=''), sep=',')
+      names <- header$x
+      All <- somethingToDo[!duplicated(somethingToDo),]
+      colnames(All) <- names
+      colnames(All)[3] <- paste(BUSINESS,colnames(All)[3],sep='_')
+      write.csv(All,paste(BUSINESS,'All.csv',sep=''),row.names=FALSE)
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[426:450]){
+  writeYellowPageBusinessTypes(i)
+  somethingToDo <-  read.csv(paste(Business_Path,'/',BUSINESS,'.csv',sep=''),
+                                 sep=",", header=FALSE, 
+                                 na.strings=c('',' ','NA'))
+      header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
+                         sep=''), sep=',')
+      names <- header$x
+      All <- somethingToDo[!duplicated(somethingToDo),]
+      colnames(All) <- names
+      colnames(All)[3] <- paste(BUSINESS,colnames(All)[3],sep='_')
+      write.csv(All,paste(BUSINESS,'All.csv',sep=''),row.names=FALSE)
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[451:477]){
+  writeYellowPageBusinessTypes(i)
+  somethingToDo <-  read.csv(paste(Business_Path,'/',BUSINESS,'.csv',sep=''),
+                                 sep=",", header=FALSE, 
+                                 na.strings=c('',' ','NA'))
+      header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
+                         sep=''), sep=',')
+      names <- header$x
+      All <- somethingToDo[!duplicated(somethingToDo),]
+      colnames(All) <- names
+      colnames(All)[3] <- paste(BUSINESS,colnames(All)[3],sep='_')
+      write.csv(All,paste(BUSINESS,'All.csv',sep=''),row.names=FALSE)
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[479:486]){
+  writeYellowPageBusinessTypes(i)
+  somethingToDo <-  read.csv(paste(Business_Path,'/',BUSINESS,'.csv',sep=''),
+                                 sep=",", header=FALSE, 
+                                 na.strings=c('',' ','NA'))
+      header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
+                         sep=''), sep=',')
+      names <- header$x
+      All <- somethingToDo[!duplicated(somethingToDo),]
+      colnames(All) <- names
+      colnames(All)[3] <- paste(BUSINESS,colnames(All)[3],sep='_')
+      write.csv(All,paste(BUSINESS,'All.csv',sep=''),row.names=FALSE)
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[487:489]){
+  writeYellowPageBusinessTypes(i)
+  somethingToDo <-  read.csv(paste(Business_Path,'/',BUSINESS,'.csv',sep=''),
+                                 sep=",", header=FALSE, 
+                                 na.strings=c('',' ','NA'))
+      header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
+                         sep=''), sep=',')
+      names <- header$x
+      All <- somethingToDo[!duplicated(somethingToDo),]
+      colnames(All) <- names
+      colnames(All)[3] <- paste(BUSINESS,colnames(All)[3],sep='_')
+      write.csv(All,paste(BUSINESS,'All.csv',sep=''),row.names=FALSE)
+}
+```
+
+```{r}
+for (i in Table10$functionInput[490:500]){
+  writeYellowPageBusinessTypes(i)
+  somethingToDo <-  read.csv(paste(Business_Path,'/',BUSINESS,'.csv',sep=''),
+                                 sep=",", header=FALSE, 
+                                 na.strings=c('',' ','NA'))
+      header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
+                         sep=''), sep=',')
+      names <- header$x
+      All <- somethingToDo[!duplicated(somethingToDo),]
+      colnames(All) <- names
+      colnames(All)[3] <- paste(BUSINESS,colnames(All)[3],sep='_')
+      write.csv(All,paste(BUSINESS,'All.csv',sep=''),row.names=FALSE)
+}
+```
+
+
+***
+
+
+***
+
+When done pulling every city and state, read in the table data to get the statistics needed.
+```{r}
+All <- read.csv(paste(BUSINESS,'All.csv',sep=''), 
+                sep=",", header=TRUE, na.strings=c('',' ','NA'))
+```
+
+
+```{r}
+All <- All[!duplicated(All),]
+```
+
+
+```{r}
+str(All)
+```
+
+```{r}
+head(All)
+```
+
+```{r}
+tail(All)
+```
+
+
+Group by state, and get the count of businesses in each state.
+```{r}
+All$state <- as.factor(All$state)
+
+businessCounts <- All %>% group_by(state) %>% count(state)
+colnames(businessCounts)[2] <- paste(BUSINESS,'businessListings',sep='_')
+businessCounts
+```
+
+
+```{r}
+write.csv(businessCounts,paste('statesRates-',BUSINESS,'.csv'), row.names=FALSE)
+```
+

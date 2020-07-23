@@ -1,11 +1,15 @@
 ---
 title: "data census gov demographic per state additions"
 author: "Janis Corona"
-date: "7/7/2020-7/15/2020"
+date: "7/22/2020"
 output: html_document
 ---
 
-This script pulls together other tables created from related scripts for extracting zillow two bedroom home values for May 2020, current July 2020 number of jobs available and hourly and annual average pay per job compared to licensed massage therapists (LMTs) in each of 50 of the US states not including the new District of Columbia state added this year 2020. It also pulls in the top 3 populated city per state that makes those average pay values according to the advertised pay per job and city from Indeed. All files are in the github repository located at https://github.com/JanJanJan2018/LMT-State-Licensing-Database and the census data that we start adding to this table is pulled from 2018 data from
+This script is exactly, more or less, like the same file that used 3 most populated state cities, but this time we use the 10 most populated cities in each states. We gathered race demographics and median pay from data.census.gov for 2018 data that was the closest to this year's date of 2020, yellowpages.com, Indeed.com, apartments.com data using webscrape scripts and Zillows's research data for friendly sharing without webscraping. The two bedroom and two bath apartments were from aparments.com and we used multifamily home median values per city from Zillow data. 
+
+All webscrapes took only the first five pages of those listings. Later scripts had each iteration stop by uploading and writing the data after each of 500 iterations done in batches of 10-25 so that we could ethically grab the online data without tying up their servers. Because apartments.com (also rent.com) and yellowpages.com didn't like that at all. Sometimes Indeed would boot the script off too. I even used a VPN to mix the IP shelling out $13/month but they knew the pattern of cities, and it got ugly when I tried to rearrange the batches. This could have gotten completed in less than a day, but because of the constant restarting of the computer or VPN and waiting to grab each of 500 city data on 20 Indeed jobs and 9 yellowpages businesses and 500 city's first five pages of apartment listings, this took about two days.
+
+All files are in the github repository located at https://github.com/JanJanJan2018/LMT-State-Licensing-Database and the census data that we start adding to this table is pulled from 2018 data from
 Data.census.gov demographics to add per state to state licensing requirements excel file:
 https://data.census.gov/cedsci/table?q=median%20pay%20by%20region%20and%20race&tid=ACSDP1Y2018.DP05&vintage=2018&cid=DP05_0001E&g=0100000US.04000.001&hidePreview=false
 
@@ -182,7 +186,7 @@ We added the demographics to the state licensing requirements and facts csv vers
 
 Now lets add in the fields from our Indeed web scrape to update the columns 32-34 of the StateLicensing table.We added them in manually before, but now that a table was made with the copy of the indeed web scrape script that uses the modified writeIndeedJobData5Pages() using the original getIndeedJobData5Pages(). We can update the table on the fly as needed as long as the Indeed site doesn't change its layout. This file is the statesRates.csv file made in the 'copy-indeed-webscrape-function-altered.Rmd' script.
 ```{r}
-statesRates <- read.csv('statesRates.csv', sep=',',header=TRUE, na.strings=c('',' ','NA'),
+statesRates <- read.csv('./Indeed 10/jobListings_licensed massage therapist.csv', sep=',',header=TRUE, na.strings=c('',' ','NA'),
                        stringsAsFactors = FALSE)
 head(statesRates)
 
@@ -219,7 +223,8 @@ states
 
 ```{r}
 statesOrdered$stateName <- states
-statesOrdered <- statesOrdered[,c(1,9,2:8)]
+statesOrdered$state <- toupper(statesOrdered$state)
+statesOrdered <- statesOrdered[,c(1,10,2:9)]
 statesOrdered <- statesOrdered[order(statesOrdered$stateName),]
 head(statesOrdered)
 ```
@@ -247,9 +252,9 @@ colnames(StateLicensing)
 ```
 
 The Zillow data was also added manually from the find3zillowCitiesFunctionMedian2BRHomeValues.Rmd file that used a downloaded Zillow dataset on 2 bedroom zillow home value index value per city.
-The file is 'updatedZillow2BR.csv' made from our copy-find3zillowCitiesFunctionMean2BRHomeValues.Rmd script.
+The file is 'updatedZillow2BR.csv' made from our copy-find10zillowCitiesFunctionMean2BRHomeValues.Rmd script.
 ```{r}
-zillowData <- read.csv('updatedZillow2BR.csv',sep=',', header=TRUE, na.strings=c('',' ','NA'))
+zillowData <- read.csv('updatedZillow2BR-10.csv',sep=',', header=TRUE, na.strings=c('',' ','NA'))
 ```
 
 ```{r}
@@ -272,7 +277,7 @@ zOrdered
 
 ```{r}
 zillowOrdered <- zOrdered[,2:3]
-colnames(zillowOrdered)[1] <- 'zillow2BR_2020May'
+colnames(zillowOrdered)[1] <- 'zillow2BR_2020June_10cities'
 zillowOrdered
 ```
 
@@ -281,8 +286,8 @@ StateLicensing$state==zillowOrdered$stateName
 ```
 Everything checks out so we can now update our zillow 2 bedroom median home values per state to the mean values per state instead. Some of the top 3 cities of population weren't in the Zillow data, such as AL.
 ```{r}
-StateLicensing$Zillow_2BR_3cityMedianHomeValue <- zillowOrdered$zillow2BR_2020May
-colnames(StateLicensing)[35] <- 'Zillow_2BR_3cityAverageHomeValue'
+StateLicensing$Zillow_2BR_3cityMedianHomeValue <- zillowOrdered$zillow2BR_2020June_10cities
+colnames(StateLicensing)[35] <- 'Zillow_2BR_10cityAverageHomeValue'
 colnames(StateLicensing)
 ```
 
@@ -312,7 +317,7 @@ We will import the data sets individually for each of the 50 states' counts, and
 
 house cleaner:
 ```{r}
-houseCleaner <- read.csv('./Alternate Jobs Each State Indeed/statesRates-house cleaner.csv', header=TRUE,
+houseCleaner <- read.csv('./Indeed 10/jobListings_house cleaner.csv', header=TRUE,
                             na.strings=c('',' ','NA'), sep=',')
 houseCleaner$stateName <- states
 houseCleaner <- houseCleaner[,c(1,10,2:9)]
@@ -322,7 +327,7 @@ head(houseCleaner)
 
 nanny:
 ```{r}
-nanny <- read.csv('./Alternate Jobs Each State Indeed/statesRates-nanny.csv', header=TRUE,
+nanny <- read.csv('./Indeed 10/jobListings_nanny.csv', header=TRUE,
                             na.strings=c('',' ','NA'), sep=',')
 nanny$stateName <- states
 nanny <- nanny[,c(1,10,2:9)]
@@ -332,7 +337,7 @@ head(nanny)
 
 cashier:
 ```{r}
-cashier <- read.csv('./Alternate Jobs Each State Indeed/statesRates-cashier.csv', header=TRUE,
+cashier <- read.csv('./Indeed 10/jobListings_cashier.csv', header=TRUE,
                             na.strings=c('',' ','NA'), sep=',')
 cashier$stateName <- states
 cashier <- cashier[,c(1,10,2:9)]
@@ -342,7 +347,7 @@ head(cashier)
 
 personal trainer:
 ```{r}
-personalTrainer <- read.csv('./Alternate Jobs Each State Indeed/statesRates-personal trainer.csv', header=TRUE,
+personalTrainer <- read.csv('./Indeed 10/jobListings_personal trainer.csv', header=TRUE,
                             na.strings=c('',' ','NA'), sep=',')
 personalTrainer$stateName <- states
 personalTrainer <- personalTrainer[,c(1,10,2:9)]
@@ -351,7 +356,7 @@ head(personalTrainer)
 
 security:
 ```{r}
-security <- read.csv('./Alternate Jobs Each State Indeed/statesRates-security.csv', header=TRUE,
+security <- read.csv('./Indeed 10/jobListings_security.csv', header=TRUE,
                             na.strings=c('',' ','NA'), sep=',')
 security$stateName <- states
 security <- security[,c(1,10,2:9)]
@@ -360,7 +365,7 @@ head(security)
 ```
 
 ```{r}
-server <- read.csv('./Alternate Jobs Each State Indeed/statesRates-server.csv', header=TRUE,
+server <- read.csv('./Indeed 10/jobListings_server.csv', header=TRUE,
                             na.strings=c('',' ','NA'), sep=',')
 server$stateName <- states
 server <- server[,c(1,10,2:9)]
@@ -370,7 +375,7 @@ head(server)
 
 warehouse worker:
 ```{r}
-warehouseWorker <- read.csv('./Alternate Jobs Each State Indeed/statesRates-warehouse worker.csv', header=TRUE,
+warehouseWorker <- read.csv('./Indeed 10/jobListings_warehouse worker.csv', header=TRUE,
                             na.strings=c('',' ','NA'), sep=',')
 warehouseWorker$stateName <- states
 warehouseWorker <- warehouseWorker[,c(1,10,2:9)]
@@ -380,7 +385,7 @@ head(warehouseWorker)
 
 data scientist:
 ```{r}
-dataScientist <- read.csv('./Alternate Jobs Each State Indeed/statesRates-data scientist.csv', header=TRUE,
+dataScientist <- read.csv('./Indeed 10/jobListings_data scientist.csv', header=TRUE,
                             na.strings=c('',' ','NA'), sep=',')
 dataScientist$stateName <- states
 dataScientist <- dataScientist[,c(1,10,2:9)]
@@ -390,7 +395,7 @@ head(dataScientist)
 
 tutor:
 ```{r}
-tutor <- read.csv('./Alternate Jobs Each State Indeed/statesRates-tutor.csv', header=TRUE,
+tutor <- read.csv('./Indeed 10/jobListings_tutor.csv', header=TRUE,
                             na.strings=c('',' ','NA'), sep=',')
 tutor$stateName <- states
 tutor <- tutor[,c(1,10,2:9)]
@@ -400,7 +405,7 @@ head(tutor)
 
 clerical:
 ```{r}
-clerical <- read.csv('./Alternate Jobs Each State Indeed/statesRates-clerical.csv', header=TRUE,
+clerical <- read.csv('./Indeed 10/jobListings_clerical.csv', header=TRUE,
                             na.strings=c('',' ','NA'), sep=',')
 clerical$stateName <- states
 clerical <- clerical[,c(1,10,2:9)]
@@ -410,7 +415,7 @@ head(clerical)
 
 teacher:
 ```{r}
-teacher <- read.csv('./Alternate Jobs Each State Indeed/statesRates-teacher.csv', header=TRUE,
+teacher <- read.csv('./Indeed 10/jobListings_teacher.csv', header=TRUE,
                             na.strings=c('',' ','NA'), sep=',')
 teacher$stateName <- states
 teacher <- teacher[,c(1,10,2:9)]
@@ -601,15 +606,15 @@ payRates
 
 
 ```{r}
-avgPay <- mean(payRates$LMT_HourlyAvgPayRangeAdvertised_Indeed)
-mPay <- min(payRates$LMT_HourlyAvgPayRangeAdvertised_Indeed)
-MPay <- max(payRates$LMT_HourlyAvgPayRangeAdvertised_Indeed)
+avgPay <- round(mean(payRates$LMT_HourlyAvgPayRangeAdvertised_Indeed,na.rm=TRUE),2)
+mPay <- min(payRates$LMT_HourlyAvgPayRangeAdvertised_Indeed,na.rm=TRUE)
+MPay <- max(payRates$LMT_HourlyAvgPayRangeAdvertised_Indeed,na.rm=TRUE)
 
 ggplot(data = numberOfJobs, aes(y=payRates$LMT_HourlyAvgPayRangeAdvertised_Indeed, x=payRates$state)) +
-  geom_bar(stat='identity', position=position_dodge())+
+  geom_bar(stat='identity', position=position_dodge(), na.rm=TRUE)+
   scale_y_continuous(breaks=c(mPay,avgPay,MPay),labels=c(mPay,avgPay,MPay))+
   scale_fill_brewer(palette='Paired') +
-  geom_hline(yintercept=mean(payRates$LMT_HourlyAvgPayRangeAdvertised_Indeed), linetype="dashed", color = "red")+
+  geom_hline(yintercept=mean(payRates$LMT_HourlyAvgPayRangeAdvertised_Indeed, na.rm=TRUE), linetype="dashed", color = "red")+
   theme_classic()+
   theme(legend.position="bottom")+
   theme(axis.text = element_text(colour = "black", angle=90, size = rel(.75)))+
@@ -620,7 +625,7 @@ ggplot(data = numberOfJobs, aes(y=payRates$LMT_HourlyAvgPayRangeAdvertised_Indee
 ```
 Lets see what states are paying their massage therapists more than the US average. Visually, above we can see Georgia does, and that GA is also in the list of the states with less than the average number of LMT job listings in the US per state. This logically indicates there is a demand for massage therapists in these states, and that the businesses offering massage therapy need LMTs and are willing to offer them more pay. 
 ```{r}
-morePayThanAvgLMT <- subset(payRates, payRates$LMT_HourlyAvgPayRangeAdvertised_Indeed>avgPay)
+morePayThanAvgLMT <- subset(payRates, payRates$LMT_HourlyAvgPayRangeAdvertised_Indeed > avgPay)
 morePayThanAvgLMT$state
 ```
 
@@ -633,7 +638,7 @@ demandStatesLMT <- fewListings %in% morePayAdvertised
 demanded <- fewListings[demandStatesLMT]
 demanded
 ```
-The above states have a demand for massage therapists because they have fewer listings advertised on Indeed, but are willing to pay more than the national average for massage therapists. Those states are Georgia, Mississippi, and Wyoming.
+The above states have a demand for massage therapists because they have fewer listings advertised on Indeed, but are willing to pay more than the national average for massage therapists. Those states are Georgia, Indiana, Mississippi, and Wyoming.
 
 Using this same logic, it is fair to say those states that have a higher than average demand for massage therapists and also more pay than average for massage therapists must also be states where the cost of living is higher than normal. Lets look at those states and compare their home values for a two bedroom Zillow listed price from our larger data table called slr.
 ```{r}
@@ -645,12 +650,13 @@ highLivingCost
 ```
 There are 20 states that are listed as possible high cost of living states because we are making the assumption that those states with higher than average pay for LMTs and higher than average job listings for LMT are in high cost of living states. We can verify this by looking at the two bedroom homes for sale in all states and get the average to compare to these 20 states.
 ```{r}
-avgHomePrice <- mean(slr$Zillow_2BR_3cityAverageHomeValue)
-mHomePrice <- min(slr$Zillow_2BR_3cityAverageHomeValue)
-MHomePrice <- max(slr$Zillow_2BR_3cityAverageHomeValue)
+avgHomePrice <- round(mean(slr$Zillow_2BR_10cityAverageHomeValue,na.rm=T),2)
+mHomePrice <- round(min(slr$Zillow_2BR_3cityAverageHomeValue),2)
+MHomePrice <- round(max(slr$Zillow_2BR_3cityAverageHomeValue),2)
 
-ggplot(data = numberOfJobs, aes(y=slr$Zillow_2BR_3cityAverageHomeValue, x=slr$state)) +
-  geom_bar(stat='identity', position=position_dodge())+
+ggplot(data = slr$Zillow_2BR_3cityAverageHomeValue,
+       aes(y=slr$Zillow_2BR_3cityAverageHomeValue, x=slr$state)) +
+  geom_col(aes(y=slr$Zillow_2BR_10cityAverageHomeValue,x=slr$state)) +
   scale_y_continuous(breaks=c(mHomePrice,avgHomePrice,MHomePrice),
                      labels=c(mHomePrice,avgHomePrice,MHomePrice))+
   scale_fill_brewer(palette='Paired') +
@@ -664,11 +670,10 @@ ggplot(data = numberOfJobs, aes(y=slr$Zillow_2BR_3cityAverageHomeValue, x=slr$st
 ```
 Lets see exactly which states have higher priced homes than the national average.
 ```{r}
-expensiveHomes <- subset(slr,slr$Zillow_2BR_3cityAverageHomeValue>avgHomePrice)
+expensiveHomes <- subset(slr,slr$Zillow_2BR_10cityAverageHomeValue > avgHomePrice)
 e <- expensiveHomes$state
 e
 ```
-There are 22 states with higher priced homes than the national average from the list produced above.
 
 Lets see if those states are also in the list of states with high living costs.
 ```{r}
@@ -680,7 +685,7 @@ There are 10 states with expensive homes compared to the national average home p
 
 Lets see which states have lower priced homes than the national average but also have higher pay advertised for LMTs and more job listings advertised for LMTs.
 ```{r}
-inexpensiveHomes <- subset(slr,slr$Zillow_2BR_3cityAverageHomeValue < avgHomePrice)
+inexpensiveHomes <- subset(slr,slr$Zillow_2BR_10cityAverageHomeValue < avgHomePrice)
 inexpensive <- inexpensiveHomes$state 
 
 notExpensive <- inexpensive %in% highLivingCost
@@ -694,7 +699,6 @@ demanded
 demanded %in% e
 ```
 
-We can see none of the demand for LMT states are in the list of states with expensive homes or homes with higher than average two bedroom home values.
 
 So, we actually have four lists: **e** is the list of states with expensive homes, **demanded** is our list of states with demand has influenced LMT pay to higher for LMTs than the national average, **expensiveHomes** is our list of states with high cost of living based on higher home values and that also pay more and have more jobs available for LMTs, and our 4th list is the **affordable** list of lower cost of living by home price less than national average but also that has higher pay and more jobs available for LMTs than the national average.
 
@@ -711,13 +715,12 @@ CA_demog <- subset(slr, slr$state=='California')
 CA_demog2 <- CA_demog[,c(1,37:44)]
 CA_demog2
 ```
-When comparing demographics of percent race to population, it could be similar in fashion to looking for an alternate planet similar to Earth in a vast universe. But we can see the state with a closer distribution of the population by Asian, Latino, Black, and two or more races is New York. The other states that are affordable in our list of 10 when compared to CA, a high cost of living state, don't really compare similarly as far as race distribution goes. Lets look at how a few of our alternate jobs from these 10 states compare to CA next.
+When comparing demographics of percent race to population, it could be similar in fashion to looking for an alternate planet similar to Earth in a vast universe. But we can see the state with a closer distribution of the population by Asian, Latino, Black, and two or more races to compare as elements of a planet in analogy to that similar comparison.
 ```{r}
 altjobs_aff <- demographics[,c(1,32,45,48,51,54,57,60,63,66,69,72,75)]
 CA_altjobs <- CA_demog[,c(1,32,45,48,51,54,57,60,63,66,69,72,75)]
 altjobs_aff
 ```
-There are less nanny, personal training, house cleaning, and data science jobs in the affordable states than in CA. While there are more cashier, server, and teaching jobs in the affordable states than in CA. The number of tutoring, clerical, warehouse, and security jobs are similar in available jobs. 
 ```{r}
 CA_altjobs
 ```
@@ -735,13 +738,12 @@ Now, we will compare the alternate jobs available in our list of expensive state
 altJobs_expStates <- expensiveDemog[,c(1,32,45,48,51,54,57,60,63,66,69,72,75)]
 altJobs_expStates
 ```
-For the most part, the expensive states have about the same distribution of available jobs alternative to LMT work, except some states have noticeably less nanny and personal training jobs. Arizona and Washington have less personal training jobs, while Nevada, Rhode Island, and Washington have less nanny jobs. And there are far less house cleaning jobs in Connecticut than any other state that is expensive. Also, there are not as many data science jobs available in Nevada as any other expensive state.
 
-Lets now plot the number of available jobs by category in CA compared to Arizona and New York. Arizona is an expensive state and New York is not so expensive compared to the average home value of the three top populated cities in each state.
+Lets now plot the number of available jobs by category in CA compared to New Jersey and New York. 
 ```{r}
-NY_altJobs <- subset(altjobs_aff, altjobs_aff$state=='New York')
+NY_altJobs <- subset(altJobs_expStates, altJobs_expStates$state=='New York')
 CA_altJobs <- subset(altJobs_expStates, altJobs_expStates$state=='California')
-AZ_altJobs <- subset(altJobs_expStates, altJobs_expStates$state=='Arizona')
+NJ_altJobs <- subset(altJobs_expStates, altJobs_expStates$state=='New Jersey')
 
 NY_tidyJobs <- gather(NY_altJobs,key="jobTitle", value="jobsListed",2:13, na.rm=TRUE)
 NY_tidyJobs$jobTitle <- gsub('_.*$','',NY_tidyJobs$jobTitle, perl=TRUE)
@@ -749,8 +751,8 @@ NY_tidyJobs$jobTitle <- gsub('_.*$','',NY_tidyJobs$jobTitle, perl=TRUE)
 CA_tidyJobs <- gather(CA_altJobs,key="jobTitle", value="jobsListed",2:13, na.rm=TRUE)
 CA_tidyJobs$jobTitle <- gsub('_.*$','',CA_tidyJobs$jobTitle, perl=TRUE)
 
-AZ_tidyJobs <- gather(AZ_altJobs,key="jobTitle", value="jobsListed",2:13, na.rm=TRUE)
-AZ_tidyJobs$jobTitle <- gsub('_.*$','',AZ_tidyJobs$jobTitle, perl=TRUE)
+NJ_tidyJobs <- gather(NJ_altJobs,key="jobTitle", value="jobsListed",2:13, na.rm=TRUE)
+NJ_tidyJobs$jobTitle <- gsub('_.*$','',NJ_tidyJobs$jobTitle, perl=TRUE)
 
 
 ```
@@ -766,7 +768,7 @@ ggplot(data = CA_tidyJobs, aes(y=CA_tidyJobs$jobsListed, x=CA_tidyJobs$jobTitle)
   ylab(NULL)+
   xlab(NULL)
 ```
-There are more warehouse and security jobs available on Indeed than the other listed jobs in CA. In comparison to other job categories available in CA, there are less tutor, nanny, and LMT jobs available than other comparative jobs.
+There are more warehouse and security jobs available on Indeed than the other listed jobs in CA. In comparison to other job categories available in CA, there are less tutor and nanny jobs available than other comparative jobs.
 
 ```{r}
 ggplot(data = NY_tidyJobs, aes(y=NY_tidyJobs$jobsListed, x=NY_tidyJobs$jobTitle)) +
@@ -782,20 +784,19 @@ ggplot(data = NY_tidyJobs, aes(y=NY_tidyJobs$jobsListed, x=NY_tidyJobs$jobTitle)
 New York has more clerical, teaching, and warehouse jobs available than other jobs in NY, but has far less personal training and nanny jobs available than CA did.
 
 ```{r}
-ggplot(data = AZ_tidyJobs, aes(y=AZ_tidyJobs$jobsListed, x=AZ_tidyJobs$jobTitle)) +
+ggplot(data = NJ_tidyJobs, aes(y=NJ_tidyJobs$jobsListed, x=NJ_tidyJobs$jobTitle)) +
   geom_bar(stat='identity', position=position_dodge())+
   scale_fill_brewer(palette='Paired') +
   theme_classic()+
   theme(legend.position="bottom")+
   theme(axis.text = element_text(colour = "black", angle=90, size = rel(.75)))+
-  ggtitle('AZ Alternate and LMT Jobs Advertised')+
+  ggtitle('NJ Alternate and LMT Jobs Advertised')+
   ylab(NULL)+
   xlab(NULL)
 ```
 
-AZ has more teacher and warehouse jobs available just like NY than other jobs in the state from our categories of alternate jobs to LMT. There are as many LMT jobs available as there are security, clerical, cashier, and server.
 
-Now, lets compare the pay to each of these states of CA, NY, and NV. To see how LMTs get paid compared to these alternative jobs in those states.
+Now, lets compare the pay to each of these states of CA, NY, and AZ. To see how LMTs get paid compared to these alternative jobs in those states.
 ```{r}
 NY_pay <- subset(slr, slr$state=='New York')
 NY_pay2 <- NY_pay[,c(1,34,47,50,53,56,59,62,65,68,71,74,77)]
@@ -856,11 +857,8 @@ ggplot(data = AZ_PAY, aes(y=AZ_PAY$AnnualPay, x=AZ_PAY$jobTitle)) +
 ```
 
 
-Lets summarize the pay for each comparative job to that of the number of jobs available. In each state, there were more warehouse jobs available than most other jobs in our categories selected, but this role is on the low end of the annual pay scale compared to those other jobs available. In all jobs, data scientist pays the most in CA, AZ, and NY. LMT pays more than clerical in AZ or CA but not in NY. In CA, nannys get paid more than LMTs and so do personal trainers. In NY, security pays more than LMTs but not in CA or AZ. Also, tutors get paid more than teachers in NY and CA, but almost the same but less than in AZ. 
 
-Those are interesting findings for those three states. Data hasn't been analyzed on the actual requirements to get licensed as a massage therapist in each state, because the table hasn't been filled in. Each state has to be handled separately by finding each requirement from their massage board website of each state, and if not available or not intuitively navigated to from their home page, then emailed and asked about each specific requirements on cost, hours required, continuing education, time to process, distribution of hours, license by endorsement or reciprocity available, etc. It is being added to as time and desire permits on a motivational need. I haven't found a table of these requirements on any internet search, but did find something close with American Massage Therapy Association's listing of schools and state requirements that lacked a date updated or sources to validate and the other variables sought.
 
-It would now be interesting to separately use our function from another script to pull in the jobs in our same wellness market of licensed massage therapists. Such as chiropractors, physical therapists, keep the personal trainer data, and add estheticians or skin care or medical spa jobs maybe by just searching for those jobs, as well as resort spas. This would add value to how effective our decision would be to move to a state to earn more, live better, or even open up a business in massage therapy that would do well based on evidence gathered from other top cities in each state and home values alongside the diversity indicated by percent race in population of the state. finding and replacing the job search sought in the scripts that are similar in file name to 'copy-indeed-webscrape-function-Alt-jobs-dataScientist.Rmd' in the github repository mentioned at the beginning of this script will get you the information you need in about 10-15 minutes. As it goes through the first five web page job listings on Indeed for 150 cities or the three most populated cities in each of the 50 US states.
 
 
 
@@ -869,23 +867,23 @@ It would now be interesting to separately use our function from another script t
 Lets look at some other salaries from other professions, that reflect the state of our economy. I have ran the function to pull the wage information and number of jobs listed for nurses, medical doctors, chiropractors, physical therapists, estheticians, medical spa technicians, and personal assistants. Lets see what our data tells us in a state by state comparison.
 
 ```{r}
-nurses <- read.csv('./Alternate Jobs Each State Indeed/statesRates-nurse.csv', sep=',',
+nurses <- read.csv('./Indeed 10/jobListings_nurse.csv', sep=',',
+                    header=TRUE, na.strings=c('',' ','NA'))
+personalAssistants <- read.csv('./Indeed 10/jobListings_personal assistant.csv', sep=',',
                    header=TRUE, na.strings=c('',' ','NA'))
-personalAssistants <- read.csv('./Alternate Jobs Each State Indeed/statesRates-personal assistant.csv', sep=',',
+chiropractor <- read.csv('./Indeed 10/jobListings_chiropractor.csv', sep=',',
                    header=TRUE, na.strings=c('',' ','NA'))
-chiropractor <- read.csv('./Alternate Jobs Each State Indeed/statesRates-chiropractor.csv', sep=',',
+physicalTherapist <- read.csv('./Indeed 10/jobListings_physical therapist.csv', sep=',',
                    header=TRUE, na.strings=c('',' ','NA'))
-physicalTherapist <- read.csv('./Alternate Jobs Each State Indeed/statesRates-physical therapist.csv', sep=',',
+esthetician <- read.csv('./Indeed 10/jobListings_esthetician.csv', sep=',',
                    header=TRUE, na.strings=c('',' ','NA'))
-esthetician <- read.csv('./Alternate Jobs Each State Indeed/statesRates-esthetician.csv', sep=',',
+medicalSpaEsthetician <- read.csv('./Indeed 10/jobListings_medical spa technician.csv', sep=',',
                    header=TRUE, na.strings=c('',' ','NA'))
-medicalSpaEsthetician <- read.csv('./Alternate Jobs Each State Indeed/statesRates-medical spa technician.csv', sep=',',
+medicalDoctor <- read.csv('./Indeed 10/jobListings_medical doctor.csv', sep=',',
                    header=TRUE, na.strings=c('',' ','NA'))
-medicalDoctor <- read.csv('./Alternate Jobs Each State Indeed/statesRates-medical doctor.csv', sep=',',
+yogaInstructor <- read.csv('./Indeed 10/jobListings_yoga Instructor.csv', sep=',',
                    header=TRUE, na.strings=c('',' ','NA'))
-yogaInstructor <- read.csv('./Alternate Jobs Each State Indeed/statesRates-yoga Instructor.csv', sep=',',
-                   header=TRUE, na.strings=c('',' ','NA'))
-pilatesInstructor <- read.csv('./Alternate Jobs Each State Indeed/statesRates-pilates Instructor.csv', sep=',',
+pilatesInstructor <- read.csv('./Indeed 10/jobListings_pilates Instructor.csv', sep=',',
                    header=TRUE, na.strings=c('',' ','NA'))
 
 ```
@@ -1085,7 +1083,7 @@ ggplot(data = GA_wellness2, aes(y=GA_wellness2$jobsListed, x=GA_wellness2$jobTit
 
 ```{r}
 ggplot(data = GA_wellnessSalary2, aes(y=GA_wellnessSalary2$annualSalary, x=GA_wellnessSalary2$jobTitle)) +
-  geom_bar(stat='identity', position=position_dodge())+
+  geom_bar(stat='identity', position=position_dodge(),na.rm=TRUE)+
   scale_fill_brewer(palette='Paired') +
   theme_classic()+
   geom_hline(yintercept=GA_medIncome, linetype="dashed", color = "red")+
@@ -1144,23 +1142,23 @@ The blue line above is the same two bedroom Zillow average home value for GA and
 There is now a script that did similar to what the indeed function did but for yellowpages.com. This script takes the first five webpages of yellowpages.com for the business searched in the city and state and returns a table of the number of businesses of that type in the same three top populated cities per state used in this program. The script is called 'yellowPages-number-of-businesses.Rmd' and it was used to get the number of businesses in those three cities per state for coffee, massage, gym, tanning, hair salon, tanning, yoga, chiropractic, wellness, and health food businesses. Lets add these counts to our table slr2 of all features used so far.
 
 ```{r}
-ypChiro <- read.csv('./number of businesses/statesRates- chiropractor .csv',
+ypChiro <- read.csv('./Yellow Pages Businesses/statesRates- chiropractor .csv',
                     sep=',', header=TRUE, na.strings=c('',' ','NA'))
-ypWellness <- read.csv('./number of businesses/statesRates- wellness clinic .csv',
+ypWellness <- read.csv('./Yellow Pages Businesses/statesRates- wellness clinic .csv',
                     sep=',', header=TRUE, na.strings=c('',' ','NA'))
-ypMassage <- read.csv('./number of businesses/statesRates- massage .csv',
+ypMassage <- read.csv('./Yellow Pages Businesses/statesRates- massage spa .csv',
                     sep=',', header=TRUE, na.strings=c('',' ','NA'))
-ypYoga <- read.csv('./number of businesses/statesRates- yoga .csv',
+ypYoga <- read.csv('./Yellow Pages Businesses/statesRates- yoga .csv',
                     sep=',', header=TRUE, na.strings=c('',' ','NA'))
-ypGym <- read.csv('./number of businesses/statesRates- gym .csv',
+ypGym <- read.csv('./Yellow Pages Businesses/statesRates- gym .csv',
                     sep=',', header=TRUE, na.strings=c('',' ','NA'))
-ypCoffee <- read.csv('./number of businesses/statesRates- coffee .csv',
+ypCoffee <- read.csv('./Yellow Pages Businesses/statesRates- coffee .csv',
                     sep=',', header=TRUE, na.strings=c('',' ','NA'))
-ypHealthFood <- read.csv('./number of businesses/statesRates- health food .csv',
+ypHealthFood <- read.csv('./Yellow Pages Businesses/statesRates- health food .csv',
                     sep=',', header=TRUE, na.strings=c('',' ','NA'))
-ypHairSalon <- read.csv('./number of businesses/statesRates- hair salon .csv',
+ypHairSalon <- read.csv('./Yellow Pages Businesses/statesRates- hair salon .csv',
                     sep=',', header=TRUE, na.strings=c('',' ','NA'))
-ypTanning <- read.csv('./number of businesses/statesRates- tanning .csv',
+ypTanning <- read.csv('./Yellow Pages Businesses/statesRates- tanning .csv',
                     sep=',', header=TRUE, na.strings=c('',' ','NA'))
 ```
 
@@ -1214,9 +1212,9 @@ write.csv(slr3, 'stateLicensingDemographicsAddedAndUpdated.csv', row.names=FALSE
 
 ***
 
-We currently have the price of 2 bedroom homes using Zillow data, but now we can add in apartments.com data for rental apartments of 2-3 bedroom, 2 bathroom, dog/cat friendly pricing to our data set to compare rental prices in the three top populated cities in each state. It didn't happen by magic either, there is a script for it very similar to the indeed and yellowpages web scraping scripts. Originally, I was going to use rent.com, but wouldn't you know they have a web scraping blocker in place that makes sure their terms of use aren't violated for 'not downloading their data.' I did download apartments.com data, but only to share the aggregate results. Each individual file is downloaded for the date pulled but not added to githu. The script is 'aps-com-2BR-2BA.Rmd' in github with all these other shared files. It will produce this table in csv format, 'apts_2BR2BA_prices.csv' to add to our updated and added state licensing requirements csv table of data to compare state by state.
+We currently have the price of 2 bedroom homes using Zillow data, but now we can add in apartments.com data for rental apartments of 2-3 bedroom, 2 bathroom, dog/cat friendly pricing to our data set to compare rental prices in the three top populated cities in each state. It didn't happen by magic either, there is a script for it very similar to the indeed and yellowpages web scraping scripts. Originally, I was going to use rent.com, but wouldn't you know they have a web scraping blocker in place that makes sure their terms of use aren't violated for 'not downloading their data.' I did download apartments.com data, but only to share the aggregate results. Each individual file is downloaded for the date pulled but not added to githu. The script is 'aps-com-2BR-2BA.Rmd' in github with all these other shared files.I was booted from apartments.com due to so many downloads, but used a VPN that allowed me to take the average of the average, minimum, and maximum prices of up to ten cities that are the most populated cities (rather than the top 3 cities) with prices on aparmtnents.com. It will produce this table in csv format, 'apts_2BR2BA_prices.csv' to add to our updated and added state licensing requirements csv table of data to compare state by state. This last file was modified to read in the listings if available of the top 10 most populated cities, as was the Zillow home value listings for 10 most populated cities, instead of for the 3 most populated as the original scripts were done.
 ```{r}
-apt2and2 <- read.csv('./apartments Dot Com/apts_2BR2BA_prices.csv',sep=',',
+apt2and2 <- read.csv('./Apartments 2BR/apts_2BR2BA_prices.csv',sep=',',
                      header=TRUE, na.strings=c('',' ','NA'))
 ```
 
@@ -1229,6 +1227,7 @@ The above information takes the price of each listing in those 50 states' three 
 Now lets add these new data columns to our table of 50 states.
 ```{r}
 colnames(apt2and2)[1] <- 'stateAbbreviation'
+colnames(apt2and2)[2:5] <- paste(colnames(apt2and2)[2:5],'_10cities')
 apt2and2$stateName <- states
 ```
 
@@ -1400,7 +1399,7 @@ gg5 <- ggplot(data = CA_jobsAvailable_tidy,
                   x=CA_jobsAvailable_tidy$job)) +
   geom_bar(stat='identity', position=position_dodge())+
   theme_classic()+
-  coord_cartesian(ylim = c(0,300))+
+  coord_cartesian(ylim = c(0,800))+
   theme(legend.position="bottom")+
   theme(axis.text = element_text(colour = "black", angle=90, size = rel(.75)))+
   ggtitle('CA Number of Advertised Jobs: ')+
@@ -1412,7 +1411,7 @@ gg6 <- ggplot(data = TN_jobsAvailable_tidy,
                   x=TN_jobsAvailable_tidy$job)) +
   geom_bar(stat='identity', position=position_dodge())+
   theme_classic()+
-  coord_cartesian(ylim = c(0,300))+
+  coord_cartesian(ylim = c(0,800))+
   theme(legend.position="bottom")+
   theme(axis.text = element_text(colour = "black", angle=90, size = rel(.75)))+
   ggtitle('TN Number of Advertised Jobs: ')+
@@ -1489,7 +1488,6 @@ The red dashed line across the CA and TN advertised salaries is the state's resp
 grid.arrange(gg7,gg8, ncol=2)
 ```
 
-We notice a larger gap in LMT annual pay in the CA advertised pay ranges for jobs selected when compared to the gap of the TN median income and annual salaries of jobs selected.
-
+This is surprising. Because when using only the top three cities to get the salary information and number of jobs available, the LMT pay was below median for CA. But now, the charts are saying that the LMT pay is actually at or above the median annual pay of TN and CA using 2018 values not injusted for 3% inflation each year. 
 
 
