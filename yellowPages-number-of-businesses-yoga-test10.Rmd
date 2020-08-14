@@ -9,8 +9,8 @@ This function will do similar to the other function that scrapes Indeed for job 
 
 Create a directory named with the business type your looking for, like massage, chiropractor, gym, etc.
 ```{r}
-BUSINESS <- 'wellness clinic'
-Business_Path <- './wellness clinic'
+BUSINESS <- 'yoga'
+Business_Path <- './yoga'
 ```
 
 

@@ -1,7 +1,7 @@
 ---
 title: "number of businesses each state"
 author: "Janis Corona"
-date: "8/3/2020"
+date: "8/12/2020"
 output: html_document
 ---
 
@@ -9,8 +9,8 @@ This function will do similar to the other function that scrapes Indeed for job 
 
 Create a directory named with the business type your looking for, like massage, chiropractor, gym, etc.
 ```{r}
-BUSINESS <- 'wellness clinic'
-Business_Path <- './wellness clinic'
+BUSINESS <- 'collsion'
+Business_Path <- './collision'
 ```
 
 
@@ -174,7 +174,7 @@ for (i in Table10$functionInput[1:25]){
 
   header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
                          sep=''), sep=',')
-  BizCities <- BizCities[!duplicated(bizCities),]
+  BizCities <- bizCities[!duplicated(bizCities),]
   colnames(BizCities) <- header$x
   colnames(BizCities)[3] <- paste(BUSINESS,colnames(BizCities)[3],sep='_')
 
@@ -191,7 +191,7 @@ for (i in Table10$functionInput[26:50]){
 
   header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
                          sep=''), sep=',')
-  BizCities <- BizCities[!duplicated(bizCities),]
+  BizCities <- bizCities[!duplicated(bizCities),]
   colnames(BizCities) <- header$x
   colnames(BizCities)[3] <- paste(BUSINESS,colnames(BizCities)[3],sep='_')
 
@@ -209,7 +209,7 @@ for (i in Table10$functionInput[51:75]){
 
   header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
                          sep=''), sep=',')
-  BizCities <- BizCities[!duplicated(bizCities),]
+  BizCities <- bizCities[!duplicated(bizCities),]
   colnames(BizCities) <- header$x
   colnames(BizCities)[3] <- paste(BUSINESS,colnames(BizCities)[3],sep='_')
 
@@ -227,7 +227,7 @@ for (i in Table10$functionInput[76:100]){
 
   header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
                          sep=''), sep=',')
-  BizCities <- BizCities[!duplicated(bizCities),]
+  BizCities <- bizCities[!duplicated(bizCities),]
   colnames(BizCities) <- header$x
   colnames(BizCities)[3] <- paste(BUSINESS,colnames(BizCities)[3],sep='_')
 
@@ -245,7 +245,7 @@ for (i in Table10$functionInput[101:125]){
 
   header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
                          sep=''), sep=',')
-  BizCities <- BizCities[!duplicated(bizCities),]
+  BizCities <- bizCities[!duplicated(bizCities),]
   colnames(BizCities) <- header$x
   colnames(BizCities)[3] <- paste(BUSINESS,colnames(BizCities)[3],sep='_')
 
@@ -263,7 +263,7 @@ for (i in Table10$functionInput[126:150]){
 
   header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
                          sep=''), sep=',')
-  BizCities <- BizCities[!duplicated(bizCities),]
+  BizCities <- bizCities[!duplicated(bizCities),]
   colnames(BizCities) <- header$x
   colnames(BizCities)[3] <- paste(BUSINESS,colnames(BizCities)[3],sep='_')
 
@@ -281,7 +281,7 @@ for (i in Table10$functionInput[151:175]){
 
   header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
                          sep=''), sep=',')
-  BizCities <- BizCities[!duplicated(bizCities),]
+  BizCities <- bizCities[!duplicated(bizCities),]
   colnames(BizCities) <- header$x
   colnames(BizCities)[3] <- paste(BUSINESS,colnames(BizCities)[3],sep='_')
 
@@ -299,7 +299,7 @@ for (i in Table10$functionInput[176:200]){
 
   header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
                          sep=''), sep=',')
-  BizCities <- BizCities[!duplicated(bizCities),]
+  BizCities <- bizCities[!duplicated(bizCities),]
   colnames(BizCities) <- header$x
   colnames(BizCities)[3] <- paste(BUSINESS,colnames(BizCities)[3],sep='_')
 
@@ -317,7 +317,7 @@ for (i in Table10$functionInput[201:208]){
 
   header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
                          sep=''), sep=',')
-  BizCities <- BizCities[!duplicated(bizCities),]
+  BizCities <- bizCities[!duplicated(bizCities),]
   colnames(BizCities) <- header$x
   colnames(BizCities)[3] <- paste(BUSINESS,colnames(BizCities)[3],sep='_')
 
@@ -327,7 +327,7 @@ for (i in Table10$functionInput[201:208]){
 
 
 ```{r}
-for (i in Table10$functionInput[209:225]){
+for (i in Table10$functionInput[209:239]){
   writeYellowPageBusinessTypes(i)
     
   bizCities <- read.csv(paste(Business_Path,'/',BUSINESS,'.csv',sep=''), sep=",", 
@@ -335,7 +335,7 @@ for (i in Table10$functionInput[209:225]){
 
   header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
                          sep=''), sep=',')
-  BizCities <- BizCities[!duplicated(bizCities),]
+  BizCities <- bizCities[!duplicated(bizCities),]
   colnames(BizCities) <- header$x
   colnames(BizCities)[3] <- paste(BUSINESS,colnames(BizCities)[3],sep='_')
 
@@ -344,7 +344,7 @@ for (i in Table10$functionInput[209:225]){
 ```
 
 ```{r}
-for (i in Table10$functionInput[226:250]){
+for (i in Table10$functionInput[240:250]){
   writeYellowPageBusinessTypes(i)
     
   bizCities <- read.csv(paste(Business_Path,'/',BUSINESS,'.csv',sep=''), sep=",", 
@@ -352,7 +352,7 @@ for (i in Table10$functionInput[226:250]){
 
   header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
                          sep=''), sep=',')
-  BizCities <- BizCities[!duplicated(bizCities),]
+  BizCities <- bizCities[!duplicated(bizCities),]
   colnames(BizCities) <- header$x
   colnames(BizCities)[3] <- paste(BUSINESS,colnames(BizCities)[3],sep='_')
 
@@ -370,7 +370,7 @@ for (i in Table10$functionInput[251:275]){
 
   header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
                          sep=''), sep=',')
-  BizCities <- BizCities[!duplicated(bizCities),]
+  BizCities <- bizCities[!duplicated(bizCities),]
   colnames(BizCities) <- header$x
   colnames(BizCities)[3] <- paste(BUSINESS,colnames(BizCities)[3],sep='_')
 
@@ -388,7 +388,7 @@ for (i in Table10$functionInput[276:300]){
 
   header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
                          sep=''), sep=',')
-  BizCities <- BizCities[!duplicated(bizCities),]
+  BizCities <- bizCities[!duplicated(bizCities),]
   colnames(BizCities) <- header$x
   colnames(BizCities)[3] <- paste(BUSINESS,colnames(BizCities)[3],sep='_')
 
@@ -406,7 +406,7 @@ for (i in Table10$functionInput[301:325]){
 
   header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
                          sep=''), sep=',')
-  BizCities <- BizCities[!duplicated(bizCities),]
+  BizCities <- bizCities[!duplicated(bizCities),]
   colnames(BizCities) <- header$x
   colnames(BizCities)[3] <- paste(BUSINESS,colnames(BizCities)[3],sep='_')
 
@@ -424,7 +424,7 @@ for (i in Table10$functionInput[326:350]){
 
   header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
                          sep=''), sep=',')
-  BizCities <- BizCities[!duplicated(bizCities),]
+  BizCities <- bizCities[!duplicated(bizCities),]
   colnames(BizCities) <- header$x
   colnames(BizCities)[3] <- paste(BUSINESS,colnames(BizCities)[3],sep='_')
 
@@ -442,7 +442,7 @@ for (i in Table10$functionInput[351:375]){
 
   header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
                          sep=''), sep=',')
-  BizCities <- BizCities[!duplicated(bizCities),]
+  BizCities <- bizCities[!duplicated(bizCities),]
   colnames(BizCities) <- header$x
   colnames(BizCities)[3] <- paste(BUSINESS,colnames(BizCities)[3],sep='_')
 
@@ -460,7 +460,7 @@ for (i in Table10$functionInput[376:400]){
 
   header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
                          sep=''), sep=',')
-  BizCities <- BizCities[!duplicated(bizCities),]
+  BizCities <- bizCities[!duplicated(bizCities),]
   colnames(BizCities) <- header$x
   colnames(BizCities)[3] <- paste(BUSINESS,colnames(BizCities)[3],sep='_')
 
@@ -478,7 +478,7 @@ for (i in Table10$functionInput[401:425]){
 
   header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
                          sep=''), sep=',')
-  BizCities <- BizCities[!duplicated(bizCities),]
+  BizCities <- bizCities[!duplicated(bizCities),]
   colnames(BizCities) <- header$x
   colnames(BizCities)[3] <- paste(BUSINESS,colnames(BizCities)[3],sep='_')
 
@@ -496,7 +496,7 @@ for (i in Table10$functionInput[426:450]){
 
   header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
                          sep=''), sep=',')
-  BizCities <- BizCities[!duplicated(bizCities),]
+  BizCities <- bizCities[!duplicated(bizCities),]
   colnames(BizCities) <- header$x
   colnames(BizCities)[3] <- paste(BUSINESS,colnames(BizCities)[3],sep='_')
 
@@ -514,7 +514,7 @@ for (i in Table10$functionInput[451:477]){
 
   header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
                          sep=''), sep=',')
-  BizCities <- BizCities[!duplicated(bizCities),]
+  BizCities <- bizCities[!duplicated(bizCities),]
   colnames(BizCities) <- header$x
   colnames(BizCities)[3] <- paste(BUSINESS,colnames(BizCities)[3],sep='_')
 
@@ -532,7 +532,7 @@ for (i in Table10$functionInput[479:500]){
 
   header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
                          sep=''), sep=',')
-  BizCities <- BizCities[!duplicated(bizCities),]
+  BizCities <- bizCities[!duplicated(bizCities),]
   colnames(BizCities) <- header$x
   colnames(BizCities)[3] <- paste(BUSINESS,colnames(BizCities)[3],sep='_')
 
@@ -558,7 +558,7 @@ bizCities <- read.csv(paste(Business_Path,'/',BUSINESS,'.csv',sep=''), sep=",",
 
 header <- read.csv(paste(Business_Path,'/tableBusinessesHeader_',BUSINESS,'.csv',
                          sep=''), sep=',')
-BizCities <- BizCities[!duplicated(bizCities),]
+BizCities <- bizCities[!duplicated(bizCities),]
 colnames(BizCities) <- header$x
 colnames(BizCities)[3] <- paste(BUSINESS,colnames(BizCities)[3],sep='_')
 

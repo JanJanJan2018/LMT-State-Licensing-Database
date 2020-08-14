@@ -1,7 +1,7 @@
 ---
 title: "number of 2BR/2BA each state"
 author: "Janis Corona"
-date: "7/20/2020"
+date: "8/10/2020"
 output: html_document
 ---
 
@@ -165,258 +165,43 @@ Table10 <- table10[,c(2,4)]
 Table10$functionInput <- paste(Table10$topCity, Table10$stateAbbreviations, sep=',')
 head(Table10)
 ```
-This site, booted me out with too many scrapes, worked great in the morning, then booted my server off. Coincidentally, VirtualBox, Azure, and AWS were being little b**Tes on creating or reopening my accounts. 
+
+***
 
 
 ```{r}
-for (i in Table10$functionInput[1:16]){
+for (i in Table10$functionInput[1:259]){
   writeRentPrice(i)
+  pausedDT <- read.csv(paste(Business_Path,'/',businessType,'.csv',sep=''),
+                       sep=",", header=FALSE, na.strings=c('',' ','NA'))
+  header <- read.csv(paste(Business_Path,'/tablePricesHeader_',businessType,'.csv',
+                         sep=''), sep=',')
+  colnames(pausedDT) <- header$x
+  write.csv(pausedDT,paste(Business_Path,'/pausedDT-',businessType,'.csv',sep=''),
+            row.names=FALSE)
+
 }
 ```
 
 ```{r}
-# writeRentPrice('Wasilla,AK')
-```
-
-
-```{r}
-# for (i in Table10$functionInput[17:17]){
-#   writeRentPrice(i)
-#}
-```
-
-```{r}
-for (i in Table10$functionInput[18:19]){
+for (i in Table10$functionInput[261:500]){
   writeRentPrice(i)
+  pausedDT <- read.csv(paste(Business_Path,'/',businessType,'.csv',sep=''),
+                       sep=",", header=FALSE, na.strings=c('',' ','NA'))
+  header <- read.csv(paste(Business_Path,'/tablePricesHeader_',businessType,'.csv',
+                         sep=''), sep=',')
+  colnames(pausedDT) <- header$x
+  write.csv(pausedDT,paste(Business_Path,'/pausedDT-',businessType,'.csv',sep=''),
+            row.names=FALSE)
 }
 ```
 
 
-```{r}
-for (i in Table10$functionInput[21:93]){
-  writeRentPrice(i)
-}
+***
 
-#Sitka, AK (20) and (17) Wasilla, AK 
-# Macon County, GA (94) have no apartments.com entries throws off f()
-```
 
-```{r}
-for (i in Table10$functionInput[95:100]){
-  writeRentPrice(i)
-}
 
-```
 
-
-```{r}
-for (i in Table10$functionInput[101:103]){
-  writeRentPrice(i)
-}
-# (104) Pearl City, HI is missing
-```
-
-```{r}
-for (i in Table10$functionInput[105:130]){
-  writeRentPrice(i)
-}
-
-```
-
-```{r}
-for (i in Table10$functionInput[131:160]){
-  writeRentPrice(i)
-}
-
-```
-
-
-```{r}
-for (i in Table10$functionInput[161:182]){
-  writeRentPrice(i)
-}
-
-# (183) Bangor, ME missing
-```
-
-
-
-```{r}
-for (i in Table10$functionInput[184:187]){
-  writeRentPrice(i)
-}
-# (188) Saco, ME missing
-```
-
-```{r}
-for (i in Table10$functionInput[189:189]){
-  writeRentPrice(i)
-}
-
-# (190) August, ME missing
-```
-
-```{r}
-for (i in Table10$functionInput[191:200]){
-  writeRentPrice(i)
-}
-
-```
-
-```{r}
-for (i in Table10$functionInput[201:213]){
-  writeRentPrice(i)
-}
-
-```
-
-
-```{r}
-for (i in Table10$functionInput[214:227]){
-  writeRentPrice(i)
-}
-
-```
-
-```{r}
-for (i in Table10$functionInput[228:242]){
-  writeRentPrice(i)
-}
-
-```
-
-```{r}
-for (i in Table10$functionInput[243:259]){
-  writeRentPrice(i)
-}
-# (260) Anaconda-Deer Lodge County, MT or http 404, booted IP
-
-```
-
-
-```{r}
-for (i in Table10$functionInput[261:265]){
-  writeRentPrice(i)
-}
-# (266) Fremont, NE 
-```
-
-```{r}
-for (i in Table10$functionInput[267:274]){
-  writeRentPrice(i)
-}
-
-# (275) Paradise, NV
-```
-
-```{r}
-for (i in Table10$functionInput[276:286]){
-  writeRentPrice(i)
-}
-
-```
-
-
-```{r}
-for (i in Table10$functionInput[287:300]){
-  writeRentPrice(i)
-}
-
-```
-
-```{r}
-for (i in Table10$functionInput[301:314]){
-  writeRentPrice(i)
-}
-
-```
-
-
-```{r}
-for (i in Table10$functionInput[315:324]){
-  writeRentPrice(i)
-}
-
-```
-
-
-```{r}
-for (i in Table10$functionInput[325:343]){
-  writeRentPrice(i)
-}
-
-```
-
-
-```{r}
-for (i in Table10$functionInput[344:367]){
-  writeRentPrice(i)
-}
-
-# (368) Medford, OR
-```
-
-```{r}
-for (i in Table10$functionInput[369:387]){
-  writeRentPrice(i)
-}
-#(388) Central Falls, RI
-```
-
-
-```{r}
-for (i in Table10$functionInput[389:400]){
-  writeRentPrice(i)
-}
-
-```
-
-```{r}
-for (i in Table10$functionInput[401:424]){
-  writeRentPrice(i)
-}
-
-```
-
-
-```{r}
-for (i in Table10$functionInput[425:427]){
-  writeRentPrice(i)
-}
-
-```
-
-
-```{r}
-for (i in Table10$functionInput[428:440]){
-  writeRentPrice(i)
-}
-
-```
-
-
-```{r}
-for (i in Table10$functionInput[441:457]){
-  writeRentPrice(i)
-}
-
-# (458) Hamn, VA
-```
-
-```{r}
-for (i in Table10$functionInput[459:480]){
-  writeRentPrice(i)
-}
-
-```
-
-
-```{r}
-for (i in Table10$functionInput[481:500]){
-  writeRentPrice(i)
-}
-
-```
 
 
 ***
