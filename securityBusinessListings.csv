@@ -1,0 +1,497 @@
+"state","city","nSecurityBusinesses"
+"AK","Anchorage",97
+"AK","Badger",4
+"AK","College",98
+"AK","Fairbanks",24
+"AK","Juneau",20
+"AK","Knik-Fairview",31
+"AK","Lakes",56
+"AK","Sitka",13
+"AK","Tanaina",96
+"AK","Wasilla",28
+"AL","Auburn",57
+"AL","Birmingham",184
+"AL","Decatur",98
+"AL","Dothan",51
+"AL","Hoover",120
+"AL","Huntsville",146
+"AL","Madison",106
+"AL","Mobile",143
+"AL","Montgomery",149
+"AL","Tuscaloosa",67
+"AR","Bentonville",108
+"AR","Conway",60
+"AR","Fayetteville",87
+"AR","Fort Smith",78
+"AR","Jonesboro",72
+"AR","Little Rock",121
+"AR","North Little Rock",108
+"AR","Pine Bluff",42
+"AR","Rogers",112
+"AR","Springdale",102
+"AZ","Gilbert",222
+"AZ","Glendale",105
+"AZ","Peoria",100
+"AZ","Phoenix",148
+"AZ","Surprise",97
+"AZ","Tempe",137
+"AZ","Tucson",171
+"CA","Anaheim",132
+"CA","Bakersfield",123
+"CA","Fresno",111
+"CA","Long Beach",131
+"CA","Los Angeles",130
+"CA","Oakland",125
+"CA","Sacramento",103
+"CA","San Diego",122
+"CA","San Francisco",104
+"CA","San Jose",123
+"CO","Arvada",124
+"CO","Aurora",132
+"CO","Centennial",97
+"CO","Colorado Springs",112
+"CO","Denver",121
+"CO","Fort Collins",103
+"CO","Lakewood",125
+"CO","Pueblo",57
+"CO","Thornton",117
+"CO","Westminster",127
+"CT","Bridgeport",121
+"CT","Bristol",100
+"CT","Danbury",118
+"CT","Hartford",91
+"CT","New Britain",115
+"CT","New Haven",95
+"CT","Norwalk",113
+"CT","Stamford",126
+"CT","Waterbury",115
+"CT","West Hartford",96
+"DE","Bear",86
+"DE","Brookside",99
+"DE","Dover",30
+"DE","Glasgow",96
+"DE","Hockessin",106
+"DE","Middletown",96
+"DE","Milford",54
+"DE","Newark",103
+"DE","Smyrna",38
+"DE","Wilmington",109
+"FL","Cape Coral",101
+"FL","Fort Lauderdale",120
+"FL","Hialeah",120
+"FL","Jacksonville",126
+"FL","Miami",143
+"FL","Orlando",117
+"FL","Port St. Lucie",121
+"FL","St. Petersburg",117
+"FL","Tallahassee",116
+"FL","Tampa",126
+"GA","Athens",67
+"GA","Atlanta",122
+"GA","Augusta",122
+"GA","Columbus",110
+"GA","Johns Creek",99
+"GA","Macon County",18
+"GA","Roswell",102
+"GA","Sandy Springs",102
+"GA","Savannah",113
+"GA","South Fulton",121
+"HI","Ewa Gentry",110
+"HI","Hilo",31
+"HI","Honolulu",143
+"HI","Kahului",41
+"HI","Kailua",114
+"HI","Kaneohe",95
+"HI","Mililani Town",127
+"HI","Pearl City",127
+"HI","Waipahu",123
+"IA","Ames",16
+"IA","Ankeny",82
+"IA","Cedar Rapids",55
+"IA","Council Bluffs",68
+"IA","Davenport",88
+"IA","Des Moines",83
+"IA","Iowa City",19
+"IA","Sioux City",26
+"IA","Waterloo",28
+"IA","West Des Moines",72
+"ID","Boise",117
+"ID","Caldwell",78
+"ID","Coeur d'Alene",41
+"ID","Idaho Falls",37
+"ID","Lewiston",13
+"ID","Meridian",89
+"ID","Nampa",101
+"ID","Pocatello",22
+"ID","Post Falls",96
+"ID","Twin Falls",35
+"IL","Aurora",91
+"IL","Champaign",63
+"IL","Chicago",121
+"IL","Elgin",106
+"IL","Joliet",78
+"IL","Naperville",82
+"IL","Peoria",88
+"IL","Rockford",85
+"IL","Springfield",67
+"IL","Waukegan",79
+"IN","Bloomington",39
+"IN","Carmel",90
+"IN","Evansville",98
+"IN","Fishers",104
+"IN","Fort Wayne",112
+"IN","Gary",66
+"IN","Hammond",80
+"IN","Indianapolis",114
+"IN","Lafayette",22
+"IN","South Bend",107
+"KS","Kansas City",130
+"KS","Lawrence",33
+"KS","Lenexa",70
+"KS","Manhattan",30
+"KS","Olathe",92
+"KS","Overland Park",102
+"KS","Salina",34
+"KS","Shawnee",77
+"KS","Topeka",71
+"KS","Wichita",175
+"KY","Bowling Green",36
+"KY","Covington",100
+"KY","Elizabethtown",28
+"KY","Florence",102
+"KY","Georgetown",92
+"KY","Lexington",100
+"KY","Louisville",100
+"KY","Nicholasville",104
+"KY","Owensboro",28
+"KY","Richmond",20
+"LA","Alexandria",37
+"LA","Baton Rouge",110
+"LA","Bossier City",101
+"LA","Kenner",108
+"LA","Lafayette",108
+"LA","Lake Charles",66
+"LA","Metairie",120
+"LA","Monroe",79
+"LA","New Orleans",123
+"LA","Shreveport",105
+"MA","Boston",117
+"MA","Brockton",104
+"MA","Cambridge",74
+"MA","Fall River",86
+"MA","Lowell",95
+"MA","Lynn",80
+"MA","New Bedford",105
+"MA","Quincy",73
+"MA","Springfield",92
+"MA","Worcester",99
+"MD","Baltimore",120
+"MD","Columbia",111
+"MD","Ellicott City",120
+"MD","Frederick",87
+"MD","Gaithersburg",85
+"MD","Germantown",95
+"MD","Glen Burnie",91
+"MD","Rockville",89
+"MD","Silver Spring",102
+"MD","Waldorf",122
+"ME","Auburn",13
+"ME","Augusta",13
+"ME","Bangor",30
+"ME","Biddeford",70
+"ME","Lewiston",25
+"ME","Portland",73
+"ME","Saco",27
+"ME","Sanford",31
+"ME","South Portland",68
+"ME","Westbrook",61
+"MI","Ann Arbor",82
+"MI","Dearborn",84
+"MI","Detroit",113
+"MI","Flint",94
+"MI","Grand Rapids",80
+"MI","Lansing",84
+"MI","Livonia",84
+"MI","Sterling Heights",79
+"MI","Troy",80
+"MI","Warren",102
+"MN","Bloomington",70
+"MN","Brooklyn Park",75
+"MN","Duluth",43
+"MN","Lakeville",77
+"MN","Maple Grove",69
+"MN","Minneapolis",94
+"MN","Plymouth",68
+"MN","Rochester",27
+"MN","St. Paul",77
+"MN","Woodbury",75
+"MO","Columbia",64
+"MO","Independence",85
+"MO","Kansas City",98
+"MO","Lee's Summit",76
+"MO","O'Fallon",77
+"MO","Springfield",105
+"MO","St. Charles",82
+"MO","St. Joseph",23
+"MO","St. Louis",89
+"MO","St. Peters",74
+"MS","Biloxi",100
+"MS","Greenville",29
+"MS","Gulfport",96
+"MS","Hattiesburg",40
+"MS","Horn Lake",93
+"MS","Jackson",102
+"MS","Meridian",30
+"MS","Olive Branch",88
+"MS","Southaven",117
+"MS","Tupelo",55
+"MT","Anaconda-Deer Lodge County",4
+"MT","Belgrade",27
+"MT","Billings",78
+"MT","Bozeman",29
+"MT","Butte",9
+"MT","Great Falls",23
+"MT","Havre",6
+"MT","Helena",16
+"MT","Kalispell",28
+"MT","Missoula",34
+"NC","Cary",99
+"NC","Charlotte",98
+"NC","Concord",94
+"NC","Durham",102
+"NC","Fayetteville",113
+"NC","Greensboro",99
+"NC","High Point",93
+"NC","Raleigh",105
+"NC","Wilmington",83
+"NC","Winston-Salem",94
+"ND","Bismarck",34
+"ND","Dickinson",9
+"ND","Fargo",71
+"ND","Grand Forks",15
+"ND","Jamestown",5
+"ND","Mandan",26
+"ND","Minot",27
+"ND","Wahpeton",6
+"ND","West Fargo",72
+"ND","Williston",15
+"NE","Bellevue",69
+"NE","Columbus",5
+"NE","Fremont",21
+"NE","Grand Island",18
+"NE","Hastings",15
+"NE","Kearney",16
+"NE","Lincoln",91
+"NE","Norfolk",11
+"NE","North Platte",12
+"NE","Omaha",83
+"NH","Concord",65
+"NH","Derry",111
+"NH","Dover",58
+"NH","Keene",15
+"NH","Laconia",32
+"NH","Lebanon",13
+"NH","Manchester",124
+"NH","Nashua",126
+"NH","Portsmouth",58
+"NH","Rochester",39
+"NJ","Camden",115
+"NJ","Clifton",98
+"NJ","Elizabeth",72
+"NJ","Jersey City",91
+"NJ","Newark",98
+"NJ","Passaic",93
+"NJ","Paterson",86
+"NJ","Toms River",91
+"NJ","Trenton",101
+"NJ","Union City",75
+"NM","Alamogordo",11
+"NM","Albuquerque",117
+"NM","Clovis",14
+"NM","Farmington",20
+"NM","Hobbs",16
+"NM","Las Cruces",34
+"NM","Rio Rancho",106
+"NM","Roswell",17
+"NM","Santa Fe",70
+"NM","South Valley",107
+"NV","Carson City",68
+"NV","Enterprise",109
+"NV","Henderson",122
+"NV","Las Vegas",121
+"NV","North Las Vegas",103
+"NV","Paradise",121
+"NV","Reno",94
+"NV","Sparks",90
+"NV","Spring Valley",97
+"NV","Sunrise Manor",117
+"NY","Albany",116
+"NY","Buffalo",112
+"NY","Cheektowaga",109
+"NY","Mount Vernon",96
+"NY","New Rochelle",105
+"NY","New York",121
+"NY","Rochester",128
+"NY","Schenectady",119
+"NY","Syracuse",103
+"NY","Yonkers",114
+"OH","Akron",112
+"OH","Canton",97
+"OH","Cincinnati",102
+"OH","Cleveland",86
+"OH","Columbus",94
+"OH","Dayton",96
+"OH","Lorain",95
+"OH","Parma",72
+"OH","Toledo",87
+"OH","Youngstown",96
+"OK","Broken Arrow",90
+"OK","Edmond",97
+"OK","Enid",20
+"OK","Lawton",43
+"OK","Midwest City",69
+"OK","Moore",84
+"OK","Norman",93
+"OK","Oklahoma City",83
+"OK","Stillwater",14
+"OK","Tulsa",123
+"OR","Beaverton",94
+"OR","Bend",55
+"OR","Corvallis",56
+"OR","Eugene",89
+"OR","Gresham",98
+"OR","Hillsboro",97
+"OR","Medford",62
+"OR","Portland",103
+"OR","Salem",84
+"OR","Springfield",80
+"PA","Allentown",105
+"PA","Bethlehem",86
+"PA","Erie",20
+"PA","Harrisburg",83
+"PA","Lancaster",113
+"PA","Levittown",94
+"PA","Philadelphia",117
+"PA","Pittsburgh",131
+"PA","Reading",93
+"PA","Scranton",105
+"RI","Central Falls",63
+"RI","Cranston",87
+"RI","East Providence",85
+"RI","Newport",78
+"RI","Pawtucket",70
+"RI","Providence",88
+"RI","Valley Falls",50
+"RI","Warwick",100
+"RI","Westerly",54
+"RI","Woonsocket",82
+"SC","Charleston",92
+"SC","Columbia",106
+"SC","Goose Creek",87
+"SC","Greenville",94
+"SC","Hilton Head Island",57
+"SC","Mount Pleasant",78
+"SC","North Charleston",82
+"SC","Rock Hill",108
+"SC","Summerville",99
+"SC","Sumter",58
+"SD","Aberdeen",14
+"SD","Brookings",4
+"SD","Huron",6
+"SD","Mitchell",6
+"SD","Pierre",7
+"SD","Rapid City",52
+"SD","Sioux Falls",73
+"SD","Spearfish",8
+"SD","Watertown",3
+"SD","Yankton",4
+"TN","Bartlett",92
+"TN","Chattanooga",111
+"TN","Clarksville",24
+"TN","Franklin",104
+"TN","Jackson",37
+"TN","Johnson City",69
+"TN","Knoxville",101
+"TN","Memphis",98
+"TN","Murfreesboro",68
+"TN","Nashville",101
+"TX","Arlington",109
+"TX","Austin",96
+"TX","Corpus Christi",111
+"TX","Dallas",123
+"TX","El Paso",102
+"TX","Fort Worth",90
+"TX","Houston",121
+"TX","Laredo",98
+"TX","Plano",90
+"TX","San Antonio",96
+"UT","Layton",79
+"UT","Ogden",76
+"UT","Orem",77
+"UT","Provo",70
+"UT","Salt Lake City",96
+"UT","Sandy",67
+"UT","South Jordan",62
+"UT","St. George",20
+"UT","West Jordan",85
+"UT","West Valley City",81
+"VA","Alexandria",119
+"VA","Arlington",124
+"VA","Chesapeake",99
+"VA","Hampton",76
+"VA","Newport News",81
+"VA","Norfolk",96
+"VA","Portsmouth",72
+"VA","Richmond",106
+"VA","Roanoke",74
+"VA","Virginia Beach",120
+"VT","Barre",11
+"VT","Bennington",13
+"VT","Brattleboro",20
+"VT","Burlington",48
+"VT","Essex Junction",33
+"VT","Middlebury",4
+"VT","Montpelier",14
+"VT","Rutland",19
+"VT","South Burlington",32
+"VT","Winooski",26
+"WA","Bellevue",73
+"WA","Everett",64
+"WA","Federal Way",72
+"WA","Kent",66
+"WA","Renton",72
+"WA","Seattle",112
+"WA","Spokane",94
+"WA","Spokane Valley",85
+"WA","Tacoma",93
+"WA","Vancouver",97
+"WI","Appleton",64
+"WI","Eau Claire",26
+"WI","Green Bay",77
+"WI","Janesville",48
+"WI","Kenosha",61
+"WI","Madison",69
+"WI","Milwaukee",64
+"WI","Oshkosh",49
+"WI","Racine",70
+"WI","Waukesha",75
+"WV","Beckley",28
+"WV","Charleston",69
+"WV","Clarksburg",16
+"WV","Fairmont",56
+"WV","Huntington",59
+"WV","Martinsburg",43
+"WV","Morgantown",31
+"WV","Parkersburg",25
+"WV","Weirton",23
+"WV","Wheeling",51
+"WY","Casper",18
+"WY","Cheyenne",24
+"WY","Evanston",21
+"WY","Gillette",11
+"WY","Green River",15
+"WY","Jackson",10
+"WY","Laramie",5
+"WY","Riverton",8
+"WY","Rock Springs",16
+"WY","Sheridan",8

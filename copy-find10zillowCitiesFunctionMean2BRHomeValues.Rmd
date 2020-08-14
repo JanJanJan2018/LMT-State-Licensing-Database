@@ -1,7 +1,7 @@
 ---
 title: "2 bedroom zillow median home value function 10 cities"
 author: "Janis Corona"
-date: "7/20/2020"
+date: "7/27/2020"
 output: html_document
 ---
 

@@ -1,7 +1,7 @@
 ---
 title: "Ten Most Populated Cities: Indeed job search"
 author: "Janis Corona"
-date: "8/10/2020"
+date: "8/3/2020"
 output: html_document
 ---
 
@@ -10,8 +10,8 @@ This function will do similar to the other function but instead of printing to c
 This will save time in the long run, and turn hours into about 10 minutes of getting the average pay of each state using the ten most populated cities searched on Indeed and using the range of pay for hourly and salary to calculate the mean pay per state. It will also produce the number of listed job postings for the job title searched in each state and the date downloaded and also how many days ago it was posted.
 
 ```{r}
-business <- 'nurse'
-busDir <- './nurse'
+business <- 'chiropractor'
+busDir <- './chiropractor'
 ```
 
 
@@ -346,8 +346,9 @@ head(Table10)
 ```
 
 
+
 ```{r}
-for (i in Table10$functionInput[1:500]){
+for (i in Table10$functionInput[1:136]){
   writeIndeedJobData5pages(i)
   pausedDT <- read.csv(paste(busDir,'/allCities-',business,'.csv',
                             sep=''),
@@ -357,12 +358,22 @@ for (i in Table10$functionInput[1:500]){
   colnames(pausedDT) <- header$x
   write.csv(pausedDT,paste(busDir,'/pausedDT-',business,'.csv',sep=''),
             row.names=FALSE)
-
 }
 ```
 
-
-
+```{r}
+for (i in Table10$functionInput[137:500]){
+  writeIndeedJobData5pages(i)
+  pausedDT <- read.csv(paste(busDir,'/allCities-',business,'.csv',
+                            sep=''),
+                            sep=",", header=FALSE, na.strings=c('',' ','NA'))
+  header <- read.csv(paste(busDir,'/tableJobsHeader-',business,'.csv',
+                         sep=''),sep=',')
+  colnames(pausedDT) <- header$x
+  write.csv(pausedDT,paste(busDir,'/pausedDT-',business,'.csv',sep=''),
+            row.names=FALSE)
+}
+```
 
 
 

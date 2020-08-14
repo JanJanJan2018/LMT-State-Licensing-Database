@@ -10,8 +10,8 @@ This function will do similar to the other function but instead of printing to c
 This will save time in the long run, and turn hours into about 10 minutes of getting the average pay of each state using the ten most populated cities searched on Indeed and using the range of pay for hourly and salary to calculate the mean pay per state. It will also produce the number of listed job postings for the job title searched in each state and the date downloaded and also how many days ago it was posted.
 
 ```{r}
-business <- 'nurse'
-busDir <- './nurse'
+business <- 'yoga instructor'
+busDir <- './yoga instructor'
 ```
 
 
@@ -346,8 +346,9 @@ head(Table10)
 ```
 
 
+
 ```{r}
-for (i in Table10$functionInput[1:500]){
+for (i in Table10$functionInput[1:117]){
   writeIndeedJobData5pages(i)
   pausedDT <- read.csv(paste(busDir,'/allCities-',business,'.csv',
                             sep=''),
@@ -357,12 +358,22 @@ for (i in Table10$functionInput[1:500]){
   colnames(pausedDT) <- header$x
   write.csv(pausedDT,paste(busDir,'/pausedDT-',business,'.csv',sep=''),
             row.names=FALSE)
-
 }
 ```
 
-
-
+```{r}
+for (i in Table10$functionInput[118:500]){
+  writeIndeedJobData5pages(i)
+  pausedDT <- read.csv(paste(busDir,'/allCities-',business,'.csv',
+                            sep=''),
+                            sep=",", header=FALSE, na.strings=c('',' ','NA'))
+  header <- read.csv(paste(busDir,'/tableJobsHeader-',business,'.csv',
+                         sep=''),sep=',')
+  colnames(pausedDT) <- header$x
+  write.csv(pausedDT,paste(busDir,'/pausedDT-',business,'.csv',sep=''),
+            row.names=FALSE)
+}
+```
 
 
 
@@ -440,4 +451,32 @@ statesRates
 write.csv(statesRates,paste('jobListings_',business,'.csv',sep='')
           , row.names=FALSE)
 ```
+
+TN missing in yoga df.
+```{r}
+
+# us <- as.character(paste(tolower(unique(Table10$stateAbbreviations))))
+# sr <- as.character(paste(statesRates$state))
+# u <- sort(us)
+# s <- sort(sr)
+# u
+# s
+# s %in% u #it says they're all there, but sd isn't in yoga df
+
+# grep('sd',statesRates$state)
+# statesRates$state
+# sort(statesRates$state)
+# sc <- grep('sc',statesRates$state)
+# s <- statesRates[1:sc,]
+# s2 <- statesRates[41:49,]
+# sd <- s[1,]
+# sd$state <- 'sd'
+# sd[,2:9] <- NA
+# 
+# sr <- rbind(s,sd,s2)
+# sr
+# write.csv(sr,paste('jobListings_',business,'.csv',sep='')
+#            , row.names=FALSE)
+```
+
 

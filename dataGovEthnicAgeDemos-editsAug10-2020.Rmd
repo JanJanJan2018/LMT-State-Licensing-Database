@@ -1,7 +1,7 @@
 ---
 title: "data census gov demographic per state additions"
 author: "Janis Corona"
-date: "8/13/2020"
+date: "8/8/2020-8/10/2020"
 output: html_document
 ---
 
@@ -284,7 +284,7 @@ zillowOrdered
 ```{r}
 StateLicensing$state==zillowOrdered$stateName
 ```
-Everything checks out so we can now update our zillow 2 bedroom median home values per state to the mean values per state instead. Some of the top 10 Cities of population weren't in the Zillow data, such as AL.
+Everything checks out so we can now update our zillow 2 bedroom median home values per state to the mean values per state instead. Some of the top 3 cities of population weren't in the Zillow data, such as AL.
 ```{r}
 StateLicensing$Zillow_2BR_3cityMedianHomeValue <- zillowOrdered$zillow2BR_2020June_10cities
 colnames(StateLicensing)[35] <- 'Zillow_2BR_10cityAverageHomeValue'
@@ -536,6 +536,7 @@ slr <- merge(slr, tutor2, by.x='state', by.y='stateName')
 slr <- merge(slr, personal_assistant2, by.x='state', by.y='stateName')
 slr <- merge(slr, dataScientist2, by.x='state', by.y='stateName')
 
+
 colnames(slr)
 ```
 
@@ -581,7 +582,7 @@ ggplot(data = numberOfJobs, aes(y=numberOfJobs$LMT_AvgJobsListed_IndeedFirst5pag
   theme_classic()+
   theme(legend.position="bottom")+
   theme(axis.text = element_text(colour = "black", angle=90, size = rel(.75)))+
-  ggtitle('LMT Average Job Listings in the US Top 10 Cities of each State')+
+  ggtitle('LMT Average Job Listings in the US Top 3 Cities of each State')+
   ylab(NULL)+
   xlab(NULL)
   
@@ -622,7 +623,7 @@ ggplot(data = numberOfJobs, aes(y=payRates$LMT_HourlyAvgPayRangeAdvertised_Indee
   theme_classic()+
   theme(legend.position="bottom")+
   theme(axis.text = element_text(colour = "black", angle=90, size = rel(.75)))+
-  ggtitle('LMT Average Hourly Pay in the US Top 10 Cities of each State')+
+  ggtitle('LMT Average Hourly Pay in the US Top 3 Cities of each State')+
   ylab(NULL)+
   xlab(NULL)
   
@@ -668,7 +669,7 @@ ggplot(data = slr$Zillow_2BR_3cityAverageHomeValue,
   theme_classic()+
   theme(legend.position="bottom")+
   theme(axis.text = element_text(colour = "black", angle=90, size = rel(.75)))+
-  ggtitle('Zillow 2 Bedroom Home Value in the US Top 10 Cities of each State')+
+  ggtitle('Zillow 2 Bedroom Home Value in the US Top 3 Cities of each State')+
   ylab(NULL)+
   xlab(NULL)
 ```
@@ -682,8 +683,8 @@ e
 Lets see if those states are also in the list of states with high living costs.
 ```{r}
 expensive <- expensiveHomes$state %in% highLivingCost
-expensiveHomes <- e[expensive]
-expensiveHomes
+expensiveHomesList <- e[expensive]
+expensiveHomesList
 ```
 There are 10 states with expensive homes compared to the national average home price, and that also have higher pay advertised for LMTs and more advertised job listings for LMTs in the three most populated cities in each state according to the first five web pages of Indeed.
 
@@ -720,6 +721,7 @@ CA_demog2 <- CA_demog[,c(1,37:44)]
 CA_demog2
 ```
 When comparing demographics of percent race to population, it could be similar in fashion to looking for an alternate planet similar to Earth in a vast universe. But we can see the state with a closer distribution of the population by Asian, Latino, Black, and two or more races to compare as elements of a planet in analogy to that similar comparison.
+
 ```{r}
 altjobs_aff <- demographics[,c(1,32,45,48,51,54,57,60,63,66,69,72,75)]
 CA_altjobs <- CA_demog[,c(1,32,45,48,51,54,57,60,63,66,69,72,75)]
@@ -731,13 +733,11 @@ CA_altjobs
 
 Now, lets compare CA to our list of expensive states for demographics and alternate jobs available. CA is in our list of expensive states, so we don't have to do separate table chart comparisons.
 ```{r}
-expensiveDemog <- subset(slr, slr$state %in% expensiveHomes)
+expensiveDemog <- subset(slr, slr$state %in% expensiveHomesList)
 expensiveDemog2 <- expensiveDemog[,c(1,37:44)]
 expensiveDemog2
 ```
-From the above data, the closest state in comparison to diversity to CA is NV or Nevada. The next state would be Colorado or Washington.
 
-Now, we will compare the alternate jobs available in our list of expensive states that includes CA.
 ```{r}
 altJobs_expStates <- expensiveDemog[,c(1,32,45,48,51,54,57,60,63,66,69,72,75)]
 altJobs_expStates
@@ -746,13 +746,13 @@ altJobs_expStates
 Lets now plot the number of available jobs by category in CA compared to New Jersey and New York. 
 ```{r}
 NY_altJobs <- subset(altJobs_expStates, altJobs_expStates$state=='New York')
-CA_altJobs <- subset(altJobs_expStates, altJobs_expStates$state=='California')
+#CA_altJobs <- subset(altJobs_expStates, altJobs_expStates$state=='California')
 NJ_altJobs <- subset(altJobs_expStates, altJobs_expStates$state=='New Jersey')
 
 NY_tidyJobs <- gather(NY_altJobs,key="jobTitle", value="jobsListed",2:13, na.rm=TRUE)
 NY_tidyJobs$jobTitle <- gsub('_.*$','',NY_tidyJobs$jobTitle, perl=TRUE)
 
-CA_tidyJobs <- gather(CA_altJobs,key="jobTitle", value="jobsListed",2:13, na.rm=TRUE)
+CA_tidyJobs <- gather(CA_altjobs,key="jobTitle", value="jobsListed",2:13, na.rm=TRUE)
 CA_tidyJobs$jobTitle <- gsub('_.*$','',CA_tidyJobs$jobTitle, perl=TRUE)
 
 NJ_tidyJobs <- gather(NJ_altJobs,key="jobTitle", value="jobsListed",2:13, na.rm=TRUE)
@@ -871,6 +871,8 @@ ggplot(data = AZ_PAY, aes(y=AZ_PAY$AnnualPay, x=AZ_PAY$jobTitle)) +
 Lets look at some other salaries from other professions, that reflect the state of our economy. I have ran the function to pull the wage information and number of jobs listed for nurses, medical doctors, chiropractors, physical therapists, estheticians, medical spa technicians, and personal assistants. Lets see what our data tells us in a state by state comparison.
 
 ```{r}
+dataAnalystEntry <- read.csv('./Indeed 10/jobListings_data analyst entry level.csv', sep=',',
+                    header=TRUE, na.strings=c('',' ','NA'))
 nurses <- read.csv('./Indeed 10/jobListings_nurse.csv', sep=',',
                     header=TRUE, na.strings=c('',' ','NA'))
 personalAssistants <- read.csv('./Indeed 10/jobListings_personal assistant.csv', sep=',',
@@ -885,8 +887,8 @@ medicalSpaEsthetician <- read.csv('./Indeed 10/jobListings_medical spa technicia
                    header=TRUE, na.strings=c('',' ','NA'))
 medicalDoctor <- read.csv('./Indeed 10/jobListings_medical doctor.csv', sep=',',
                    header=TRUE, na.strings=c('',' ','NA'))
-yogaInstructor <- read.csv('./Indeed 10/jobListings_yoga Instructor.csv', sep=',',
-                   header=TRUE, na.strings=c('',' ','NA'))
+# yogaInstructor <- read.csv('./Indeed 10/jobListings_yoga Instructor.csv', sep=',',
+#                    header=TRUE, na.strings=c('',' ','NA'))
 pilatesInstructor <- read.csv('./Indeed 10/jobListings_pilates Instructor.csv', sep=',',
                    header=TRUE, na.strings=c('',' ','NA'))
 
@@ -955,10 +957,10 @@ head(medicalDoctor)
 ```
 
 ```{r}
-yogaInstructor$stateName <- states
-yogaInstructor <- yogaInstructor[,c(1,10,2:9)]
-yogaInstructor$avgAnualSalary <- yogaInstructor$avgHourly*40*52
-head(yogaInstructor)
+# yogaInstructor$stateName <- states
+# yogaInstructor <- yogaInstructor[,c(1,10,2:9)]
+# yogaInstructor$avgAnualSalary <- yogaInstructor$avgHourly*40*52
+# head(yogaInstructor)
 ```
 
 ```{r}
@@ -990,7 +992,7 @@ physicalTherapist2 <- physicalTherapist[,c(2,3,9,10)]
 esthetician2 <- esthetician[,c(2,3,9,10)]
 medicalSpaEsthetician2 <- medicalSpaEsthetician[,c(2,3,9,10)]
 medicalDoctor2 <- medicalDoctor[,c(2,3,9,10)]
-yogaInstructor2 <- yogaInstructor[,c(2,3,9,10)]
+#yogaInstructor2 <- yogaInstructor[,c(2,3,9,10)]
 pilatesInstructor2 <- pilatesInstructor[,c(2,3,9,10)]
 ```
 
@@ -1021,7 +1023,7 @@ medicalDoctor2$avgAnualSalary <- ifelse(medicalDoctor2$avgAnualSalary,
                                         medicalDoctor2$avgAnualSalary,
                                         medicalDoctor2$avgHourly*40*52)
 colnames(medicalDoctor2)[2:4] <- paste('medicalDoctor',colnames(medicalDoctor2)[2:4])
-colnames(yogaInstructor2)[2:4] <- paste('yogaInstructor',colnames(yogaInstructor2)[2:4])
+#colnames(yogaInstructor2)[2:4] <- paste('yogaInstructor',colnames(yogaInstructor2)[2:4])
 pilatesInstructor2$avgAnualSalary <- pilatesInstructor2$avgHourly*40*52
 colnames(pilatesInstructor2)[2:4] <- paste('pilatesInstructor',colnames(pilatesInstructor2)[2:4])
 ```
@@ -1035,7 +1037,7 @@ slr2 <- merge(slr2, physicalTherapist2, by.x='state', by.y='stateName')
 slr2 <- merge(slr2, esthetician2, by.x='state', by.y='stateName')
 slr2 <- merge(slr2, medicalSpaEsthetician2, by.x='state', by.y='stateName')
 slr2 <- merge(slr2, medicalDoctor2, by.x='state',by.y='stateName')
-slr2 <- merge(slr2, yogaInstructor2, by.x='state',by.y='stateName')
+#slr2 <- merge(slr2, yogaInstructor2, by.x='state',by.y='stateName')
 slr2 <- merge(slr2, pilatesInstructor2, by.x='state', by.y='stateName',all.x=TRUE)
 ```
 
@@ -1056,27 +1058,32 @@ avgSalaryAll <- slr2[,c(1,34,ansy)]
 ```{r}
 colnames(listedJobsAll) <- gsub('_.*$','',colnames(listedJobsAll),perl=TRUE)
 colnames(listedJobsAll) <- gsub(' jobsListed','',colnames(listedJobsAll))
-listedJobsAll
+listedJobsAll2 <- listedJobsAll[,-12]#added personal Assistant 2x bw weeks missing
+#nurses, now realized
+listedJobsAll2
 ```
 
 
 ```{r}
 colnames(avgSalaryAll) <- gsub('_.*$','',colnames(avgSalaryAll))
 colnames(avgSalaryAll) <- gsub(' .*$','',colnames(avgSalaryAll))
-avgSalaryAll
+avgSalaryAll2 <- avgSalaryAll[,-12]
+avgSalaryAll2
 ```
 
 Lets take a look at the health and wellness number of jobs available by using the listedJobsAll columns for LMT, personalTrainer, chiropractor, physicalTherapist, esthetician, and medicalSpaEsthetician. 
 ```{r}
-wellnessJobs <- listedJobsAll[,c(1,2,5,16,17,21,22)]
-wellnessSalary <- avgSalaryAll[,c(1,2,5,16,17,21,22)]
+wellnessJobs <- listedJobsAll2[,c(1,2,5,15:20)]
+wellnessSalary <- avgSalaryAll2[,c(1,2,5,15:20)]
+colnames(wellnessJobs)[2]<- 'massageTherapist'
 wellnessJobs
 ```
 
 Now look at the LMT with esthetician and medical spa esthetician jobs available.Nurses are needed in medical spas that are also estheticians, so we will add that class of jobs listed to our spaJobs data table.
 ```{r}
-spaJobs <- listedJobsAll[,c(1,2,14,18,19)]
-spaSalary <- avgSalaryAll[,c(1,2,14,18,19)]
+spaJobs <- listedJobsAll2[,c(1,2,17,18)]
+spaSalary <- avgSalaryAll2[,c(1,2,17,18)]
+colnames(spaJobs)[2] <- 'massageTherapist'
 spaJobs
 ```
 
@@ -1132,8 +1139,8 @@ Now, lets look at the chart of the medical spas jobs available and annual salary
 GA_spa <- subset(spaJobs, spaJobs$state=='Georgia')
 GA_spaSalary <- subset(spaSalary,spaSalary$state=='Georgia')
 
-GA_spa2 <- gather(GA_spa, key='jobTitle',value='jobsListed',2:5)
-GA_spaSalary2 <- gather(GA_spaSalary, key='jobTitle', value='annualSalary',2:5)
+GA_spa2 <- gather(GA_spa, key='jobTitle',value='jobsListed',2:4)
+GA_spaSalary2 <- gather(GA_spaSalary, key='jobTitle', value='annualSalary',2:4)
 
 ```
 
@@ -1269,7 +1276,7 @@ colnames(slr4)
 ```
 
 ```{r}
-slr5 <- slr4[,c(114,1:113,115:118)]
+slr5 <- slr4[,c(111,1:110,112:115)]
 ```
 
 ```{r}
@@ -1285,7 +1292,7 @@ Getting back to the motivation for this project, comparing TN to CA, to satisfy 
 Lets first get all the fields used for this comparison.
 ```{r}
 comparing_TN_CA <- slr5[,c(1,11,12,17,18,19,23,33,35,37:45,55,57,58,60,
-                           64,66,67,69,70,72,76,78,82,84,108:118)]
+                           64,66,67,69,70,72,76,78,82,84,100:115)]
 colnames(comparing_TN_CA)
 ```
 
@@ -1355,8 +1362,8 @@ grid.arrange(gg1, gg2, ncol = 2)
 
 Now lets look at the two bedroom, two bath, pet friendly apartments for rent in CA and TN.
 ```{r}
-CA_2BR <- CA[,c(1,40:43)]
-TN_2BR <- TN[,c(1,40:43)]
+CA_2BR <- CA[,c(1,45:48)]
+TN_2BR <- TN[,c(1,45:48)]
 ```
 
 ```{r}
@@ -1408,8 +1415,8 @@ grid.arrange(gg3, gg4, ncol = 2)
 
 Lets now look at the number of massage and alternate jobs in CA and TN to compare their annual salaries against number of jobs available.
 ```{r}
-CA_jobsAvailable <- CA[,c(1,8,19,21,23,25,27,29,31)]
-TN_jobsAvailable <- TN[,c(1,8,19,21,23,25,27,29,31)]
+CA_jobsAvailable <- CA[,c(1,8,19,21,23,25,27,29,31,33)]
+TN_jobsAvailable <- TN[,c(1,8,19,21,23,25,27,29,31,33)]
 
 colnames(CA_jobsAvailable) <- gsub('_.*$','',colnames(CA_jobsAvailable))
 colnames(TN_jobsAvailable) <- gsub('_.*$','',colnames(TN_jobsAvailable))
@@ -1427,8 +1434,8 @@ gg5 <- ggplot(data = CA_jobsAvailable_tidy,
               aes(y=CA_jobsAvailable_tidy$listings,
                   x=CA_jobsAvailable_tidy$job)) +
   geom_bar(stat='identity', position=position_dodge())+
-  theme_classic()+
-  #coord_cartesian(ylim = c(0,800))+
+  theme_grey()+
+  #coord_cartesian(ylim = c(0, 800))+  
   theme(legend.position="bottom")+
   theme(axis.text = element_text(colour = "black", angle=90, size = rel(.75)))+
   ggtitle('CA Number of Advertised Jobs: ')+
@@ -1439,8 +1446,9 @@ gg6 <- ggplot(data = TN_jobsAvailable_tidy,
               aes(y=TN_jobsAvailable_tidy$listings,
                   x=TN_jobsAvailable_tidy$job)) +
   geom_bar(stat='identity', position=position_dodge())+
-  theme_classic()+
-  #coord_cartesian(ylim = c(0,800))+
+  theme_bw()+
+
+  #coord_cartesian(ylim = c(0, 800))+ 
   theme(legend.position="bottom")+
   theme(axis.text = element_text(colour = "black", angle=90, size = rel(.75)))+
   ggtitle('TN Number of Advertised Jobs: ')+
@@ -1455,7 +1463,12 @@ CA_TN_jobsAvailable
 ```
 
 ```{r}
-grid.arrange(gg5,gg6,ncol=2)
+#grid.arrange(gg5,gg6,ncol=2)
+gg5
+```
+
+```{r}
+gg6
 ```
 
 
@@ -1519,177 +1532,4 @@ grid.arrange(gg7,gg8, ncol=2)
 
 This is surprising. Because when using only the top three cities to get the salary information and number of jobs available, the LMT pay was below median for CA. But now, the charts are saying that the LMT pay is actually at or above the median annual pay of TN and CA using 2018 values not injusted for 3% inflation each year. 
 
-
-***
-
-
-updated
-
-Add in some business listings for collisions, jails/prisons, nursing/convalescent, and universities/colleges to this data and remove the notes and massage board info features that throw off the Tableau import of csv due to the quotations throughout that data, also the 10 city information resource feature.
-```{r}
-yp_JailsAndPrison_Listings <- read.csv('./Yellow Pages Businesses/statesRates- jail or prison .csv',sep=',', header=T, na.strings=c('',' ','NA'), stringsAsFactors = F)
-
-yp_UniversitiesAndCollege_Listings <- read.csv('./Yellow Pages Businesses/statesRates- university or college .csv',sep=',', header=T, na.strings=c('',' ','NA'), stringsAsFactors = F)
-
-yp_collision_Listings <- read.csv('./Yellow Pages Businesses/statesRates- collsion .csv',sep=',', header=T, na.strings=c('',' ','NA'), stringsAsFactors = F)
-```
-
-```{r}
-slr6 <- merge(slr5,yp_JailsAndPrison_Listings,by.x='stateAbbreviation',
-              by.y='state')
-slr6 <- merge(slr6,yp_collision_Listings,by.x='stateAbbreviation',
-              by.y='state')
-slr6 <- merge(slr6,yp_UniversitiesAndCollege_Listings,by.x='stateAbbreviation',
-              by.y='state')
-```
-
-```{r}
-colnames(slr6
-         )
-```
-
-```{r}
-slr7 <- slr6[,-c(3,28:32)]
-```
-
-```{r}
-colnames(slr7)
-```
-
-```{r}
-reciprocity <- as.character(slr7$licenseByReciprocity)
-
-reciprocity <- gsub('yes','Yes',reciprocity)
-reciprocity <- gsub('ye b','Yes; ',reciprocity)
-reciprocity <- gsub('1','Yes; ',reciprocity)
-reciprocity <- gsub('No',NA,reciprocity)
-reciprocity <- gsub('Yes,','Yes; ',reciprocity)
-reciprocity <- gsub('Yes ','Yes; ',reciprocity)
-reciprocity <- gsub('2. License','Yes; 2. License',reciprocity)
-
-reciprocity2 <- strsplit(reciprocity,split='[;]', perl=T)
-Reciprocity <- lapply(reciprocity2, '[',1)
-ReciprocityDetails <- lapply(reciprocity2,'[',2)
-
-hours <- strsplit(as.character(slr7$Hours), split='[;]',perl=T)
-HoursOnly <- lapply(hours,'[',1)
-
-```
-
-
-```{r}
-slr7$HoursOnly <- as.numeric(paste(HoursOnly))
-slr7$Reciprocity <- as.character(Reciprocity)
-slr7$ReciprocityDetails <- as.character(ReciprocityDetails)
-
-```
-
-```{r}
-colnames(slr7)
-```
-
-```{r}
-slr8 <- slr7[,c(1:2,117,118,4:10,116,11:115)]
-colnames(slr8)
-slr8[5,18:20] <- c(0,200,200) #the license renewal fee for CA wasn't entered
-```
-
-Add cosmetologist and nursing/convalescent business listings to data set.
-```{r}
-slr8$Hours <- gsub(';,',';',slr8$Hours)
-
-cosmetologist <- read.csv('./Indeed 10/jobListings_cosmetologist.csv',
-                          sep=',', header=T, na.strings=c('',' ','NA'),
-                          stringsAsFactors = T)
-colnames(cosmetologist)[2:9] <- paste('cosmetologist_',colnames(cosmetologist)[2:9])
-cosmetologist$state <- toupper(cosmetologist$state)
-cosmt <- cosmetologist[,c(1,2,8,9)]
-cosmt$`cosmetologist_ avgAnualSalary` <- ifelse(is.na(cosmt$`cosmetologist_ avgAnualSalary`), (cosmt$`cosmetologist_ avgHourly`)*40*52,cosmt$`cosmetologist_ avgAnualSalary`)
-colnames(cosmt) <- gsub(' ','_',colnames(cosmt))
-
-
-colnames(slr8) <- gsub(' ','_',colnames(slr8))
-colnames(slr8) <- gsub('[.]','_',colnames(slr8),perl=T)
-
-slr9 <- merge(slr8,cosmt,by.x='stateAbbreviation',by.y='state')
-
-write.csv(slr9,'updated_state_licensing_edits_Listings_wages.csv',row.names=F)
-
-# slr9 <- read.csv('updated_state_licensing_edits_Listings_wages.csv',
-#                  sep=',',header=T,na.strings=c('',' ','NA'),
-#                  stringsAsFactors = F)
-
-convalescent  <- read.csv('./Yellow Pages Businesses/statesRates- nursing or convalescent .csv', sep=',', header=T, na.strings=c('',' ','NA'),
-                          stringsAsFactors = T)
-colnames(convalescent)[2] <- 'convalescent_businessListings'
-```
-
-
-```{r}
-slr10 <- merge(slr9,convalescent,by.x='stateAbbreviation',
-               by.y='state')
-bl <- grep('businessListings',colnames(slr10))
-colnames(slr10)[bl] <- gsub('_businessListings','',colnames(slr10)[bl])
-colnames(slr10)[bl] <- paste('businessListings',colnames(slr10)[bl],sep='_')
-colnames(slr10) <- gsub('collsion','collision',colnames(slr10))
-avgAnnual<- grep('avgAnualSalary',colnames(slr10))
-avgHourly <- grep('avgHourly',colnames(slr10))
-LMT <- grep('LMT',colnames(slr10))
-
-colnames(slr10)[avgAnnual] <- gsub('_avgAnualSalary','',colnames(slr10)[avgAnnual])
-colnames(slr10)[avgAnnual] <- paste(colnames(slr10)[avgAnnual],
-                                    '_avgAnnualSalary',sep='')
-
-colnames(slr10)[avgHourly] <- gsub('_avgHourly','',
-                                   colnames(slr10)[avgHourly])
-colnames(slr10)[avgHourly] <- 
-  paste(colnames(slr10)[avgHourly], '_avgHourly',sep='')
-
-colnames(slr10)[LMT] <- c('LMT_jobsListed',
-                          'LMT_avgHourly',
-                          'LMT_avgAnnualSalary')
-
-colnames(slr10)[111] <- 'Rent2BR2BA_Listings_10cities'
-double <- grep('personal_assistant',colnames(slr10))
-
-slr11 <- slr10[,-c(double)]
-
-write.csv(slr11,'updated_state_licensing_edits_Listings_wages.csv',
-          row.names=FALSE)
-```
-
-
-```{r}
-# slr11 <- read.csv('updated_state_licensing_edits_Listings_wages.csv',
-#                   sep=',',header=T,stringsAsFactors=FALSE, 
-#                   na.strings=c('',' ','NA'))
-```
-
-```{r}
-autoBodyRepairTechnician <- read.csv('./Indeed 10/jobListings_auto body technician.csv',sep=',',header=T,na.strings=c('',' ','NA'),
-                                     stringsAsFactors = F)
-
-
-autoBodyRepairTechnician$state <- toupper(autoBodyRepairTechnician$state)
-autoBodyRepairTechnician$avgAnualSalary <- ifelse(is.na(autoBodyRepairTechnician$avgAnualSalary),
-              ((autoBodyRepairTechnician$MinHourlySalary+
-                autoBodyRepairTechnician$MaxHourlySalary)/2)*40*52,
-                autoBodyRepairTechnician$avgAnualSalary)
-
-ab <- autoBodyRepairTechnician[,c(1,2,9,8)]
-colnames(ab) <- c('state','autoRepairTechnician_jobsListed',
-                  'autoRepairTechnician_avgHourly',
-                  'autoRepairTechnician_avgAnnualSalary')
-```
-
-```{r}
-
-slr12 <- merge(slr11,ab, by.x='stateAbbreviation',by.y='state')
-colnames(slr12)
-```
-
-```{r}
-write.csv(slr12,'updated_state_licensing_edits_Listings_wages.csv',
-          row.names=FALSE)
-```
 

@@ -10,8 +10,8 @@ This function will do similar to the other function but instead of printing to c
 This will save time in the long run, and turn hours into about 10 minutes of getting the average pay of each state using the ten most populated cities searched on Indeed and using the range of pay for hourly and salary to calculate the mean pay per state. It will also produce the number of listed job postings for the job title searched in each state and the date downloaded and also how many days ago it was posted.
 
 ```{r}
-business <- 'nurse'
-busDir <- './nurse'
+business <- 'licensed massage therapist'
+busDir <- './LMT'
 ```
 
 
@@ -347,7 +347,7 @@ head(Table10)
 
 
 ```{r}
-for (i in Table10$functionInput[1:500]){
+for (i in Table10$functionInput[1:25]){
   writeIndeedJobData5pages(i)
   pausedDT <- read.csv(paste(busDir,'/allCities-',business,'.csv',
                             sep=''),
@@ -357,12 +357,165 @@ for (i in Table10$functionInput[1:500]){
   colnames(pausedDT) <- header$x
   write.csv(pausedDT,paste(busDir,'/pausedDT-',business,'.csv',sep=''),
             row.names=FALSE)
-
 }
 ```
 
 
 
+```{r}
+for (i in Table10$functionInput[26:50]){
+  writeIndeedJobData5pages(i)
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[51:75]){
+  writeIndeedJobData5pages(i)
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[76:100]){
+  writeIndeedJobData5pages(i)
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[101:125]){
+  writeIndeedJobData5pages(i)
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[126:150]){
+  writeIndeedJobData5pages(i)
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[151:175]){
+  writeIndeedJobData5pages(i)
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[176:200]){
+  writeIndeedJobData5pages(i)
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[201:225]){
+  writeIndeedJobData5pages(i)
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[226:232]){
+  writeIndeedJobData5pages(i)
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[232:250]){
+  writeIndeedJobData5pages(i)
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[251:275]){
+  writeIndeedJobData5pages(i)
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[276:300]){
+  writeIndeedJobData5pages(i)
+   pausedDT <- read.csv(paste(busDir,'/allCities-',business,'.csv',
+                            sep=''),
+                            sep=",", header=FALSE, na.strings=c('',' ','NA'))
+  header <- read.csv(paste(busDir,'/tableJobsHeader-',business,'.csv',
+                         sep=''),sep=',')
+  colnames(pausedDT) <- header$x
+  write.csv(pausedDT,paste(busDir,'/pausedDT-',business,'.csv',sep=''),
+            row.names=FALSE)
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[301:325]){
+  writeIndeedJobData5pages(i)
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[326:350]){
+  writeIndeedJobData5pages(i)
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[351:375]){
+  writeIndeedJobData5pages(i)
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[376:400]){
+  writeIndeedJobData5pages(i)
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[401:425]){
+  writeIndeedJobData5pages(i)
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[426:450]){
+  writeIndeedJobData5pages(i)
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[451:475]){
+  writeIndeedJobData5pages(i)
+}
+```
+
+
+```{r}
+for (i in Table10$functionInput[476:500]){
+  writeIndeedJobData5pages(i)
+   pausedDT <- read.csv(paste(busDir,'/allCities-',business,'.csv',
+                            sep=''),
+                            sep=",", header=FALSE, na.strings=c('',' ','NA'))
+  header <- read.csv(paste(busDir,'/tableJobsHeader-',business,'.csv',
+                         sep=''),sep=',')
+  colnames(pausedDT) <- header$x
+  write.csv(pausedDT,paste(busDir,'/pausedDT-',business,'.csv',sep=''),
+            row.names=FALSE)
+}
+```
 
 
 
@@ -371,6 +524,7 @@ for (i in Table10$functionInput[1:500]){
  
 When done pulling every city and state, read in the table data to get the statistics needed.
 ```{r}
+
 allCities <- read.csv(paste(busDir,'/allCities-',business,'.csv',
                             sep=''),
                             sep=",", header=FALSE, na.strings=c('',' ','NA'))
