@@ -252,14 +252,77 @@ allJobPostings$job <- as.factor(paste(allJobPostings$job))
 write.csv(allJobPostings,'allJobsPosted.csv',row.names=F)
 ```
 
-
+***
+Lets get data that also gets the average hourly and annual salary for each city by reading in that data.
 ```{r}
-
+wages <- read.csv('JulAugNot30.csv',sep=',',header=T,
+                  na.strings=c('',' ','NA'),stringsAsFactors = T)
 ```
 
 
 ```{r}
+colnames(wages)
+```
 
+
+```{r}
+cityWages <- wages %>% group_by(state,city,jobSearched,
+                                jobPosted_nDays_ago) %>% summarise_at(vars(MinHourlySalary,MaxHourlySalary,MinAnnualSalary,
+                                                                                      MaxAnnualSalary),mean)
+```
+
+
+```{r}
+write.csv(cityWages,'LMT_citywages.csv',row.names=F)
+```
+
+
+Lets import all of the city wage data for our five selected jobs.
+```{r}
+lmtCityWages <- read.csv('LMT_citywages.csv',sep=',',header=T,
+                         na.strings=c('',' ','NA'),
+                         stringsAsFactors = F)
+```
+
+
+```{r}
+nannyCityWages <- read.csv('./alternate jobs/nanny_citywages.csv',sep=',',header=T,
+                         na.strings=c('',' ','NA'),
+                         stringsAsFactors = F)
+
+nurseCityWages <- read.csv('./alternate jobs/nurse_citywages.csv',sep=',',header=T,
+                         na.strings=c('',' ','NA'),
+                         stringsAsFactors = F)
+
+personalAssistantCityWages <- read.csv('./alternate jobs/personalAssistant_citywages.csv',sep=',',header=T,
+                         na.strings=c('',' ','NA'),
+                         stringsAsFactors = F)
+
+securityCityWages <- read.csv('./alternate jobs/security_citywages.csv',sep=',',header=T,
+                         na.strings=c('',' ','NA'),
+                         stringsAsFactors = F)
+
+warehouseCityWages <- read.csv('./alternate jobs/warehouse_citywages.csv',sep=',',header=T,
+                         na.strings=c('',' ','NA'),
+                         stringsAsFactors = F)
+
+```
+
+
+Lets combine all this data into one table. 
+```{r}
+BigDataWages <- rbind(lmtCityWages,
+                      nannyCityWages,
+                      nurseCityWages,
+                      personalAssistantCityWages,
+                      securityCityWages,
+                      warehouseCityWages)
+colnames(BigDataWages)[4] <- 'dateJobPosted'
+```
+
+
+```{r}
+write.csv(BigDataWages,'BigDataWages.csv', row.names=F)
 ```
 
 

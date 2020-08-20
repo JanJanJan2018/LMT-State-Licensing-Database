@@ -177,24 +177,27 @@ write.csv(jobsPerStateCityDayPosted,'nanny_jobsPostedDateCityState.csv',
           row.names=F)
 ```
 
-
+***
+Lets get data that also gets the average hourly and annual salary for each city by reading in that data.
 ```{r}
-
+wages <- read.csv('nanny_JulAugNot30.csv',sep=',',header=T,
+                  na.strings=c('',' ','NA'),stringsAsFactors = T)
 ```
 
 
 ```{r}
-
+colnames(wages)
 ```
 
 
 ```{r}
-
+cityWages <- wages %>% group_by(state,city,jobSearched,
+                                jobPosted_nDays_ago) %>% summarise_at(vars(MinHourlySalary,MaxHourlySalary,MinAnnualSalary,
+                                                                                      MaxAnnualSalary),mean)
 ```
 
-
 ```{r}
-
+write.csv(cityWages,'nanny_citywages.csv',row.names=F)
 ```
 
 
