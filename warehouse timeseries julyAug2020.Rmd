@@ -1,0 +1,209 @@
+---
+title: "LMT time series July 20-Aug 17 2020"
+author: "Janis Corona"
+date: "8/19/2020"
+output: html_document
+---
+
+
+
+```{r}
+library(dplyr)
+library(lubridate)
+```
+
+
+```{r}
+warehouse1 <- read.csv('warehouse-7-20-2020.csv',sep=',',header=F,
+                 na.strings=c('',' ','NA'),stringsAsFactors = F)
+
+warehouse2 <- read.csv('warehouse-7-27-2020.csv',sep=',',header=F,
+                 na.strings=c('',' ','NA'),stringsAsFactors = F)
+warehouse3 <- read.csv('warehouse-8-3-2020.csv',sep=',',header=F,
+                 na.strings=c('',' ','NA'),stringsAsFactors = F)
+warehouse4 <- read.csv('warehouse-8-10-2020.csv',sep=',',header=F,
+                 na.strings=c('',' ','NA'),stringsAsFactors = F)
+warehouse5 <- read.csv('warehouse-8-17-2020.csv',sep=',',header=F,
+                 na.strings=c('',' ','NA'),stringsAsFactors = F)
+
+header <- read.csv('tableJobsHeader.csv')
+```
+
+
+```{r}
+colnames(warehouse1) <- header$x
+colnames(warehouse2) <- header$x
+colnames(warehouse3) <- header$x
+colnames(warehouse4) <- header$x
+colnames(warehouse5) <- header$x
+
+warehouse1$state <- toupper(warehouse1$state)
+warehouse2$state <- toupper(warehouse2$state)
+warehouse3$state <- toupper(warehouse3$state)
+warehouse4$state <- toupper(warehouse4$state)
+warehouse5$state <- toupper(warehouse5$state)
+
+```
+
+
+```{r}
+unique(warehouse1$date_daysAgo)
+```
+
+
+```{r}
+warehouse1$date_daysAgo <- gsub('Just posted',0,warehouse1$date_daysAgo)
+warehouse1$date_daysAgo <- gsub('Today',0,warehouse1$date_daysAgo)
+
+warehouse2$date_daysAgo <- gsub('Just posted',0,warehouse2$date_daysAgo)
+warehouse2$date_daysAgo <- gsub('Today',0,warehouse2$date_daysAgo)
+
+warehouse3$date_daysAgo <- gsub('Just posted',0,warehouse3$date_daysAgo)
+warehouse3$date_daysAgo <- gsub('Today',0,warehouse3$date_daysAgo)
+
+warehouse4$date_daysAgo <- gsub('Just posted',0,warehouse4$date_daysAgo)
+warehouse4$date_daysAgo <- gsub('Today',0,warehouse4$date_daysAgo)
+
+warehouse5$date_daysAgo <- gsub('Just posted',0,warehouse5$date_daysAgo)
+warehouse5$date_daysAgo <- gsub('Today',0,warehouse5$date_daysAgo)
+
+
+```
+
+
+```{r}
+warehouse1$date_daysAgo <- as.numeric(paste(warehouse1$date_daysAgo))
+warehouse2$date_daysAgo <- as.numeric(paste(warehouse2$date_daysAgo))
+warehouse3$date_daysAgo <- as.numeric(paste(warehouse3$date_daysAgo))
+warehouse4$date_daysAgo <- as.numeric(paste(warehouse4$date_daysAgo))
+warehouse5$date_daysAgo <- as.numeric(paste(warehouse5$date_daysAgo))
+
+```
+
+
+```{r}
+warehouse1s <- strsplit(warehouse1$todaysDate,split=' ')
+warehouse1$wday <- as.character(lapply(warehouse1s,'[',1))
+warehouse1$month   <- as.character(lapply(warehouse1s,'[',2))
+warehouse1$dayMonth <- as.character(lapply(warehouse1s, '[',3))
+warehouse1$timeHMS  <- as.character(lapply(warehouse1s,'[',4))
+warehouse1$year <- as.character(lapply(warehouse1s,'[',5))
+
+warehouse2s <- strsplit(warehouse2$todaysDate,split=' ')
+warehouse2$wday <- as.character(lapply(warehouse2s,'[',1))
+warehouse2$month   <- as.character(lapply(warehouse2s,'[',2))
+warehouse2$dayMonth <- as.character(lapply(warehouse2s, '[',3))
+warehouse2$timeHMS  <- as.character(lapply(warehouse2s,'[',4))
+warehouse2$year <- as.character(lapply(warehouse2s,'[',5))
+
+warehouse3s <- strsplit(warehouse3$todaysDate,split=' ')
+warehouse3$wday <- as.character(lapply(warehouse3s,'[',1))
+warehouse3$month   <- as.character(lapply(warehouse3s,'[',2))
+warehouse3$dayMonth <- as.character(lapply(warehouse3s, '[',3))
+warehouse3$timeHMS  <- as.character(lapply(warehouse3s,'[',4))
+warehouse3$year <- as.character(lapply(warehouse3s,'[',5))
+
+warehouse4s <- strsplit(warehouse4$todaysDate,split=' ')
+warehouse4$wday <- as.character(lapply(warehouse4s,'[',1))
+warehouse4$month   <- as.character(lapply(warehouse4s,'[',2))
+warehouse4$dayMonth <- as.character(lapply(warehouse4s, '[',3))
+warehouse4$timeHMS  <- as.character(lapply(warehouse4s,'[',4))
+warehouse4$year <- as.character(lapply(warehouse4s,'[',5))
+
+warehouse5s <- strsplit(warehouse5$todaysDate,split=' ')
+warehouse5$wday <- as.character(lapply(warehouse5s,'[',1))
+warehouse5$month   <- as.character(lapply(warehouse5s,'[',2))
+warehouse5$dayMonth <- as.character(lapply(warehouse5s, '[',3))
+warehouse5$timeHMS  <- as.character(lapply(warehouse5s,'[',4))
+warehouse5$year <- as.character(lapply(warehouse5s,'[',5))
+
+```
+
+
+```{r}
+JulAug <- rbind(warehouse1,warehouse2,warehouse3,warehouse4,warehouse5)
+
+```
+
+
+```{r}
+JulAug$nMonth <- ifelse(JulAug$month=='Jan',1,
+                  ifelse(JulAug$month=='Feb',2,
+                  ifelse(JulAug$month=='Mar',3,
+                  ifelse(JulAug$month=='Apr',4,
+                  ifelse(JulAug$month=='May',5,
+                  ifelse(JulAug$month=='Jun',6,
+                  ifelse(JulAug$month=='Jul',7,
+                  ifelse(JulAug$month=='Aug',8,
+                  ifelse(JulAug$month=='Sep',9,
+                  ifelse(JulAug$month=='Oct',10,
+                  ifelse(JulAug$month=='Nov',11,
+                  ifelse(JulAug$month=='Dec',12,NA))))))))))))
+```
+
+
+```{r}
+JulAug$mdy <- paste(JulAug$nMonth,JulAug$dayMonth,JulAug$year,sep='/')
+```
+
+
+```{r}
+JulAug$mdy <- mdy(JulAug$mdy)
+JulAug$jobPosted_nDays_ago <- JulAug$mdy-JulAug$date_daysAgo
+```
+
+
+```{r}
+JulAugNot30 <- subset(JulAug, JulAug$date_daysAgo != 30)
+JulAugNot30 <- JulAugNot30[!duplicated(JulAugNot30),]
+```
+
+
+```{r}
+jobsPerStateCityDayPosted <- JulAugNot30 %>% 
+  group_by(state,city,jobPosted_nDays_ago) %>% count(jobPosted_nDays_ago)
+
+```
+
+
+```{r}
+colnames(jobsPerStateCityDayPosted)[3:4] <- c('datePosted','warehouse_jobsPosted')
+```
+
+
+```{r}
+write.csv(JulAugNot30,'warehouse_JulAugNot30.csv',row.names=F)
+write.csv(jobsPerStateCityDayPosted,'warehouse_jobsPostedDateCityState.csv',
+          row.names=F)
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+

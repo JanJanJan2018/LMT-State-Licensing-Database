@@ -1,0 +1,209 @@
+---
+title: "LMT time series July 20-Aug 17 2020"
+author: "Janis Corona"
+date: "8/19/2020"
+output: html_document
+---
+
+
+
+```{r}
+library(dplyr)
+library(lubridate)
+```
+
+
+```{r}
+security1 <- read.csv('security-7-20-2020.csv',sep=',',header=F,
+                 na.strings=c('',' ','NA'),stringsAsFactors = F)
+
+security2 <- read.csv('security-7-27-2020.csv',sep=',',header=F,
+                 na.strings=c('',' ','NA'),stringsAsFactors = F)
+security3 <- read.csv('security-8-3-2020.csv',sep=',',header=F,
+                 na.strings=c('',' ','NA'),stringsAsFactors = F)
+security4 <- read.csv('security-8-10-2020.csv',sep=',',header=F,
+                 na.strings=c('',' ','NA'),stringsAsFactors = F)
+security5 <- read.csv('security-8-17-2020.csv',sep=',',header=F,
+                 na.strings=c('',' ','NA'),stringsAsFactors = F)
+
+header <- read.csv('tableJobsHeader.csv')
+```
+
+
+```{r}
+colnames(security1) <- header$x
+colnames(security2) <- header$x
+colnames(security3) <- header$x
+colnames(security4) <- header$x
+colnames(security5) <- header$x
+
+security1$state <- toupper(security1$state)
+security2$state <- toupper(security2$state)
+security3$state <- toupper(security3$state)
+security4$state <- toupper(security4$state)
+security5$state <- toupper(security5$state)
+
+```
+
+
+```{r}
+unique(security1$date_daysAgo)
+```
+
+
+```{r}
+security1$date_daysAgo <- gsub('Just posted',0,security1$date_daysAgo)
+security1$date_daysAgo <- gsub('Today',0,security1$date_daysAgo)
+
+security2$date_daysAgo <- gsub('Just posted',0,security2$date_daysAgo)
+security2$date_daysAgo <- gsub('Today',0,security2$date_daysAgo)
+
+security3$date_daysAgo <- gsub('Just posted',0,security3$date_daysAgo)
+security3$date_daysAgo <- gsub('Today',0,security3$date_daysAgo)
+
+security4$date_daysAgo <- gsub('Just posted',0,security4$date_daysAgo)
+security4$date_daysAgo <- gsub('Today',0,security4$date_daysAgo)
+
+security5$date_daysAgo <- gsub('Just posted',0,security5$date_daysAgo)
+security5$date_daysAgo <- gsub('Today',0,security5$date_daysAgo)
+
+
+```
+
+
+```{r}
+security1$date_daysAgo <- as.numeric(paste(security1$date_daysAgo))
+security2$date_daysAgo <- as.numeric(paste(security2$date_daysAgo))
+security3$date_daysAgo <- as.numeric(paste(security3$date_daysAgo))
+security4$date_daysAgo <- as.numeric(paste(security4$date_daysAgo))
+security5$date_daysAgo <- as.numeric(paste(security5$date_daysAgo))
+
+```
+
+
+```{r}
+security1s <- strsplit(security1$todaysDate,split=' ')
+security1$wday <- as.character(lapply(security1s,'[',1))
+security1$month   <- as.character(lapply(security1s,'[',2))
+security1$dayMonth <- as.character(lapply(security1s, '[',3))
+security1$timeHMS  <- as.character(lapply(security1s,'[',4))
+security1$year <- as.character(lapply(security1s,'[',5))
+
+security2s <- strsplit(security2$todaysDate,split=' ')
+security2$wday <- as.character(lapply(security2s,'[',1))
+security2$month   <- as.character(lapply(security2s,'[',2))
+security2$dayMonth <- as.character(lapply(security2s, '[',3))
+security2$timeHMS  <- as.character(lapply(security2s,'[',4))
+security2$year <- as.character(lapply(security2s,'[',5))
+
+security3s <- strsplit(security3$todaysDate,split=' ')
+security3$wday <- as.character(lapply(security3s,'[',1))
+security3$month   <- as.character(lapply(security3s,'[',2))
+security3$dayMonth <- as.character(lapply(security3s, '[',3))
+security3$timeHMS  <- as.character(lapply(security3s,'[',4))
+security3$year <- as.character(lapply(security3s,'[',5))
+
+security4s <- strsplit(security4$todaysDate,split=' ')
+security4$wday <- as.character(lapply(security4s,'[',1))
+security4$month   <- as.character(lapply(security4s,'[',2))
+security4$dayMonth <- as.character(lapply(security4s, '[',3))
+security4$timeHMS  <- as.character(lapply(security4s,'[',4))
+security4$year <- as.character(lapply(security4s,'[',5))
+
+security5s <- strsplit(security5$todaysDate,split=' ')
+security5$wday <- as.character(lapply(security5s,'[',1))
+security5$month   <- as.character(lapply(security5s,'[',2))
+security5$dayMonth <- as.character(lapply(security5s, '[',3))
+security5$timeHMS  <- as.character(lapply(security5s,'[',4))
+security5$year <- as.character(lapply(security5s,'[',5))
+
+```
+
+
+```{r}
+JulAug <- rbind(security1,security2,security3,security4,security5)
+
+```
+
+
+```{r}
+JulAug$nMonth <- ifelse(JulAug$month=='Jan',1,
+                  ifelse(JulAug$month=='Feb',2,
+                  ifelse(JulAug$month=='Mar',3,
+                  ifelse(JulAug$month=='Apr',4,
+                  ifelse(JulAug$month=='May',5,
+                  ifelse(JulAug$month=='Jun',6,
+                  ifelse(JulAug$month=='Jul',7,
+                  ifelse(JulAug$month=='Aug',8,
+                  ifelse(JulAug$month=='Sep',9,
+                  ifelse(JulAug$month=='Oct',10,
+                  ifelse(JulAug$month=='Nov',11,
+                  ifelse(JulAug$month=='Dec',12,NA))))))))))))
+```
+
+
+```{r}
+JulAug$mdy <- paste(JulAug$nMonth,JulAug$dayMonth,JulAug$year,sep='/')
+```
+
+
+```{r}
+JulAug$mdy <- mdy(JulAug$mdy)
+JulAug$jobPosted_nDays_ago <- JulAug$mdy-JulAug$date_daysAgo
+```
+
+
+```{r}
+JulAugNot30 <- subset(JulAug, JulAug$date_daysAgo != 30)
+JulAugNot30 <- JulAugNot30[!duplicated(JulAugNot30),]
+```
+
+
+```{r}
+jobsPerStateCityDayPosted <- JulAugNot30 %>% 
+  group_by(state,city,jobPosted_nDays_ago) %>% count(jobPosted_nDays_ago)
+
+```
+
+
+```{r}
+colnames(jobsPerStateCityDayPosted)[3:4] <- c('datePosted','security_jobsPosted')
+```
+
+
+```{r}
+write.csv(JulAugNot30,'security_JulAugNot30.csv',row.names=F)
+write.csv(jobsPerStateCityDayPosted,'security_jobsPostedDateCityState.csv',
+          row.names=F)
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+

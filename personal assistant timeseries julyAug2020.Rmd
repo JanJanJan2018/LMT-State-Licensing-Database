@@ -1,0 +1,209 @@
+---
+title: "LMT time series July 20-Aug 17 2020"
+author: "Janis Corona"
+date: "8/19/2020"
+output: html_document
+---
+
+
+
+```{r}
+library(dplyr)
+library(lubridate)
+```
+
+
+```{r}
+personalAssistant1 <- read.csv('personal assistant-7-20-2020.csv',sep=',',header=F,
+                 na.strings=c('',' ','NA'),stringsAsFactors = F)
+
+personalAssistant2 <- read.csv('personal assistant-7-27-2020.csv',sep=',',header=F,
+                 na.strings=c('',' ','NA'),stringsAsFactors = F)
+personalAssistant3 <- read.csv('personal assistant-8-3-2020.csv',sep=',',header=F,
+                 na.strings=c('',' ','NA'),stringsAsFactors = F)
+personalAssistant4 <- read.csv('personal assistant-8-10-2020.csv',sep=',',header=F,
+                 na.strings=c('',' ','NA'),stringsAsFactors = F)
+personalAssistant5 <- read.csv('personal assistant-8-17-2020.csv',sep=',',header=F,
+                 na.strings=c('',' ','NA'),stringsAsFactors = F)
+
+header <- read.csv('tableJobsHeader.csv')
+```
+
+
+```{r}
+colnames(personalAssistant1) <- header$x
+colnames(personalAssistant2) <- header$x
+colnames(personalAssistant3) <- header$x
+colnames(personalAssistant4) <- header$x
+colnames(personalAssistant5) <- header$x
+
+personalAssistant1$state <- toupper(personalAssistant1$state)
+personalAssistant2$state <- toupper(personalAssistant2$state)
+personalAssistant3$state <- toupper(personalAssistant3$state)
+personalAssistant4$state <- toupper(personalAssistant4$state)
+personalAssistant5$state <- toupper(personalAssistant5$state)
+
+```
+
+
+```{r}
+unique(personalAssistant1$date_daysAgo)
+```
+
+
+```{r}
+personalAssistant1$date_daysAgo <- gsub('Just posted',0,personalAssistant1$date_daysAgo)
+personalAssistant1$date_daysAgo <- gsub('Today',0,personalAssistant1$date_daysAgo)
+
+personalAssistant2$date_daysAgo <- gsub('Just posted',0,personalAssistant2$date_daysAgo)
+personalAssistant2$date_daysAgo <- gsub('Today',0,personalAssistant2$date_daysAgo)
+
+personalAssistant3$date_daysAgo <- gsub('Just posted',0,personalAssistant3$date_daysAgo)
+personalAssistant3$date_daysAgo <- gsub('Today',0,personalAssistant3$date_daysAgo)
+
+personalAssistant4$date_daysAgo <- gsub('Just posted',0,personalAssistant4$date_daysAgo)
+personalAssistant4$date_daysAgo <- gsub('Today',0,personalAssistant4$date_daysAgo)
+
+personalAssistant5$date_daysAgo <- gsub('Just posted',0,personalAssistant5$date_daysAgo)
+personalAssistant5$date_daysAgo <- gsub('Today',0,personalAssistant5$date_daysAgo)
+
+
+```
+
+
+```{r}
+personalAssistant1$date_daysAgo <- as.numeric(paste(personalAssistant1$date_daysAgo))
+personalAssistant2$date_daysAgo <- as.numeric(paste(personalAssistant2$date_daysAgo))
+personalAssistant3$date_daysAgo <- as.numeric(paste(personalAssistant3$date_daysAgo))
+personalAssistant4$date_daysAgo <- as.numeric(paste(personalAssistant4$date_daysAgo))
+personalAssistant5$date_daysAgo <- as.numeric(paste(personalAssistant5$date_daysAgo))
+
+```
+
+
+```{r}
+personalAssistant1s <- strsplit(personalAssistant1$todaysDate,split=' ')
+personalAssistant1$wday <- as.character(lapply(personalAssistant1s,'[',1))
+personalAssistant1$month   <- as.character(lapply(personalAssistant1s,'[',2))
+personalAssistant1$dayMonth <- as.character(lapply(personalAssistant1s, '[',3))
+personalAssistant1$timeHMS  <- as.character(lapply(personalAssistant1s,'[',4))
+personalAssistant1$year <- as.character(lapply(personalAssistant1s,'[',5))
+
+personalAssistant2s <- strsplit(personalAssistant2$todaysDate,split=' ')
+personalAssistant2$wday <- as.character(lapply(personalAssistant2s,'[',1))
+personalAssistant2$month   <- as.character(lapply(personalAssistant2s,'[',2))
+personalAssistant2$dayMonth <- as.character(lapply(personalAssistant2s, '[',3))
+personalAssistant2$timeHMS  <- as.character(lapply(personalAssistant2s,'[',4))
+personalAssistant2$year <- as.character(lapply(personalAssistant2s,'[',5))
+
+personalAssistant3s <- strsplit(personalAssistant3$todaysDate,split=' ')
+personalAssistant3$wday <- as.character(lapply(personalAssistant3s,'[',1))
+personalAssistant3$month   <- as.character(lapply(personalAssistant3s,'[',2))
+personalAssistant3$dayMonth <- as.character(lapply(personalAssistant3s, '[',3))
+personalAssistant3$timeHMS  <- as.character(lapply(personalAssistant3s,'[',4))
+personalAssistant3$year <- as.character(lapply(personalAssistant3s,'[',5))
+
+personalAssistant4s <- strsplit(personalAssistant4$todaysDate,split=' ')
+personalAssistant4$wday <- as.character(lapply(personalAssistant4s,'[',1))
+personalAssistant4$month   <- as.character(lapply(personalAssistant4s,'[',2))
+personalAssistant4$dayMonth <- as.character(lapply(personalAssistant4s, '[',3))
+personalAssistant4$timeHMS  <- as.character(lapply(personalAssistant4s,'[',4))
+personalAssistant4$year <- as.character(lapply(personalAssistant4s,'[',5))
+
+personalAssistant5s <- strsplit(personalAssistant5$todaysDate,split=' ')
+personalAssistant5$wday <- as.character(lapply(personalAssistant5s,'[',1))
+personalAssistant5$month   <- as.character(lapply(personalAssistant5s,'[',2))
+personalAssistant5$dayMonth <- as.character(lapply(personalAssistant5s, '[',3))
+personalAssistant5$timeHMS  <- as.character(lapply(personalAssistant5s,'[',4))
+personalAssistant5$year <- as.character(lapply(personalAssistant5s,'[',5))
+
+```
+
+
+```{r}
+JulAug <- rbind(personalAssistant1,personalAssistant2,personalAssistant3,personalAssistant4,personalAssistant5)
+
+```
+
+
+```{r}
+JulAug$nMonth <- ifelse(JulAug$month=='Jan',1,
+                  ifelse(JulAug$month=='Feb',2,
+                  ifelse(JulAug$month=='Mar',3,
+                  ifelse(JulAug$month=='Apr',4,
+                  ifelse(JulAug$month=='May',5,
+                  ifelse(JulAug$month=='Jun',6,
+                  ifelse(JulAug$month=='Jul',7,
+                  ifelse(JulAug$month=='Aug',8,
+                  ifelse(JulAug$month=='Sep',9,
+                  ifelse(JulAug$month=='Oct',10,
+                  ifelse(JulAug$month=='Nov',11,
+                  ifelse(JulAug$month=='Dec',12,NA))))))))))))
+```
+
+
+```{r}
+JulAug$mdy <- paste(JulAug$nMonth,JulAug$dayMonth,JulAug$year,sep='/')
+```
+
+
+```{r}
+JulAug$mdy <- mdy(JulAug$mdy)
+JulAug$jobPosted_nDays_ago <- JulAug$mdy-JulAug$date_daysAgo
+```
+
+
+```{r}
+JulAugNot30 <- subset(JulAug, JulAug$date_daysAgo != 30)
+JulAugNot30 <- JulAugNot30[!duplicated(JulAugNot30),]
+```
+
+
+```{r}
+jobsPerStateCityDayPosted <- JulAugNot30 %>% 
+  group_by(state,city,jobPosted_nDays_ago) %>% count(jobPosted_nDays_ago)
+
+```
+
+
+```{r}
+colnames(jobsPerStateCityDayPosted)[3:4] <- c('datePosted','personalAssistant_jobsPosted')
+```
+
+
+```{r}
+write.csv(JulAugNot30,'personalAssistant_JulAugNot30.csv',row.names=F)
+write.csv(jobsPerStateCityDayPosted,'personalAssistant_jobsPostedDateCityState.csv',
+          row.names=F)
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+

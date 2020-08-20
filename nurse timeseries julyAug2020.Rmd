@@ -1,0 +1,209 @@
+---
+title: "LMT time series July 20-Aug 17 2020"
+author: "Janis Corona"
+date: "8/19/2020"
+output: html_document
+---
+
+
+
+```{r}
+library(dplyr)
+library(lubridate)
+```
+
+
+```{r}
+nurse1 <- read.csv('nurse-7-20-2020.csv',sep=',',header=F,
+                 na.strings=c('',' ','NA'),stringsAsFactors = F)
+
+nurse2 <- read.csv('nurse-7-27-2020.csv',sep=',',header=F,
+                 na.strings=c('',' ','NA'),stringsAsFactors = F)
+# nurse3 <- read.csv('nurse-8-3-2020.csv',sep=',',header=F,
+#                  na.strings=c('',' ','NA'),stringsAsFactors = F)
+nurse4 <- read.csv('nurse-8-10-2020.csv',sep=',',header=F,
+                 na.strings=c('',' ','NA'),stringsAsFactors = F)
+nurse5 <- read.csv('nurse-8-17-2020.csv',sep=',',header=F,
+                 na.strings=c('',' ','NA'),stringsAsFactors = F)
+
+header <- read.csv('tableJobsHeader.csv')
+```
+
+
+```{r}
+colnames(nurse1) <- header$x
+colnames(nurse2) <- header$x
+#colnames(nurse3) <- header$x
+colnames(nurse4) <- header$x
+colnames(nurse5) <- header$x
+
+nurse1$state <- toupper(nurse1$state)
+nurse2$state <- toupper(nurse2$state)
+#nurse3$state <- toupper(nurse3$state)
+nurse4$state <- toupper(nurse4$state)
+nurse5$state <- toupper(nurse5$state)
+
+```
+
+
+```{r}
+unique(nurse1$date_daysAgo)
+```
+
+
+```{r}
+nurse1$date_daysAgo <- gsub('Just posted',0,nurse1$date_daysAgo)
+nurse1$date_daysAgo <- gsub('Today',0,nurse1$date_daysAgo)
+
+nurse2$date_daysAgo <- gsub('Just posted',0,nurse2$date_daysAgo)
+nurse2$date_daysAgo <- gsub('Today',0,nurse2$date_daysAgo)
+
+# nurse3$date_daysAgo <- gsub('Just posted',0,nurse3$date_daysAgo)
+# nurse3$date_daysAgo <- gsub('Today',0,nurse3$date_daysAgo)
+
+nurse4$date_daysAgo <- gsub('Just posted',0,nurse4$date_daysAgo)
+nurse4$date_daysAgo <- gsub('Today',0,nurse4$date_daysAgo)
+
+nurse5$date_daysAgo <- gsub('Just posted',0,nurse5$date_daysAgo)
+nurse5$date_daysAgo <- gsub('Today',0,nurse5$date_daysAgo)
+
+
+```
+
+
+```{r}
+nurse1$date_daysAgo <- as.numeric(paste(nurse1$date_daysAgo))
+nurse2$date_daysAgo <- as.numeric(paste(nurse2$date_daysAgo))
+# nurse3$date_daysAgo <- as.numeric(paste(nurse3$date_daysAgo))
+nurse4$date_daysAgo <- as.numeric(paste(nurse4$date_daysAgo))
+nurse5$date_daysAgo <- as.numeric(paste(nurse5$date_daysAgo))
+
+```
+
+
+```{r}
+nurse1s <- strsplit(nurse1$todaysDate,split=' ')
+nurse1$wday <- as.character(lapply(nurse1s,'[',1))
+nurse1$month   <- as.character(lapply(nurse1s,'[',2))
+nurse1$dayMonth <- as.character(lapply(nurse1s, '[',3))
+nurse1$timeHMS  <- as.character(lapply(nurse1s,'[',4))
+nurse1$year <- as.character(lapply(nurse1s,'[',5))
+
+nurse2s <- strsplit(nurse2$todaysDate,split=' ')
+nurse2$wday <- as.character(lapply(nurse2s,'[',1))
+nurse2$month   <- as.character(lapply(nurse2s,'[',2))
+nurse2$dayMonth <- as.character(lapply(nurse2s, '[',3))
+nurse2$timeHMS  <- as.character(lapply(nurse2s,'[',4))
+nurse2$year <- as.character(lapply(nurse2s,'[',5))
+
+# nurse3s <- strsplit(nurse3$todaysDate,split=' ')
+# nurse3$wday <- as.character(lapply(nurse3s,'[',1))
+# nurse3$month   <- as.character(lapply(nurse3s,'[',2))
+# nurse3$dayMonth <- as.character(lapply(nurse3s, '[',3))
+# nurse3$timeHMS  <- as.character(lapply(nurse3s,'[',4))
+# nurse3$year <- as.character(lapply(nurse3s,'[',5))
+
+nurse4s <- strsplit(nurse4$todaysDate,split=' ')
+nurse4$wday <- as.character(lapply(nurse4s,'[',1))
+nurse4$month   <- as.character(lapply(nurse4s,'[',2))
+nurse4$dayMonth <- as.character(lapply(nurse4s, '[',3))
+nurse4$timeHMS  <- as.character(lapply(nurse4s,'[',4))
+nurse4$year <- as.character(lapply(nurse4s,'[',5))
+
+nurse5s <- strsplit(nurse5$todaysDate,split=' ')
+nurse5$wday <- as.character(lapply(nurse5s,'[',1))
+nurse5$month   <- as.character(lapply(nurse5s,'[',2))
+nurse5$dayMonth <- as.character(lapply(nurse5s, '[',3))
+nurse5$timeHMS  <- as.character(lapply(nurse5s,'[',4))
+nurse5$year <- as.character(lapply(nurse5s,'[',5))
+
+```
+
+
+```{r}
+JulAug <- rbind(nurse1,nurse2,nurse4,nurse5)
+
+```
+
+
+```{r}
+JulAug$nMonth <- ifelse(JulAug$month=='Jan',1,
+                  ifelse(JulAug$month=='Feb',2,
+                  ifelse(JulAug$month=='Mar',3,
+                  ifelse(JulAug$month=='Apr',4,
+                  ifelse(JulAug$month=='May',5,
+                  ifelse(JulAug$month=='Jun',6,
+                  ifelse(JulAug$month=='Jul',7,
+                  ifelse(JulAug$month=='Aug',8,
+                  ifelse(JulAug$month=='Sep',9,
+                  ifelse(JulAug$month=='Oct',10,
+                  ifelse(JulAug$month=='Nov',11,
+                  ifelse(JulAug$month=='Dec',12,NA))))))))))))
+```
+
+
+```{r}
+JulAug$mdy <- paste(JulAug$nMonth,JulAug$dayMonth,JulAug$year,sep='/')
+```
+
+
+```{r}
+JulAug$mdy <- mdy(JulAug$mdy)
+JulAug$jobPosted_nDays_ago <- JulAug$mdy-JulAug$date_daysAgo
+```
+
+
+```{r}
+JulAugNot30 <- subset(JulAug, JulAug$date_daysAgo != 30)
+JulAugNot30 <- JulAugNot30[!duplicated(JulAugNot30),]
+```
+
+
+```{r}
+jobsPerStateCityDayPosted <- JulAugNot30 %>% 
+  group_by(state,city,jobPosted_nDays_ago) %>% count(jobPosted_nDays_ago)
+
+```
+
+
+```{r}
+colnames(jobsPerStateCityDayPosted)[3:4] <- c('datePosted','nurse_jobsPosted')
+```
+
+
+```{r}
+write.csv(JulAugNot30,'nurse_JulAugNot30.csv',row.names=F)
+write.csv(jobsPerStateCityDayPosted,'nurse_jobsPostedDateCityState.csv',
+          row.names=F)
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+

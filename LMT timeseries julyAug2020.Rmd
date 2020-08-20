@@ -1,0 +1,269 @@
+---
+title: "LMT time series July 20-Aug 17 2020"
+author: "Janis Corona"
+date: "8/19/2020"
+output: html_document
+---
+
+
+
+```{r}
+library(dplyr)
+library(lubridate)
+```
+
+
+```{r}
+lmt1 <- read.csv('LMT-7-20-2020.csv',sep=',',header=F,
+                 na.strings=c('',' ','NA'),stringsAsFactors = F)
+
+lmt2 <- read.csv('LMT-7-27-2020.csv',sep=',',header=F,
+                 na.strings=c('',' ','NA'),stringsAsFactors = F)
+lmt3 <- read.csv('LMT-8-3-2020.csv',sep=',',header=F,
+                 na.strings=c('',' ','NA'),stringsAsFactors = F)
+lmt4 <- read.csv('LMT-8-10-2020.csv',sep=',',header=F,
+                 na.strings=c('',' ','NA'),stringsAsFactors = F)
+lmt5 <- read.csv('LMT-8-17-2020.csv',sep=',',header=F,
+                 na.strings=c('',' ','NA'),stringsAsFactors = F)
+
+header <- read.csv('tableJobsHeader.csv')
+```
+
+
+```{r}
+colnames(lmt1) <- header$x
+colnames(lmt2) <- header$x
+colnames(lmt3) <- header$x
+colnames(lmt4) <- header$x
+colnames(lmt5) <- header$x
+
+lmt1$state <- toupper(lmt1$state)
+lmt2$state <- toupper(lmt2$state)
+lmt3$state <- toupper(lmt3$state)
+lmt4$state <- toupper(lmt4$state)
+lmt5$state <- toupper(lmt5$state)
+
+```
+
+
+```{r}
+unique(lmt1$date_daysAgo)
+```
+
+
+```{r}
+lmt1$date_daysAgo <- gsub('Just posted',0,lmt1$date_daysAgo)
+lmt1$date_daysAgo <- gsub('Today',0,lmt1$date_daysAgo)
+
+lmt2$date_daysAgo <- gsub('Just posted',0,lmt2$date_daysAgo)
+lmt2$date_daysAgo <- gsub('Today',0,lmt2$date_daysAgo)
+
+lmt3$date_daysAgo <- gsub('Just posted',0,lmt3$date_daysAgo)
+lmt3$date_daysAgo <- gsub('Today',0,lmt3$date_daysAgo)
+
+lmt4$date_daysAgo <- gsub('Just posted',0,lmt4$date_daysAgo)
+lmt4$date_daysAgo <- gsub('Today',0,lmt4$date_daysAgo)
+
+lmt5$date_daysAgo <- gsub('Just posted',0,lmt5$date_daysAgo)
+lmt5$date_daysAgo <- gsub('Today',0,lmt5$date_daysAgo)
+
+
+```
+
+
+```{r}
+lmt1$date_daysAgo <- as.numeric(paste(lmt1$date_daysAgo))
+lmt2$date_daysAgo <- as.numeric(paste(lmt2$date_daysAgo))
+lmt3$date_daysAgo <- as.numeric(paste(lmt3$date_daysAgo))
+lmt4$date_daysAgo <- as.numeric(paste(lmt4$date_daysAgo))
+lmt5$date_daysAgo <- as.numeric(paste(lmt5$date_daysAgo))
+
+```
+
+
+```{r}
+lmt1s <- strsplit(lmt1$todaysDate,split=' ')
+lmt1$wday <- as.character(lapply(lmt1s,'[',1))
+lmt1$month   <- as.character(lapply(lmt1s,'[',2))
+lmt1$dayMonth <- as.character(lapply(lmt1s, '[',3))
+lmt1$timeHMS  <- as.character(lapply(lmt1s,'[',4))
+lmt1$year <- as.character(lapply(lmt1s,'[',5))
+
+lmt2s <- strsplit(lmt2$todaysDate,split=' ')
+lmt2$wday <- as.character(lapply(lmt2s,'[',1))
+lmt2$month   <- as.character(lapply(lmt2s,'[',2))
+lmt2$dayMonth <- as.character(lapply(lmt2s, '[',3))
+lmt2$timeHMS  <- as.character(lapply(lmt2s,'[',4))
+lmt2$year <- as.character(lapply(lmt2s,'[',5))
+
+lmt3s <- strsplit(lmt3$todaysDate,split=' ')
+lmt3$wday <- as.character(lapply(lmt3s,'[',1))
+lmt3$month   <- as.character(lapply(lmt3s,'[',2))
+lmt3$dayMonth <- as.character(lapply(lmt3s, '[',3))
+lmt3$timeHMS  <- as.character(lapply(lmt3s,'[',4))
+lmt3$year <- as.character(lapply(lmt3s,'[',5))
+
+lmt4s <- strsplit(lmt4$todaysDate,split=' ')
+lmt4$wday <- as.character(lapply(lmt4s,'[',1))
+lmt4$month   <- as.character(lapply(lmt4s,'[',2))
+lmt4$dayMonth <- as.character(lapply(lmt4s, '[',3))
+lmt4$timeHMS  <- as.character(lapply(lmt4s,'[',4))
+lmt4$year <- as.character(lapply(lmt4s,'[',5))
+
+lmt5s <- strsplit(lmt5$todaysDate,split=' ')
+lmt5$wday <- as.character(lapply(lmt5s,'[',1))
+lmt5$month   <- as.character(lapply(lmt5s,'[',2))
+lmt5$dayMonth <- as.character(lapply(lmt5s, '[',3))
+lmt5$timeHMS  <- as.character(lapply(lmt5s,'[',4))
+lmt5$year <- as.character(lapply(lmt5s,'[',5))
+
+```
+
+
+```{r}
+JulAug <- rbind(lmt1,lmt2,lmt3,lmt4,lmt5)
+
+```
+
+
+```{r}
+JulAug$nMonth <- ifelse(JulAug$month=='Jan',1,
+                  ifelse(JulAug$month=='Feb',2,
+                  ifelse(JulAug$month=='Mar',3,
+                  ifelse(JulAug$month=='Apr',4,
+                  ifelse(JulAug$month=='May',5,
+                  ifelse(JulAug$month=='Jun',6,
+                  ifelse(JulAug$month=='Jul',7,
+                  ifelse(JulAug$month=='Aug',8,
+                  ifelse(JulAug$month=='Sep',9,
+                  ifelse(JulAug$month=='Oct',10,
+                  ifelse(JulAug$month=='Nov',11,
+                  ifelse(JulAug$month=='Dec',12,NA))))))))))))
+```
+
+
+```{r}
+JulAug$mdy <- paste(JulAug$nMonth,JulAug$dayMonth,JulAug$year,sep='/')
+```
+
+
+```{r}
+JulAug$mdy <- mdy(JulAug$mdy)
+JulAug$jobPosted_nDays_ago <- JulAug$mdy-JulAug$date_daysAgo
+```
+
+
+```{r}
+JulAugNot30 <- subset(JulAug, JulAug$date_daysAgo != 30)
+JulAugNot30 <- JulAugNot30[!duplicated(JulAugNot30),]
+```
+
+
+```{r}
+jobsPerStateCityDayPosted <- JulAugNot30 %>% 
+  group_by(state,city,jobPosted_nDays_ago) %>% count(jobPosted_nDays_ago)
+
+```
+
+
+```{r}
+colnames(jobsPerStateCityDayPosted)[3:4] <- c('datePosted','LMT_jobsPosted')
+```
+
+
+```{r}
+write.csv(JulAugNot30,'JulAugNot30.csv',row.names=F)
+write.csv(jobsPerStateCityDayPosted,'LMT_jobsPostedDateCityState.csv',
+          row.names=F)
+```
+
+***
+
+
+Lets read in the available information on nannys, nurses (Aug 3, 2020 missed getting pulled from web that week), personal assistants, security, and warehouse jobs available in the US.
+```{r}
+
+nannyListings <- read.csv(
+  './alternate jobs/nanny_jobsPostedDateCityState.csv',
+                          sep=',',header=T, na.strings=c('',' ','NA'),
+                          stringsAsFactors = T)
+
+#reread in the file if starting at ***
+lmtListings <- read.csv(
+  'LMT_jobsPostedDateCityState.csv',
+                          sep=',',header=T, na.strings=c('',' ','NA'),
+                          stringsAsFactors = T)
+
+nurseListings <- read.csv(
+  './alternate jobs/nurse_jobsPostedDateCityState.csv',
+                          sep=',',header=T, na.strings=c('',' ','NA'),
+                          stringsAsFactors = T)
+
+personalAssistantListings <- read.csv(
+  './alternate jobs/personalAssistant_jobsPostedDateCityState.csv',
+                          sep=',',header=T, na.strings=c('',' ','NA'),
+                          stringsAsFactors = T)
+
+securityListings <- read.csv(
+  './alternate jobs/security_jobsPostedDateCityState.csv',
+                          sep=',',header=T, na.strings=c('',' ','NA'),
+                          stringsAsFactors = T)
+
+warehouseListings <- read.csv(
+  './alternate jobs/warehouse_jobsPostedDateCityState.csv',
+                          sep=',',header=T, na.strings=c('',' ','NA'),
+                          stringsAsFactors = T)
+
+
+```
+
+
+```{r}
+colnames(lmtListings)[4] <- 'jobsPosted'
+lmtListings$job <- 'LMT'
+
+colnames(nannyListings)[4] <- 'jobsPosted'
+nannyListings$job <- 'nanny'
+
+colnames(nurseListings)[4] <- 'jobsPosted'
+nurseListings$job <- 'nurse'
+
+colnames(personalAssistantListings)[4] <- 'jobsPosted'
+personalAssistantListings$job <- 'personal assistant'
+
+colnames(securityListings)[4] <- 'jobsPosted'
+securityListings$job <- 'security'
+
+colnames(warehouseListings)[4] <- 'jobsPosted'
+warehouseListings$job <- 'warehouse'
+
+
+```
+
+```{r}
+allJobPostings <- rbind(lmtListings,nannyListings,
+                        nurseListings, personalAssistantListings,
+                        securityListings,warehouseListings)
+allJobPostings$job <- as.factor(paste(allJobPostings$job))
+```
+
+
+```{r}
+write.csv(allJobPostings,'allJobsPosted.csv',row.names=F)
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
