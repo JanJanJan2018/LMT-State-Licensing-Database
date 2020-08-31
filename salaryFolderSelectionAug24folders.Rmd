@@ -1,0 +1,1257 @@
+---
+title: "salary folder selection"
+author: "Janis Corona"
+date: "8/30/2020"
+output: html_document
+---
+
+
+
+
+```{r}
+setwd('./yoga instructor')
+yoga_salaries <- list.files(pattern='salaries.csv')
+dim(yoga_salaries)
+
+
+if (file.exists('yoga.csv')){
+  file.remove('yoga.csv')
+}
+
+for (i in yoga_salaries){
+  name <- gsub('yoga instructor_','',i)
+  name2 <- gsub('_salaries.csv','',name)
+  job <- gsub('_.*$','',i,perl=TRUE)
+  
+  yoga <- read.csv(i,sep=',',header=T,na.strings=c('',' ','NA'),
+                   stringsAsFactors = F)
+  yoga$cityState <- rep(name2,length(yoga$salary))
+  yoga$job <- rep(job,length(yoga$salary))
+  
+  names <- data.frame(names=colnames(yoga)) 
+  write.csv(names,'salaryFeatureNames.csv',row.names=F)
+  
+  write.table(yoga,'yoga.csv',sep=',',col.names=FALSE,
+              row.names=FALSE,
+              append=TRUE)
+}
+
+yoga <- read.csv('yoga.csv',sep=',', header=F)
+salaryNames <- read.csv('salaryFeatureNames.csv')
+colnames(yoga) <- salaryNames$names
+
+
+
+setwd('../')
+
+
+
+```
+
+```{r}
+setwd('./warehouse')
+warehouse_salaries <- list.files(pattern='salaries.csv')
+dim(warehouse_salaries)
+
+
+if (file.exists('warehouse.csv')){
+  file.remove('warehouse.csv')
+}
+
+for (i in warehouse_salaries){
+  name <- gsub('warehouse_','',i)
+  name2 <- gsub('_salaries.csv','',name)
+  job <- gsub('_.*$','',i,perl=TRUE)
+  
+  warehouse <- read.csv(i,sep=',',header=T,na.strings=c('',' ','NA'),
+                   stringsAsFactors = F)
+  warehouse$cityState <- rep(name2,length(warehouse$salary))
+  warehouse$job <- rep(job,length(warehouse$salary))
+  
+  #names <- data.frame(names=colnames(warehouse)) 
+  #write.csv(names,'salaryFeatureNames.csv',row.names=F)
+  
+  write.table(warehouse,'warehouse.csv',sep=',',col.names=FALSE,
+              row.names=FALSE,
+              append=TRUE)
+}
+
+warehouse <- read.csv('warehouse.csv',sep=',', header=F)
+#salaryNames <- read.csv('salaryFeatureNames.csv')
+colnames(warehouse) <- salaryNames$names
+
+
+
+setwd('../')
+```
+
+```{r}
+setwd('./tutor')
+tutor_salaries <- list.files(pattern='salaries.csv')
+dim(tutor_salaries)
+
+
+if (file.exists('tutor.csv')){
+  file.remove('tutor.csv')
+}
+
+for (i in tutor_salaries){
+  name <- gsub('tutor_','',i)
+  name2 <- gsub('_salaries.csv','',name)
+  job <- gsub('_.*$','',i,perl=TRUE)
+  
+  tutor <- read.csv(i,sep=',',header=T,na.strings=c('',' ','NA'),
+                   stringsAsFactors = F)
+  tutor$cityState <- rep(name2,length(tutor$salary))
+  tutor$job <- rep(job,length(tutor$salary))
+  
+  #names <- data.frame(names=colnames(tutor)) 
+  #write.csv(names,'salaryFeatureNames.csv',row.names=F)
+  
+  write.table(tutor,'tutor.csv',sep=',',col.names=FALSE,
+              row.names=FALSE,
+              append=TRUE)
+}
+
+tutor <- read.csv('tutor.csv',sep=',', header=F)
+#salaryNames <- read.csv('salaryFeatureNames.csv')
+colnames(tutor) <- salaryNames$names
+
+
+
+setwd('../')
+```
+
+```{r}
+setwd('./security')
+security_salaries <- list.files(pattern='salaries.csv')
+dim(security_salaries)
+
+
+if (file.exists('Security.csv')){
+  file.remove('Security.csv')
+}
+
+for (i in security_salaries){
+  name <- gsub('security_','',i)
+  name2 <- gsub('_salaries.csv','',name)
+  job <- gsub('_.*$','',i,perl=TRUE)
+  
+  security <- read.csv(i,sep=',',header=T,na.strings=c('',' ','NA'),
+                   stringsAsFactors = F)
+  security$cityState <- rep(name2,length(security$salary))
+  security$job <- rep(job,length(security$salary))
+  
+  #names <- data.frame(names=colnames(security)) 
+ # write.csv(names,'salaryFeatureNames.csv',row.names=F)
+  
+  write.table(security,'security.csv',sep=',',col.names=FALSE,
+              row.names=FALSE,
+              append=TRUE)
+}
+
+security <- read.csv('Security.csv',sep=',', header=F)
+#salaryNames <- read.csv('salaryFeatureNames.csv')
+colnames(security) <- salaryNames$names
+
+
+
+setwd('../')
+```
+
+```{r}
+setwd('./remote')
+remote_salaries <- list.files(pattern='salaries.csv')
+dim(remote_salaries)
+
+
+if (file.exists('remote.csv')){
+  file.remove('remote.csv')
+}
+
+for (i in remote_salaries){
+  name <- gsub('remote_','',i)
+  name2 <- gsub('_salaries.csv','',name)
+  job <- gsub('_.*$','',i,perl=TRUE)
+  
+  remote <- read.csv(i,sep=',',header=T,na.strings=c('',' ','NA'),
+                   stringsAsFactors = F)
+  remote$cityState <- rep(name2,length(remote$salary))
+  remote$job <- rep(job,length(remote$salary))
+  
+  #names <- data.frame(names=colnames(remote)) 
+ # write.csv(names,'salaryFeatureNames.csv',row.names=F)
+  
+  write.table(remote,'remote.csv',sep=',',col.names=FALSE,
+              row.names=FALSE,
+              append=TRUE)
+}
+
+remote <- read.csv('remote.csv',sep=',', header=F)
+#salaryNames <- read.csv('salaryFeatureNames.csv')
+colnames(remote) <- salaryNames$names
+
+
+
+setwd('../')
+```
+
+```{r}
+setwd('./pilates instructor')
+pilates_salaries <- list.files(pattern='salaries.csv')
+dim(pilates_salaries)
+
+
+if (file.exists('pilates_instructor.csv')){
+  file.remove('pilates_instructor.csv')
+}
+
+for (i in pilates_salaries){
+  name <- gsub('pilates instructor_','',i)
+  name2 <- gsub('_salaries.csv','',name)
+  job <- gsub('_.*$','',i,perl=TRUE)
+  
+  pilates_instructor <- read.csv(i,sep=',',header=T,na.strings=c('',' ','NA'),
+                   stringsAsFactors = F)
+  pilates_instructor$cityState <- rep(name2,length(pilates_instructor$salary))
+  pilates_instructor$job <- rep(job,length(pilates_instructor$salary))
+  
+  #names <- data.frame(names=colnames(pilates_instructor)) 
+ # write.csv(names,'salaryFeatureNames.csv',row.names=F)
+  
+  write.table(pilates_instructor,'pilates_instructor.csv',sep=',',col.names=FALSE,
+              row.names=FALSE,
+              append=TRUE)
+}
+
+pilates_instructor <- read.csv('pilates_instructor.csv',sep=',', header=F)
+#salaryNames <- read.csv('salaryFeatureNames.csv')
+colnames(pilates_instructor) <- salaryNames$names
+
+
+
+setwd('../')
+```
+
+```{r}
+setwd('./physical therapist')
+physical_therapist_salaries <- list.files(pattern='salaries.csv')
+dim(physical_therapist_salaries)
+
+
+if (file.exists('physical_therapist.csv')){
+  file.remove('physical_therapist.csv')
+}
+
+for (i in physical_therapist_salaries){
+  name <- gsub('physical therapist_','',i)
+  name2 <- gsub('_salaries.csv','',name)
+  job <- gsub('_.*$','',i,perl=TRUE)
+  
+  physical_therapist <- read.csv(i,sep=',',header=T,na.strings=c('',' ','NA'),
+                   stringsAsFactors = F)
+  physical_therapist$cityState <- rep(name2,length(physical_therapist$salary))
+  physical_therapist$job <- rep(job,length(physical_therapist$salary))
+  
+  #names <- data.frame(names=colnames(physical_therapist)) 
+  #write.csv(names,'salaryFeatureNames.csv',row.names=F)
+  
+  write.table(physical_therapist,'physical_therapist.csv',sep=',',col.names=FALSE,
+              row.names=FALSE,
+              append=TRUE)
+}
+
+physical_therapist <- read.csv('physical_therapist.csv',sep=',', header=F)
+#salaryNames <- read.csv('salaryFeatureNames.csv')
+colnames(physical_therapist) <- salaryNames$names
+
+
+
+setwd('../')
+```
+
+```{r}
+setwd('./personal trainer')
+personal_trainer_salaries <- list.files(pattern='salaries.csv')
+dim(personal_trainer_salaries)
+
+
+
+if (file.exists('personal_trainer.csv')){
+  file.remove('personal_trainer.csv')
+}
+
+for (i in personal_trainer_salaries){
+  name <- gsub('personal trainer_','',i)
+  name2 <- gsub('_salaries.csv','',name)
+  job <- gsub('_.*$','',i,perl=TRUE)
+  
+  personal_trainer <- read.csv(i,sep=',',header=T,na.strings=c('',' ','NA'),
+                   stringsAsFactors = F)
+  personal_trainer$cityState <- rep(name2,length(personal_trainer$salary))
+  personal_trainer$job <- rep(job,length(personal_trainer$salary))
+  
+  #names <- data.frame(names=colnames(personal_trainer)) 
+ # write.csv(names,'salaryFeatureNames.csv',row.names=F)
+  
+  write.table(personal_trainer,'personal_trainer.csv',sep=',',col.names=FALSE,
+              row.names=FALSE,
+              append=TRUE)
+}
+
+personal_trainer <- read.csv('personal_trainer.csv',sep=',', header=F)
+#salaryNames <- read.csv('salaryFeatureNames.csv')
+colnames(personal_trainer) <- salaryNames$names
+
+
+
+setwd('../')
+```
+
+```{r}
+setwd('./personal assistant')
+personal_assistant_salaries <- list.files(pattern='salaries.csv')
+dim(personal_assistant_salaries)
+
+
+if (file.exists('personal_assistant.csv')){
+  file.remove('personal_assistant.csv')
+}
+
+for (i in personal_assistant_salaries){
+  name <- gsub('personal assistant_','',i)
+  name2 <- gsub('_salaries.csv','',name)
+  job <- gsub('_.*$','',i,perl=TRUE)
+  
+  personal_assistant <- read.csv(i,sep=',',header=T,na.strings=c('',' ','NA'),
+                   stringsAsFactors = F)
+  personal_assistant$cityState <- rep(name2,length(personal_assistant$salary))
+  personal_assistant$job <- rep(job,length(personal_assistant$salary))
+  
+  #names <- data.frame(names=colnames(personal_assistant)) 
+ # write.csv(names,'salaryFeatureNames.csv',row.names=F)
+  
+  write.table(personal_assistant,'personal_assistant.csv',sep=',',col.names=FALSE,
+              row.names=FALSE,
+              append=TRUE)
+}
+
+personal_assistant <- read.csv('personal_assistant.csv',sep=',', header=F)
+#salaryNames <- read.csv('salaryFeatureNames.csv')
+colnames(personal_assistant) <- salaryNames$names
+
+
+
+setwd('../')
+```
+
+```{r}
+setwd('./nurse')
+nurse_salaries <- list.files(pattern='salaries.csv')
+dim(nurse_salaries)
+
+
+if (file.exists('nurse.csv')){
+  file.remove('nurse.csv')
+}
+
+for (i in nurse_salaries){
+  name <- gsub('nurse_','',i)
+  name2 <- gsub('_salaries.csv','',name)
+  job <- gsub('_.*$','',i,perl=TRUE)
+  
+  nurse <- read.csv(i,sep=',',header=T,na.strings=c('',' ','NA'),
+                   stringsAsFactors = F)
+  nurse$cityState <- rep(name2,length(nurse$salary))
+  nurse$job <- rep(job,length(nurse$salary))
+  
+  #names <- data.frame(names=colnames(nurse)) 
+ # write.csv(names,'salaryFeatureNames.csv',row.names=F)
+  
+  write.table(nurse,'nurse.csv',sep=',',col.names=FALSE,
+              row.names=FALSE,
+              append=TRUE)
+}
+
+nurse <- read.csv('nurse.csv',sep=',', header=F)
+#salaryNames <- read.csv('salaryFeatureNames.csv')
+colnames(nurse) <- salaryNames$names
+
+
+
+setwd('../')
+```
+
+```{r}
+setwd('./nanny')
+nanny_salaries <- list.files(pattern='salaries.csv')
+dim(nanny_salaries)
+
+
+if (file.exists('nanny.csv')){
+  file.remove('nanny.csv')
+}
+
+for (i in nanny_salaries){
+  name <- gsub('nanny_','',i)
+  name2 <- gsub('_salaries.csv','',name)
+  job <- gsub('_.*$','',i,perl=TRUE)
+  
+  nanny <- read.csv(i,sep=',',header=T,na.strings=c('',' ','NA'),
+                   stringsAsFactors = F)
+  nanny$cityState <- rep(name2,length(nanny$salary))
+  nanny$job <- rep(job,length(nanny$salary))
+  
+  #names <- data.frame(names=colnames(nanny)) 
+ # write.csv(names,'salaryFeatureNames.csv',row.names=F)
+  
+  write.table(nanny,'nanny.csv',sep=',',col.names=FALSE,
+              row.names=FALSE,
+              append=TRUE)
+}
+
+nanny <- read.csv('nanny.csv',sep=',', header=F)
+#salaryNames <- read.csv('salaryFeatureNames.csv')
+colnames(nanny) <- salaryNames$names
+
+
+
+setwd('../')
+```
+
+```{r}
+setwd('./medical spa technician')
+med_spa_tech_salaries <- list.files(pattern='salaries.csv')
+dim(med_spa_tech_salaries)
+
+
+
+if (file.exists('medi_spa_tech.csv')){
+  file.remove('medi_spa_tech.csv')
+}
+
+for (i in med_spa_tech_salaries){
+  name <- gsub('medical spa technician_','',i)
+  name2 <- gsub('_salaries.csv','',name)
+  job <- gsub('_.*$','',i,perl=TRUE)
+  
+  medi_spa_tech <- read.csv(i,sep=',',header=T,na.strings=c('',' ','NA'),
+                   stringsAsFactors = F)
+  medi_spa_tech$cityState <- rep(name2,length(medi_spa_tech$salary))
+  medi_spa_tech$job <- rep(job,length(medi_spa_tech$salary))
+  
+  #names <- data.frame(names=colnames(medi_spa_tech)) 
+ # write.csv(names,'salaryFeatureNames.csv',row.names=F)
+  
+  write.table(medi_spa_tech,'medi_spa_tech.csv',sep=',',col.names=FALSE,
+              row.names=FALSE,
+              append=TRUE)
+}
+
+medi_spa_tech <- read.csv('medi_spa_tech.csv',sep=',', header=F)
+#salaryNames <- read.csv('salaryFeatureNames.csv')
+colnames(medi_spa_tech) <- salaryNames$names
+
+
+
+setwd('../')
+```
+
+```{r}
+setwd('./medical doctor')
+medical_dr_salaries <- list.files(pattern='salaries.csv')
+dim(medical_dr_salaries)
+
+
+if (file.exists('medical_dr.csv')){
+  file.remove('medical_dr.csv')
+}
+
+for (i in medical_dr_salaries){
+  name <- gsub('medical doctor_','',i)
+  name2 <- gsub('_salaries.csv','',name)
+  job <- gsub('_.*$','',i,perl=TRUE)
+  
+  medical_dr <- read.csv(i,sep=',',header=T,na.strings=c('',' ','NA'),
+                   stringsAsFactors = F)
+  medical_dr$cityState <- rep(name2,length(medical_dr$salary))
+  medical_dr$job <- rep(job,length(medical_dr$salary))
+  
+  #names <- data.frame(names=colnames(medical_dr)) 
+  #write.csv(names,'salaryFeatureNames.csv',row.names=F)
+  
+  write.table(medical_dr,'medical_dr.csv',sep=',',col.names=FALSE,
+              row.names=FALSE,
+              append=TRUE)
+}
+
+medical_dr <- read.csv('medical_dr.csv',sep=',', header=F)
+#salaryNames <- read.csv('salaryFeatureNames.csv')
+colnames(medical_dr) <- salaryNames$names
+
+
+
+setwd('../')
+```
+
+```{r}
+setwd('./LMT')
+LMT_salaries <- list.files(pattern='salaries.csv')
+dim(LMT_salaries)
+
+
+
+if (file.exists('LMT.csv')){
+  file.remove('LMT.csv')
+}
+
+for (i in LMT_salaries){
+  name <- gsub('licensed massage therapist_','',i)
+  name2 <- gsub('_salaries.csv','',name)
+  job <- gsub('_.*$','',i,perl=TRUE)
+  
+  LMT <- read.csv(i,sep=',',header=T,na.strings=c('',' ','NA'),
+                   stringsAsFactors = F)
+  LMT$cityState <- rep(name2,length(LMT$salary))
+  LMT$job <- rep(job,length(LMT$salary))
+  
+  #names <- data.frame(names=colnames(LMT)) 
+ # write.csv(names,'salaryFeatureNames.csv',row.names=F)
+  
+  write.table(LMT,'LMT.csv',sep=',',col.names=FALSE,
+              row.names=FALSE,
+              append=TRUE)
+}
+
+LMT <- read.csv('LMT.csv',sep=',', header=F)
+#salaryNames <- read.csv('salaryFeatureNames.csv')
+colnames(LMT) <- salaryNames$names
+
+
+
+setwd('../')
+```
+
+```{r}
+setwd('./house cleaner')
+house_cleaner_salaries <- list.files(pattern='salaries.csv')
+dim(house_cleaner_salaries)
+
+
+
+if (file.exists('house_cleaner.csv')){
+  file.remove('house_cleaner.csv')
+}
+
+for (i in house_cleaner_salaries){
+  name <- gsub('house cleaner_','',i)
+  name2 <- gsub('_salaries.csv','',name)
+  job <- gsub('_.*$','',i,perl=TRUE)
+  
+  house_cleaner <- read.csv(i,sep=',',header=T,na.strings=c('',' ','NA'),
+                   stringsAsFactors = F)
+  house_cleaner$cityState <- rep(name2,length(house_cleaner$salary))
+  house_cleaner$job <- rep(job,length(house_cleaner$salary))
+  
+  #names <- data.frame(names=colnames(house_cleaner)) 
+  #write.csv(names,'salaryFeatureNames.csv',row.names=F)
+  
+  write.table(house_cleaner,'house_cleaner.csv',sep=',',col.names=FALSE,
+              row.names=FALSE,
+              append=TRUE)
+}
+
+house_cleaner <- read.csv('house_cleaner.csv',sep=',', header=F)
+#salaryNames <- read.csv('salaryFeatureNames.csv')
+colnames(house_cleaner) <- salaryNames$names
+
+
+
+setwd('../')
+```
+
+```{r}
+setwd('./esthetician')
+esthetician_salaries <- list.files(pattern='salaries.csv')
+dim(esthetician_salaries)
+
+
+if (file.exists('esthetician.csv')){
+  file.remove('esthetician.csv')
+}
+
+for (i in esthetician_salaries){
+  name <- gsub('esthetician_','',i)
+  name2 <- gsub('_salaries.csv','',name)
+  job <- gsub('_.*$','',i,perl=TRUE)
+  
+  esthetician <- read.csv(i,sep=',',header=T,na.strings=c('',' ','NA'),
+                   stringsAsFactors = F)
+  esthetician$cityState <- rep(name2,length(esthetician$salary))
+  esthetician$job <- rep(job,length(esthetician$salary))
+  
+  #names <- data.frame(names=colnames(esthetician)) 
+ # write.csv(names,'salaryFeatureNames.csv',row.names=F)
+  
+  write.table(esthetician,'esthetician.csv',sep=',',col.names=FALSE,
+              row.names=FALSE,
+              append=TRUE)
+}
+
+esthetician <- read.csv('esthetician.csv',sep=',', header=F)
+#salaryNames <- read.csv('salaryFeatureNames.csv')
+colnames(esthetician) <- salaryNames$names
+
+
+
+setwd('../')
+```
+
+```{r}
+setwd('./data scientist')
+data_scientist_salaries <- list.files(pattern='salaries.csv')
+dim(data_scientist_salaries)
+
+
+
+if (file.exists('data_scientist.csv')){
+  file.remove('data_scientist.csv')
+}
+
+for (i in data_scientist_salaries){
+  name <- gsub('data scientist_','',i)
+  name2 <- gsub('_salaries.csv','',name)
+  job <- gsub('_.*$','',i,perl=TRUE)
+  
+  data_scientist <- read.csv(i,sep=',',header=T,na.strings=c('',' ','NA'),
+                   stringsAsFactors = F)
+  data_scientist$cityState <- rep(name2,length(data_scientist$salary))
+  data_scientist$job <- rep(job,length(data_scientist$salary))
+  
+  #names <- data.frame(names=colnames(data_scientist)) 
+  #write.csv(names,'salaryFeatureNames.csv',row.names=F)
+  
+  write.table(data_scientist,'data_scientist.csv',sep=',',col.names=FALSE,
+              row.names=FALSE,
+              append=TRUE)
+}
+
+data_scientist <- read.csv('data_scientist.csv',sep=',', header=F)
+#salaryNames <- read.csv('salaryFeatureNames.csv')
+colnames(data_scientist) <- salaryNames$names
+
+
+
+setwd('../')
+```
+
+```{r}
+setwd('./data analyst entry level')
+data_analyst_entry_level_salaries <- list.files(pattern='salaries.csv')
+dim(data_analyst_entry_level_salaries)
+
+
+if (file.exists('data_analyst_entry_level.csv')){
+  file.remove('data_analyst_entry_level.csv')
+}
+
+for (i in data_analyst_entry_level_salaries){
+  name <- gsub('data analyst entry level_','',i)
+  name2 <- gsub('_salaries.csv','',name)
+  job <- gsub('_.*$','',i,perl=TRUE)
+  
+  data_analyst_entry_level <- read.csv(i,sep=',',header=T,na.strings=c('',' ','NA'),
+                   stringsAsFactors = F)
+  data_analyst_entry_level$cityState <- rep(name2,length(data_analyst_entry_level$salary))
+  data_analyst_entry_level$job <- rep(job,length(data_analyst_entry_level$salary))
+  
+  #names <- data.frame(names=colnames(data_analyst_entry_level)) 
+  #write.csv(names,'salaryFeatureNames.csv',row.names=F)
+  
+  write.table(data_analyst_entry_level,'data_analyst_entry_level.csv',sep=',',col.names=FALSE,
+              row.names=FALSE,
+              append=TRUE)
+}
+
+data_analyst_entry_level <- read.csv('data_analyst_entry_level.csv',sep=',', header=F)
+#salaryNames <- read.csv('salaryFeatureNames.csv')
+colnames(data_analyst_entry_level) <- salaryNames$names
+
+
+
+setwd('../')
+```
+
+```{r}
+setwd('./data analyst')
+data_analyst_salaries <- list.files(pattern='salaries.csv')
+dim(data_analyst_salaries)
+
+
+if (file.exists('data_analyst.csv')){
+  file.remove('data_analyst.csv')
+}
+
+for (i in data_analyst_salaries){
+  name <- gsub('data analyst_','',i)
+  name2 <- gsub('_salaries.csv','',name)
+  job <- gsub('_.*$','',i,perl=TRUE)
+  
+  data_analyst <- read.csv(i,sep=',',header=T,na.strings=c('',' ','NA'),
+                   stringsAsFactors = F)
+  data_analyst$cityState <- rep(name2,length(data_analyst$salary))
+  data_analyst$job <- rep(job,length(data_analyst$salary))
+  
+  #names <- data.frame(names=colnames(data_analyst)) 
+  #write.csv(names,'salaryFeatureNames.csv',row.names=F)
+  
+  write.table(data_analyst,'data_analyst.csv',sep=',',col.names=FALSE,
+              row.names=FALSE,
+              append=TRUE)
+}
+
+data_analyst <- read.csv('data_analyst.csv',sep=',', header=F)
+#salaryNames <- read.csv('salaryFeatureNames.csv')
+colnames(data_analyst) <- salaryNames$names
+
+
+
+setwd('../')
+```
+
+```{r}
+setwd('./cosmetologist')
+cosmetologist_salaries <- list.files(pattern='salaries.csv')
+dim(cosmetologist_salaries)
+
+
+
+if (file.exists('cosmetologist.csv')){
+  file.remove('cosmetologist.csv')
+}
+
+for (i in cosmetologist_salaries){
+  name <- gsub('cosmetologist_','',i)
+  name2 <- gsub('_salaries.csv','',name)
+  job <- gsub('_.*$','',i,perl=TRUE)
+  
+  cosmetologist <- read.csv(i,sep=',',header=T,na.strings=c('',' ','NA'),
+                   stringsAsFactors = F)
+  cosmetologist$cityState <- rep(name2,length(cosmetologist$salary))
+  cosmetologist$job <- rep(job,length(cosmetologist$salary))
+  
+  #names <- data.frame(names=colnames(cosmetologist)) 
+  #write.csv(names,'salaryFeatureNames.csv',row.names=F)
+  
+  write.table(cosmetologist,'cosmetologist.csv',sep=',',col.names=FALSE,
+              row.names=FALSE,
+              append=TRUE)
+}
+
+cosmetologist <- read.csv('cosmetologist.csv',sep=',', header=F)
+#salaryNames <- read.csv('salaryFeatureNames.csv')
+colnames(cosmetologist) <- salaryNames$names
+
+
+
+setwd('../')
+```
+
+```{r}
+setwd('./clerical')
+clerical_salaries <- list.files(pattern='salaries.csv')
+dim(clerical_salaries)
+
+
+if (file.exists('clerical.csv')){
+  file.remove('clerical.csv')
+}
+
+for (i in clerical_salaries){
+  name <- gsub('clerical_','',i)
+  name2 <- gsub('_salaries.csv','',name)
+  job <- gsub('_.*$','',i,perl=TRUE)
+  
+  clerical <- read.csv(i,sep=',',header=T,na.strings=c('',' ','NA'),
+                   stringsAsFactors = F)
+  clerical$cityState <- rep(name2,length(clerical$salary))
+  clerical$job <- rep(job,length(clerical$salary))
+  
+  #names <- data.frame(names=colnames(clerical)) 
+  #write.csv(names,'salaryFeatureNames.csv',row.names=F)
+  
+  write.table(clerical,'clerical.csv',sep=',',col.names=FALSE,
+              row.names=FALSE,
+              append=TRUE)
+}
+
+clerical <- read.csv('clerical.csv',sep=',', header=F)
+#salaryNames <- read.csv('salaryFeatureNames.csv')
+colnames(clerical) <- salaryNames$names
+
+
+
+setwd('../')
+```
+
+```{r}
+setwd('./chiropractor')
+chiropractor_salaries <- list.files(pattern='salaries.csv')
+dim(chiropractor_salaries)
+
+
+
+if (file.exists('chiropractor.csv')){
+  file.remove('chiropractor.csv')
+}
+
+for (i in chiropractor_salaries){
+  name <- gsub('chiropractor_','',i)
+  name2 <- gsub('_salaries.csv','',name)
+  job <- gsub('_.*$','',i,perl=TRUE)
+  
+  chiropractor <- read.csv(i,sep=',',header=T,na.strings=c('',' ','NA'),
+                   stringsAsFactors = F)
+  chiropractor$cityState <- rep(name2,length(chiropractor$salary))
+  chiropractor$job <- rep(job,length(chiropractor$salary))
+  
+  #names <- data.frame(names=colnames(chiropractor)) 
+ # write.csv(names,'salaryFeatureNames.csv',row.names=F)
+  
+  write.table(chiropractor,'chiropractor.csv',sep=',',col.names=FALSE,
+              row.names=FALSE,
+              append=TRUE)
+}
+
+chiropractor <- read.csv('chiropractor.csv',sep=',', header=F)
+#salaryNames <- read.csv('salaryFeatureNames.csv')
+colnames(chiropractor) <- salaryNames$names
+
+
+
+setwd('../')
+```
+
+```{r}
+setwd('./cashier')
+cashier_salaries <- list.files(pattern='salaries.csv')
+dim(cashier_salaries)
+
+
+
+if (file.exists('cashier.csv')){
+  file.remove('cashier.csv')
+}
+
+for (i in cashier_salaries){
+  name <- gsub('cashier_','',i)
+  name2 <- gsub('_salaries.csv','',name)
+  job <- gsub('_.*$','',i,perl=TRUE)
+  
+  cashier <- read.csv(i,sep=',',header=T,na.strings=c('',' ','NA'),
+                   stringsAsFactors = F)
+  cashier$cityState <- rep(name2,length(cashier$salary))
+  cashier$job <- rep(job,length(cashier$salary))
+  
+  #names <- data.frame(names=colnames(cashier)) 
+  #write.csv(names,'salaryFeatureNames.csv',row.names=F)
+  
+  write.table(cashier,'cashier.csv',sep=',',col.names=FALSE,
+              row.names=FALSE,
+              append=TRUE)
+}
+
+cashier <- read.csv('cashier.csv',sep=',', header=F)
+#salaryNames <- read.csv('salaryFeatureNames.csv')
+colnames(cashier) <- salaryNames$names
+
+
+
+setwd('../')
+```
+
+```{r}
+
+
+
+setwd('./auto body technician')
+auto_body_salaries <- list.files(pattern='salaries.csv')
+dim(auto_body_salaries)
+
+if (file.exists('auto.csv')){
+  file.remove('auto.csv')
+}
+
+for (i in auto_body_salaries){
+  name <- gsub('auto body technician_','',i)
+  name2 <- gsub('_salaries.csv','',name)
+  job <- gsub('_.*$','',i,perl=TRUE)
+  
+  auto <- read.csv(i,sep=',',header=T,na.strings=c('',' ','NA'),
+                   stringsAsFactors = F)
+  auto$cityState <- rep(name2,length(auto$salary))
+  auto$job <- rep(job,length(auto$salary))
+  
+  #names <- data.frame(names=colnames(auto)) 
+  #write.csv(names,'salaryFeatureNames.csv',row.names=F)
+  
+  write.table(auto,'auto.csv',sep=',',col.names=FALSE,
+              row.names=FALSE,
+              append=TRUE)
+}
+
+auto <- read.csv('auto.csv',sep=',', header=F)
+#salaryNames <- read.csv('salaryFeatureNames.csv')
+colnames(auto) <- salaryNames$names
+
+
+setwd('../')
+
+
+```
+
+
+
+
+
+```{r}
+salaries <- rbind(yoga,warehouse,tutor,security,remote,
+                  pilates_instructor,physical_therapist,
+                  personal_trainer,personal_assistant,
+                  nurse,nanny,medical_dr,medi_spa_tech,
+                  LMT,house_cleaner,esthetician,data_scientist,
+                  data_analyst_entry_level,data_analyst,
+                  cosmetologist,clerical,chiropractor,
+                  cashier,auto)
+dim(salaries)
+```
+
+
+
+
+```{r}
+colnames(auto)
+```
+
+
+```{r}
+colnames(cashier)
+```
+
+
+```{r}
+colnames(chiropractor)
+```
+
+
+```{r}
+colnames(clerical)
+```
+
+
+```{r}
+colnames(cosmetologist)
+```
+
+
+```{r}
+colnames(data_analyst)
+```
+
+
+```{r}
+colnames(data_analyst_entry_level)
+```
+
+```{r}
+colnames(data_scientist)
+```
+
+```{r}
+colnames(esthetician)
+```
+
+
+```{r}
+colnames(house_cleaner)
+```
+
+
+```{r}
+colnames(LMT)
+```
+
+
+```{r}
+colnames(medi_spa_tech)
+```
+
+
+```{r}
+colnames(medical_dr)
+```
+
+
+```{r}
+colnames(nanny)
+```
+
+
+```{r}
+colnames(nurse)
+```
+
+
+```{r}
+colnames(personal_assistant)
+```
+
+
+```{r}
+colnames(personal_trainer)
+```
+
+
+```{r}
+colnames(physical_therapist)
+```
+
+
+```{r}
+colnames(pilates_instructor)
+```
+
+```{r}
+colnames(remote)
+```
+
+
+```{r}
+colnames(security)
+```
+
+
+```{r}
+colnames(tutor)
+```
+
+
+```{r}
+colnames(warehouse)
+```
+
+
+```{r}
+colnames(yoga)
+```
+
+```{r}
+colnames(salaries)[1] <- 'cityPaySequence'
+```
+
+
+```{r}
+cs <- strsplit(as.character(paste(salaries$cityState)),split='_')
+salaries$city <- as.character(paste(lapply(cs,'[',1)))
+salaries$state <- toupper(as.character(paste(lapply(cs,'[',2))))
+```
+
+
+```{r}
+salaries2 <- salaries 
+
+salaries2$maxSalary <- ifelse(is.na(salaries2$maxSalary),
+                    salaries2$minSalary,salaries2$maxSalary)
+
+salaries2$city <- gsub('[+]',' ',salaries2$city, perl=T)
+```
+
+Uppercase with Base R https://statisticsglobe.com/r-capitalize-first-letter-of-character-string-containing-multiple-words
+```{r}
+
+salaries2$city <- gsub("(^|[[:space:]])([[:alpha:]])", 
+                       "\\1\\U\\2"
+                       ,  salaries2$city, perl = TRUE)
+
+```
+
+
+```{r}
+salaries3 <- salaries2[,c(14,15,13,1,2)]
+```
+
+
+
+
+```{r}
+salaries3$Salary <- gsub('\\n','',salaries3$Salary, perl=T)
+salaries3$Salary <- gsub('an','',salaries3$Salary)
+salaries3$Salary <- gsub('a ','',salaries3$Salary)
+salaries3$Salary <- gsub('per','',salaries3$Salary)
+salaries3$Salary <- gsub('[$]','',salaries3$Salary, perl=T)
+salaries3$Salary <- gsub(',','',salaries3$Salary)
+salaries3$Salary <- gsub('[+]','',salaries3$Salary,perl=T)
+salaries3$Salary <- gsub('-','',salaries3$Salary)
+```
+
+
+```{r}
+monthly <- grep('month',salaries3$Salary)
+hourly <- grep('hour',salaries3$Salary)
+weekly <- grep('week',salaries3$Salary)
+yearly <- grep('year',salaries3$Salary)
+perClass <- grep('class',salaries3$Salary)
+perSession <- grep('session',salaries3$Salary)
+day <- grep('day',salaries3$Salary)
+```
+
+
+```{r}
+salaries3$month <- 0
+salaries3$hour <- 0
+salaries3$week <- 0
+salaries3$year <- 0
+salaries3$class <- 0
+salaries3$session <- 0
+salaries3$day <- 0
+
+salaries3[monthly,6] <- 1
+salaries3[hourly,7] <- 1
+salaries3[weekly,8] <- 1
+salaries3[yearly,9] <- 1
+salaries3[perClass,10] <- 1
+salaries3[perSession,11] <- 1
+salaries3[day,12] <- 1
+
+setList <- c(monthly,hourly,weekly,yearly,perClass,perSession,day)
+salaries4 <- salaries3[-setList,]
+salaries4$Salary
+```
+
+```{r}
+salaries3$originalSalaryPost <- salaries2$Salary
+salaries5 <- salaries3[setList,]
+```
+
+
+
+```{r}
+salaries5$Salary <- gsub(' hour','',salaries5$Salary)
+salaries5$Salary <- gsub(' month','',salaries5$Salary)
+salaries5$Salary <- gsub(' week','',salaries5$Salary)
+salaries5$Salary <- gsub(' year','',salaries5$Salary)
+salaries5$Salary <- gsub(' class','',salaries5$Salary)
+salaries5$Salary <- gsub(' session','',salaries5$Salary)
+salaries5$Salary <- gsub(' day','',salaries5$Salary)
+salaries5$Salary <- gsub('From ','',salaries5$Salary)
+salaries5$Salary <- gsub('Up to ','',salaries5$Salary)
+salaries5$Salary <- trimws(salaries5$Salary,which='both',
+                           whitespace=' ')
+```
+
+
+```{r}
+split1 <- strsplit(salaries5$Salary,split='  ')
+salaries5$minUnit <- as.numeric(paste(lapply(split1,'[',1)))
+salaries5$maxUnit <- as.numeric(paste(lapply(split1,'[',2)))
+salaries5$maxUnit <- ifelse(is.na(salaries5$maxUnit),
+                            salaries5$minUnit,
+                            salaries5$maxUnit)
+```
+
+
+```{r}
+salaries6 <- salaries5[,-5]
+```
+
+
+```{r}
+salaries6$minhourly <- ifelse(salaries6$hour==1,salaries6$minUnit,
+      ifelse(salaries6$class==1,salaries6$minUnit,
+        ifelse(salaries6$session==1,salaries6$minUnit,
+          ifelse(salaries6$day==1,salaries6$minUnit/8,
+           ifelse(salaries6$week==1,salaries6$minUnit/40,
+                  
+# 12 months/1 year X 1 year/52 weeks X 1week/40 hours -> k=[(12/52)/40] per hour  
+            ifelse(salaries6$month==1,salaries6$minUnit*((12/52)/40),
+                   
+# 52 weeks/year divided by 40 hours a week
+             ifelse(salaries6$year==1,(salaries6$minUnit/52)/40, NA
+                    )))))))
+
+salaries6$maxhourly <- ifelse(salaries6$hour==1,salaries6$maxUnit,
+      ifelse(salaries6$class==1,salaries6$maxUnit,
+        ifelse(salaries6$session==1,salaries6$maxUnit,
+          ifelse(salaries6$day==1,salaries6$maxUnit/8,
+           ifelse(salaries6$week==1,salaries6$maxUnit/40,
+                  
+# 12 months/1 year X 1 year/52 weeks X 1week/40 hours -> k=[(12/52)/40] per hour  
+            ifelse(salaries6$month==1,salaries6$maxUnit*((12/52)/40),
+                   
+# 52 weeks/year divided by 40 hours a week
+             ifelse(salaries6$year==1,(salaries6$maxUnit/52)/40, NA
+                    )))))))
+
+```
+
+
+```{r}
+salaries6$minAnnual <- ifelse(salaries6$class==1 | salaries6$session==1,
+                      salaries6$minhourly*40*52*(.75),#assume 30 hour work week
+                      salaries6$minhourly*40*52)
+
+salaries6$maxAnnual <- ifelse(salaries6$class==1 | salaries6$session==1,
+                      salaries6$maxhourly*40*52*(.75),#assume 30 hour work week
+                      salaries6$maxhourly*40*52)
+
+
+```
+
+
+```{r}
+salaries7 <- salaries6 %>% group_by(state,city,job) %>%
+      summarise_at(vars('minhourly':'maxhourly'),mean)
+colnames(salaries7)[4:5] <- 
+  c('avgMinHourly_CityStateJob','avgMaxHourly_CityStateJob')
+head(salaries7,10)
+```
+
+
+```{r}
+salaries8 <- salaries6 %>% group_by(state,city,job) %>%
+  summarise_at(vars('minAnnual':'maxAnnual'),mean)
+colnames(salaries8)[4:5] <- 
+  c('avgMinAnnual_CityStateJob','avgMaxAnnual_CityStateJob')
+head(salaries8,10)
+```
+
+
+```{r}
+salaries8$cityStateJob <- paste(salaries8$city,salaries8$state,salaries8$job)
+salaries7$cityStateJob <- paste(salaries7$city,salaries7$state,salaries7$job)
+salaries6$citystateJob <- paste(salaries6$city,salaries6$state,salaries6$job)
+```
+
+
+```{r}
+salaries8$cityStateJob <- as.factor(paste(salaries8$cityStateJob))
+salaries7$cityStateJob <- as.factor(paste(salaries7$cityStateJob))
+salaries6$cityStateJob <- as.factor(paste(salaries6$citystateJob))
+```
+
+
+```{r}
+salaries9 <- salaries7[,c(4:6)]
+salaries10 <- salaries8[,c(4:6)]
+```
+
+
+```{r}
+salaries11 <- merge(salaries6,salaries9,by.x='cityStateJob',by.y='cityStateJob')
+salaries12 <- merge(salaries11,salaries10,by.x='cityStateJob',by.y='cityStateJob')
+```
+
+```{r}
+#write.csv(salaries12,'allSalariesAdvertised_Aug302020.csv')
+```
+

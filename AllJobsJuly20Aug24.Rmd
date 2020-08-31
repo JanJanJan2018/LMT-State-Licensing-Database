@@ -1,0 +1,452 @@
+---
+title: "All jobs July 20-Aug 24 2020"
+author: "Janis Corona"
+date: "8/30/2020"
+output: html_document
+---
+
+
+```{r}
+library(lubridate)
+library(dplyr)
+```
+
+
+# Preprocessing
+
+
+```{r}
+header <- read.csv('tableJobsHeader.csv')
+```
+
+
+
+```{r}
+setwd('./July 20')
+
+if (file.exists('allJuly20.csv')){
+  file.remove('allJuly20.csv')
+}
+
+for (i in list.files()){
+  
+  table <- read.csv(i,sep=',',header=F, na.strings=c('',' ','NA'),
+                    stringsAsFactors = T)
+  table2 <- table[,-c(4:5)]
+  write.table(table2, 'allJuly20.csv',sep=',', append=T,quote=T,na='NA',
+              col.names=F, row.names=F)
+}
+rm(table);rm(i);rm(table2)
+july20 <- read.csv('allJuly20.csv',sep=',', header=F,na.strings=c('',' ','NA'),
+                   stringsAsFactors=T)
+
+setwd('../')
+
+```
+
+
+
+```{r}
+setwd('./July 27')
+
+if (file.exists('allJuly27.csv')){
+  file.remove('allJuly27.csv')
+}
+
+for (i in list.files()){
+  
+  table <- read.csv(i,sep=',',header=F, na.strings=c('',' ','NA'),
+                    stringsAsFactors = T)
+  table2 <- table[,-c(4:5)]
+  write.table(table2, 'allJuly27.csv',sep=',', append=T,quote=T,na='NA',
+              col.names=F, row.names=F)
+}
+rm(table);rm(i);rm(table2)
+july27 <- read.csv('allJuly27.csv',sep=',', header=F,na.strings=c('',' ','NA'),
+                   stringsAsFactors=T)
+
+setwd('../')
+```
+
+
+
+```{r}
+setwd('./Aug 3')
+
+if (file.exists('allAug3.csv')){
+  file.remove('allAug3.csv')
+}
+
+for (i in list.files()){
+  
+  table <- read.csv(i,sep=',',header=F, na.strings=c('',' ','NA'),
+                    stringsAsFactors = T)
+  table2 <- table[,-c(4:5)]
+  write.table(table2, 'Allaug3.csv',sep=',', append=T,quote=T,na='NA',
+              col.names=F, row.names=F)
+}
+rm(table);rm(i);rm(table2)
+aug3 <- read.csv('allAug3.csv',sep=',', header=F,na.strings=c('',' ','NA'),
+                   stringsAsFactors=T)
+
+setwd('../')
+
+```
+
+
+
+```{r}
+setwd('./Aug 10')
+
+if (file.exists('allAug10.csv')){
+  file.remove('allAug10.csv')
+}
+
+for (i in list.files()){
+  
+  table <- read.csv(i,sep=',',header=F, na.strings=c('',' ','NA'),
+                    stringsAsFactors = T)
+  table2 <- table[,-c(4:5)]
+  write.table(table2, 'allAug10.csv',sep=',', append=T,quote=T,na='NA',
+              col.names=F, row.names=F)
+}
+rm(table);rm(i);rm(table2)
+aug10 <- read.csv('allAug10.csv',sep=',', header=F,na.strings=c('',' ','NA'),
+                   stringsAsFactors=T)
+
+setwd('../')
+
+```
+
+
+```{r}
+setwd('./Aug 17')
+
+if (file.exists('allAug17.csv')){
+  file.remove('allAug17.csv')
+}
+
+for (i in list.files()){
+  
+  table <- read.csv(i,sep=',',header=F, na.strings=c('',' ','NA'),
+                    stringsAsFactors = T)
+  table2 <- table[,-c(4:5)]
+  write.table(table2, 'allAug17.csv',sep=',', append=T,quote=T,na='NA',
+              col.names=F, row.names=F)
+}
+rm(table);rm(i);rm(table2)
+aug17 <- read.csv('allAug17.csv',sep=',', header=F,na.strings=c('',' ','NA'),
+                   stringsAsFactors=T)
+
+setwd('../')
+
+```
+
+
+```{r}
+setwd('./Aug 24')
+
+if (file.exists('allAug24.csv')){
+  file.remove('allAug24.csv')
+}
+
+for (i in list.files()){
+  
+  table <- read.csv(i,sep=',',header=F, na.strings=c('',' ','NA'),
+                    stringsAsFactors = T)
+  table2 <- table[,-c(4:5)]
+  write.table(table2, 'allAug24.csv',sep=',', append=T,quote=T,na='NA',
+              col.names=F, row.names=F)
+}
+rm(table);rm(i);rm(table2)
+aug24 <- read.csv('allAug24.csv',sep=',', header=F,na.strings=c('',' ','NA'),
+                   stringsAsFactors=T)
+
+setwd('../')
+
+```
+
+
+```{r}
+setwd('./Aug 31')
+
+if (file.exists('allAug31.csv')){
+  file.remove('allAug31.csv')
+}
+
+for (i in list.files()){
+  
+  table <- read.csv(i,sep=',',header=F, na.strings=c('',' ','NA'),
+                    stringsAsFactors = T)
+  table2 <- table[,-c(4:5)]
+  write.table(table2, 'allAug31.csv',sep=',', append=T,quote=T,na='NA',
+              col.names=F, row.names=F)
+}
+rm(table);rm(i);rm(table2)
+aug31 <- read.csv('allAug31.csv',sep=',', header=F,na.strings=c('',' ','NA'),
+                   stringsAsFactors=T)
+
+setwd('../')
+
+```
+
+```{r}
+Header <- header$x[-c(4:5)]
+Header
+```
+
+```{r}
+colnames(july20) <- Header
+colnames(july27) <- Header
+colnames(aug3) <- Header
+colnames(aug10) <- Header
+colnames(aug17) <- Header
+colnames(aug24) <- Header
+colnames(aug31) <- Header
+```
+
+
+```{r}
+allJobs <- rbind(july20,july27,aug3,aug10,aug17,aug24,aug31)
+head(allJobs)
+```
+
+
+```{r}
+allJobs$state <- toupper(allJobs$state)
+allJobs$city <- gsub('[+]',' ', allJobs$city)
+allJobs$city <-  gsub("(^|[[:space:]])([[:alpha:]])", 
+                       "\\1\\U\\2"
+                       ,  allJobs$city, perl = TRUE)
+head(allJobs)
+
+```
+
+
+
+```{r}
+allJobs$date_daysAgo <- gsub('Just posted',0,allJobs$date_daysAgo)
+allJobs$date_daysAgo <- gsub('Today',0,allJobs$date_daysAgo)
+
+```
+
+
+```{r}
+allJobs$date_daysAgo <- as.numeric(paste(allJobs$date_daysAgo))
+
+```
+
+
+```{r}
+allJobs$todaysDate <- as.character(paste(allJobs$todaysDate))
+allJobss <- strsplit(allJobs$todaysDate,split=' ')
+allJobs$wday <- as.character(lapply(allJobss,'[',1))
+allJobs$month   <- as.character(lapply(allJobss,'[',2))
+allJobs$dayMonth <- as.character(lapply(allJobss, '[',3))
+allJobs$timeHMS  <- as.character(lapply(allJobss,'[',4))
+allJobs$year <- as.character(lapply(allJobss,'[',5))
+
+```
+
+
+```{r}
+allJobs$nMonth <- ifelse(allJobs$month=='Jan',1,
+                  ifelse(allJobs$month=='Feb',2,
+                  ifelse(allJobs$month=='Mar',3,
+                  ifelse(allJobs$month=='Apr',4,
+                  ifelse(allJobs$month=='May',5,
+                  ifelse(allJobs$month=='Jun',6,
+                  ifelse(allJobs$month=='Jul',7,
+                  ifelse(allJobs$month=='Aug',8,
+                  ifelse(allJobs$month=='Sep',9,
+                  ifelse(allJobs$month=='Oct',10,
+                  ifelse(allJobs$month=='Nov',11,
+                  ifelse(allJobs$month=='Dec',12,NA))))))))))))
+```
+
+
+```{r}
+allJobs$mdy <- paste(allJobs$nMonth,allJobs$dayMonth,allJobs$year,sep='/')
+```
+
+
+```{r}
+allJobs$mdy <- mdy(allJobs$mdy)
+allJobs$jobPosted_nDays_ago <- allJobs$mdy-allJobs$date_daysAgo
+```
+
+
+```{r}
+allJobs$MinAnnualSalary <- allJobs$MinHourlySalary*40*52
+allJobs$MaxAnnualSalary <- allJobs$MaxHourlySalary*40*52
+
+```
+
+```{r}
+allJobs <- allJobs[!duplicated(allJobs),]
+```
+
+```{r}
+allJobsPerStateCityDayPosted <- allJobs %>% group_by(state,city,jobSearched,
+                jobPosted_nDays_ago) %>% count(jobPosted_nDays_ago)
+```
+
+```{r}
+colnames(allJobsPerStateCityDayPosted)[4:5] <- c('datePosted','jobsPosted')
+
+```
+
+
+```{r}
+write.csv(allJobs,'allJobs.csv',row.names=F)
+write.csv(allJobsPerStateCityDayPosted,'allJobsPostedDateCityState.csv',
+          row.names=F)
+```
+
+
+```{r}
+allJobsNot30 <- subset(allJobs, allJobs$date_daysAgo != 30)
+allJobsNot30 <- allJobsNot30[!duplicated(allJobsNot30),]
+```
+
+Number of jobs posted per day, up to 30 days ago, but not including 30 days ago.
+```{r}
+jobsPerStateCityDayPosted <- allJobsNot30 %>% 
+  group_by(state,city,jobSearched,jobPosted_nDays_ago) %>% count(jobPosted_nDays_ago)
+
+```
+
+
+```{r}
+colnames(jobsPerStateCityDayPosted)[4:5] <- c('datePosted','jobsPosted')
+```
+
+
+```{r}
+write.csv(allJobsNot30,'allJobsNot30.csv',row.names=F)
+write.csv(jobsPerStateCityDayPosted,'JobsPostedDateCityStateNot30.csv',
+          row.names=F)
+```
+
+
+
+```{r}
+allJobsAvgSalary <- allJobs %>% group_by(state,city,jobSearched,
+            jobPosted_nDays_ago) %>% summarise_at(vars('MinAnnualSalary':'MaxAnnualSalary'),mean)
+allJobsAvgHourly <- allJobs %>% group_by(state,city,jobSearched,
+            jobPosted_nDays_ago) %>% summarise_at(vars('MinHourlySalary':
+                      'MaxHourlySalary'),mean)
+
+```
+
+
+```{r}
+allJobsAvgSalary$ID <- paste(allJobsAvgSalary$state,
+                allJobsAvgSalary$city,allJobsAvgSalary$jobSearched,
+                allJobsAvgSalary$jobPosted_nDays_ago)
+allJobsAvgHourly$ID <- paste(allJobsAvgHourly$state,
+                allJobsAvgHourly$city,allJobsAvgHourly$jobSearched,
+                allJobsAvgHourly$jobPosted_nDays_ago)
+allJobs$ID <- paste(allJobs$state,allJobs$city,allJobs$jobSearched,
+                allJobs$jobPosted_nDays_ago)
+
+allJobsPerStateCityDayPosted$ID <- paste(allJobsPerStateCityDayPosted$state,
+      allJobsPerStateCityDayPosted$city,allJobsPerStateCityDayPosted$jobSearched,
+      allJobsPerStateCityDayPosted$datePosted)
+```
+
+
+```{r}
+allJobsAvgHourly2 <- allJobsAvgHourly[,-c(1:4)]
+allJobsAvgSalary2 <- allJobsAvgSalary[,-c(1:4)]
+allJobsPerStateCityDayPosted2 <- allJobsPerStateCityDayPosted[,-c(1:4)]
+```
+
+
+```{r}
+allJobsM1 <- merge(allJobs,allJobsAvgHourly2, by.x='ID',by.y='ID')
+allJobsM2 <- merge(allJobsM1,allJobsAvgSalary2, by.x='ID',by.y='ID')
+allJobsM3 <- merge(allJobsM2,allJobsPerStateCityDayPosted2, by.x='ID',by.y='ID')
+```
+
+
+```{r}
+colnames(allJobsM3)[c(7:10,19:22)] <- c('minHourly','maxHourly',
+    'minAnnual','maxAnnual','avgMinHourly','avgMaxHourly','avgMinAnnual',
+    'avgMaxAnnual')
+```
+
+
+```{r}
+head(allJobsM3)
+```
+
+```{r}
+write.csv(allJobsM3,'allJobsM3aggregates.csv',row.names=F)
+```
+
+```{r}
+allJobsNot30AvgSalary <- allJobsNot30 %>% group_by(state,city,jobSearched,
+            jobPosted_nDays_ago) %>% summarise_at(vars('MinAnnualSalary':'MaxAnnualSalary'),mean)
+allJobsNot30AvgHourly <- allJobsNot30 %>% group_by(state,city,jobSearched,
+            jobPosted_nDays_ago) %>% summarise_at(vars('MinHourlySalary':
+                      'MaxHourlySalary'),mean)
+
+```
+
+
+```{r}
+allJobsNot30AvgSalary$ID <- paste(allJobsNot30AvgSalary$state,
+                allJobsNot30AvgSalary$city,allJobsNot30AvgSalary$jobSearched,
+                allJobsNot30AvgSalary$jobPosted_nDays_ago)
+allJobsNot30AvgHourly$ID <- paste(allJobsNot30AvgHourly$state,
+                allJobsNot30AvgHourly$city,allJobsNot30AvgHourly$jobSearched,
+                allJobsNot30AvgHourly$jobPosted_nDays_ago)
+allJobsNot30$ID <- paste(allJobsNot30$state,allJobsNot30$city,allJobsNot30$jobSearched, allJobsNot30$jobPosted_nDays_ago)
+
+jobsPerStateCityDayPosted$ID <- paste(jobsPerStateCityDayPosted$state,
+      jobsPerStateCityDayPosted$city,jobsPerStateCityDayPosted$jobSearched,
+      jobsPerStateCityDayPosted$datePosted)
+```
+
+
+```{r}
+allJobsNot30AvgHourly2 <- allJobsNot30AvgHourly[,-c(1:4)]
+allJobsNot30AvgSalary2 <- allJobsNot30AvgSalary[,-c(1:4)]
+jobsPerStateCityDayPosted2 <- jobsPerStateCityDayPosted[,-c(1:4)]
+```
+
+
+```{r}
+allJobsNot30M1 <- merge(allJobsNot30,allJobsNot30AvgHourly2, by.x='ID',by.y='ID')
+allJobsNot30M2 <- merge(allJobsNot30M1,allJobsNot30AvgSalary2, by.x='ID',by.y='ID')
+allJobsNot30M3 <- merge(allJobsNot30M2,jobsPerStateCityDayPosted2, by.x='ID',by.y='ID')
+```
+
+
+```{r}
+colnames(allJobsNot30M3)[c(7:10,19:22)] <- c('minHourly','maxHourly',
+    'minAnnual','maxAnnual','avgMinHourly','avgMaxHourly','avgMinAnnual',
+    'avgMaxAnnual')
+```
+
+
+```{r}
+head(allJobsNot30M3)
+```
+
+
+```{r}
+write.csv(allJobsNot30M3,'allJobsNot30M3aggregates.csv',row.names=F)
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
