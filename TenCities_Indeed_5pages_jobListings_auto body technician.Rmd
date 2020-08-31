@@ -1,0 +1,472 @@
+---
+title: "Ten Most Populated Cities: Indeed job search"
+author: "Janis Corona"
+date: "8/31/2020"
+output: html_document
+---
+
+This function will do similar to the other function but instead of printing to console results, it will append the retrieved data to a table, for the data on advertised pay if available for a job title, city, and state searched in Indeed with this function, the rvest webscrape package and the selector gadget, https://selectorgadget.com/ or CSS selector or similar to get the tags on the web page to use in the rvest R web scrape package. Those are chrome extension for highlighting html and getting the tag location. 
+
+This will save time in the long run, and turn hours into about 10 minutes of getting the average pay of each state using the ten most populated cities searched on Indeed and using the range of pay for hourly and salary to calculate the mean pay per state. It will also produce the number of listed job postings for the job title searched in each state and the date downloaded and also how many days ago it was posted.
+
+```{r}
+business <- 'auto body technician'
+busDir <- './auto body technician'
+```
+
+
+```{r}
+#Loading the rvest package
+library(rvest)
+library(lubridate)
+library(dplyr)
+```
+
+This function will take an input job title search, such as 'data scientist' in quotations, the city searching, i.e. "Corona" also in quotations, and the state abbreviations, such as "CA" also in quotations, then it returns a list of the job titles found, dates in 'days ago', and the hiring company's name, and a table is also returned that displays the job title, dates, hiring companies, minimum hourly, maximum hourly, minimum annual salary, and maximum annual salary for the job title searched using the Indeed website.But only for the first five page listings.
+
+Create a directory named 'Indeed cities scraped'
+```{r}
+if (dir.exists(busDir)){
+  unlink(busDir, recursive=TRUE)
+  dir.create(busDir)
+} else {
+  dir.create(busDir)
+}
+
+
+```
+
+This funciton won't return the tables to look at, but will write all results to a csv file to read in when done importing the 150 cities of the three most populated city in each US state other than the newly added District of Columbia.
+```{r}
+writeIndeedJobData5pages <- function(jobCityState){
+  url <- 'https://www.indeed.com/jobs?q=jobTitle&l=CityName%2C+stateAbb'
+  url2 <- 'https://www.indeed.com/jobs?q=jobTitle&l=CityName%2C+stateAbb&start=20'
+  url3 <- 'https://www.indeed.com/jobs?q=jobTitle&l=CityName%2C+stateAbb&start=30'
+  url4 <- 'https://www.indeed.com/jobs?q=jobTitle&l=CityName%2C+stateAbb&start=40'
+  url5 <- 'https://www.indeed.com/jobs?q=jobTitle&l=CityName%2C+stateAbb&start=50'
+  
+  inputs <- strsplit(jobCityState, split=',')
+  
+  jobTitle <- lapply(inputs,'[',1)
+  jobTitle <- as.character(jobTitle)
+  jobTitle <- trimws(jobTitle, which='right',whitespace='[\t\r\n]')
+  jobSearch <- gsub(' ','+',jobTitle)
+
+  cityName <- lapply(inputs, '[',2)
+  cityName <- as.character(cityName)
+  city <- trimws(cityName, which="left", whitespace="[\t\r\n]")
+  city <- tolower(city)
+  city <- gsub(' ','+',city)
+
+  stateAbb <- lapply(inputs,'[',3)
+  stateAbb <- as.character(stateAbb)
+  stateAbb <- trimws(stateAbb, which= "left", whitespace="[\t\r\n]")
+  state <- tolower(stateAbb)
+  
+  url <- gsub('jobTitle',jobSearch, url)
+  url <- gsub('CityName',city, url)
+  url <- gsub('stateAbb',state, url)
+  
+  url2 <- gsub('jobTitle',jobSearch, url2)
+  url2 <- gsub('CityName',city, url2)
+  url2 <- gsub('stateAbb',state, url2)
+  
+  url3 <- gsub('jobTitle',jobSearch, url3)
+  url3 <- gsub('CityName',city, url3)
+  url3 <- gsub('stateAbb',state, url3)
+
+  url4 <- gsub('jobTitle',jobSearch, url4)
+  url4 <- gsub('CityName',city, url4)
+  url4 <- gsub('stateAbb',state, url4)
+
+  url5 <- gsub('jobTitle',jobSearch, url5)
+  url5 <- gsub('CityName',city, url5)
+  url5 <- gsub('stateAbb',state, url5)
+
+  webpage <- read_html(url)
+  webpage2 <- read_html(url2)
+  webpage3 <- read_html(url3)
+  webpage4 <- read_html(url4)
+  webpage5 <- read_html(url5)
+  
+  job_title_html <- html_nodes(webpage,'.jobtitle')
+  job_title <- html_text(job_title_html)
+  
+  job_title_html2 <- html_nodes(webpage2,'.jobtitle')
+  job_title2 <- html_text(job_title_html2)
+
+  job_title_html3 <- html_nodes(webpage3,'.jobtitle')
+  job_title3 <- html_text(job_title_html3)
+
+  job_title_html4 <- html_nodes(webpage4,'.jobtitle')
+  job_title4 <- html_text(job_title_html4)
+
+  job_title_html5 <- html_nodes(webpage5,'.jobtitle')
+  job_title5 <- html_text(job_title_html5)
+
+  jobTitles <- as.data.frame(c(job_title,job_title2, job_title3, 
+                               job_title4, job_title5))
+  colnames(jobTitles) <- 'jobTitle'
+  jobTitles$jobTitle <- as.character(paste(jobTitles$jobTitle))
+  jobTitles$jobTitle <- gsub('\n','',jobTitles$jobTitle)
+
+
+  
+  salary_html <- html_nodes(webpage,'.salaryText')
+  salary <- html_text(salary_html)
+
+  salary_html2 <- html_nodes(webpage2,'.salaryText')
+  salary2 <- html_text(salary_html2)
+
+  salary_html3 <- html_nodes(webpage3,'.salaryText')
+  salary3 <- html_text(salary_html3)
+
+  salary_html4 <- html_nodes(webpage4,'.salaryText')
+  salary4 <- html_text(salary_html4)
+
+  salary_html5 <- html_nodes(webpage5,'.salaryText')
+  salary5 <- html_text(salary_html5)
+  
+  salaries <- as.data.frame(c(salary,salary2, salary3, salary4, salary5))
+  colnames(salaries) <- 'Salary'
+  salaries$salary <- as.character(paste(salaries$Salary))
+  salaries$salary <- gsub('\n','',salaries$salary)
+  salaries$salary <- gsub('!','',salaries$salary)
+  
+  #annual
+  annual <- salaries[grep('a year', salaries$salary),]
+  
+  if (length(annual$salary)>0){
+  annual$salary <- gsub('a year','', annual$salary)
+  annual$salary <- gsub(',','', annual$salary)
+  annual$salary <- gsub('Up to','',annual$salary)
+  annual$salary <- gsub('From','',annual$salary)
+  annual$salary <- gsub('[++]','',annual$salary,perl=TRUE)
+  
+  annualSalarySplit <- strsplit(annual$salary, split='-')
+  minSalary <- lapply(annualSalarySplit,'[',1)
+  maxSalary <- lapply(annualSalarySplit,'[',2)
+  minSalary <- gsub('[$]','',minSalary, perl=TRUE)
+  minSalary <- gsub(' ','',minSalary)
+  maxSalary <- gsub('[$]','',maxSalary, perl=TRUE)
+  maxSalary <- gsub(' ','',maxSalary)
+
+  annual$minSalary <- as.numeric(paste(minSalary))
+  annual$maxSalary <- as.numeric(paste(maxSalary))
+  annual$medianMinSalary <- median(annual$minSalary,na.rm=TRUE)
+  annual$medianMaxSalary <- median(annual$maxSalary,na.rm=TRUE)
+  annual$avgMinSalary <- mean(annual$minSalary,na.rm=TRUE)
+  annual$avgMaxSalary <- mean(annual$maxSalary,na.rm=TRUE)
+  annual$minimumMinSalary <- min(annual$minSalary,na.rm=TRUE)
+  annual$maximumMaxSalary <- max(annual$maxSalary,na.rm=TRUE)
+
+  avgAnnualSalary <- mean(rbind(annual$avgMinSalary,annual$avgMaxSalary),na.rm=TRUE)
+  minAnnualSalary <- min(annual$minimumMinSalary,na.rm=TRUE)
+  maxAnnualSalary <- max(rbind(annual$maximumMaxSalary,annual$minimumMinSalary),na.rm=TRUE)
+  } else {
+    avgAnnualSalary <- 'NA'
+    minAnnualSalary <- 'NA'
+    maxAnnualSalary <- 'NA'
+  }
+  
+  # hourly
+  hourly <- salaries[grep('an hour', salaries$salary),]
+  
+  if (length(hourly$salary>0)){
+  hourly$salary <- gsub('an hour','', hourly$salary)
+  hourly$salary <- gsub(',','', hourly$salary)
+  hourly$salary <- gsub('From ','', hourly$salary)
+  hourly$salary <- gsub('Up to','',hourly$salary)
+  hourly$salary <- gsub('[++]','',hourly$salary, perl=TRUE)
+  
+  hourlySalarySplit <- strsplit(hourly$salary, split='-')
+  minSalary <- lapply(hourlySalarySplit,'[',1)
+  maxSalary <- lapply(hourlySalarySplit,'[',2)
+  minSalary <- gsub('[$]','',minSalary, perl=TRUE)
+  minSalary <- gsub(' ','',minSalary)
+  maxSalary <- gsub('[$]','',maxSalary, perl=TRUE)
+  maxSalary <- gsub(' ','',maxSalary)
+
+  hourly$minSalary <- as.numeric(paste(minSalary))
+  hourly$maxSalary <- as.numeric(paste(maxSalary))
+  hourly$medianMinSalary <- median(hourly$minSalary,na.rm=TRUE)
+  hourly$medianMaxSalary <- median(hourly$maxSalary,na.rm=TRUE)
+  hourly$avgMinSalary <- mean(hourly$minSalary,na.rm=TRUE)
+  hourly$avgMaxSalary <- mean(hourly$maxSalary,na.rm=TRUE)
+  hourly$minimumMinSalary <- min(hourly$minSalary,na.rm=TRUE)
+  hourly$maximumMaxSalary <- max(hourly$maxSalary,na.rm=TRUE)
+  
+  avgHourlySalary <- mean(rbind(hourly$avgMinSalary,hourly$avgMaxSalary), na.rm=TRUE)
+  minHourlySalary <- min(hourly$minimumMinSalary, na.rm=TRUE)
+  maxHourlySalary <- max(rbind(hourly$maximumMaxSalary,hourly$minimumMinSalary),
+                         na.rm=TRUE)
+  } else {
+    avgHourlySalary <- 'NA'
+    minHourlySalary <- 'NA'
+    maxHourlySalary <- 'NA'
+  }
+  
+  if (length(salaries$salary)>0){
+  salaries$salary <- gsub('a year','', salaries$salary)
+  salaries$salary <- gsub('an hour','', salaries$salary)
+  salaries$salary <- gsub('a day','', salaries$salary)
+  salaries$salary <- gsub('a month','', salaries$salary)
+  salaries$salary <- gsub(',','', salaries$salary)
+  salaries$salary <- gsub('From ','', salaries$salary)
+  salaries$salary <- gsub('Up to','',salaries$salary)
+  salaries$salary <- gsub('[++]','',salaries$salary, perl=TRUE)
+
+  salarysplit <- strsplit(salaries$salary, split='-')
+  minSalary <- lapply(salarysplit,'[',1)
+  maxSalary <- lapply(salarysplit,'[',2)
+  minSalary <- gsub('[$]','',minSalary, perl=TRUE)
+  minSalary <- gsub(' ','',minSalary)
+  maxSalary <- gsub('[$]','',maxSalary, perl=TRUE)
+  maxSalary <- gsub(' ','',maxSalary)
+
+  salaries$minSalary <- as.numeric(paste(minSalary))
+  salaries$maxSalary <- as.numeric(paste(maxSalary))
+  salaries$medianMinSalary <- median(salaries$minSalary,na.rm=TRUE)
+  salaries$medianMaxSalary <- median(rbind(salaries$minSalary,
+                                    salaries$maxSalary),na.rm=TRUE)
+  salaries$avgMinSalary <- mean(salaries$minSalary,na.rm=TRUE)
+  salaries$avgMaxSalary <- mean(rbind(salaries$minSalary,
+                                    salaries$maxSalary),na.rm=TRUE)
+  salaries$minimumMinSalary <- min(salaries$minSalary,na.rm=TRUE)
+  salaries$maximumMaxSalary <- max(rbind(salaries$maxSalary,salaries$minSalary),na.rm=TRUE)
+
+  avgSalary <- mean(cbind(salaries$avgMaxSalary,salaries$avgMinSalary),na.rm=TRUE)
+  minSalary <- min(salaries$minimumMinSalary,na.rm=TRUE)
+  maxSalary <- max(salaries$maximumMaxSalary,na.rm=TRUE)
+  } else {
+    salaries <- salaries
+  }
+
+  date_html <- html_nodes(webpage,'.date')
+  date <- html_text(date_html)
+
+  date_html2 <- html_nodes(webpage2,'.date')
+  date2 <- html_text(date_html2)
+
+  date_html3 <- html_nodes(webpage3,'.date')
+  date3 <- html_text(date_html3)
+
+  date_html4 <- html_nodes(webpage4,'.date')
+  date4 <- html_text(date_html4)
+
+  date_html5 <- html_nodes(webpage5,'.date')
+  date5 <- html_text(date_html5)
+  
+  dates <- as.data.frame(c(date,date2, date3, date4, date5))
+  colnames(dates) <- 'date_daysAgo'
+  dates$date_daysAgo <- as.character(paste(dates$date_daysAgo))
+  dates$date_daysAgo <- gsub('\n','',dates$date_daysAgo)
+  dates$date_daysAgo <- gsub(' days ago','', dates$date_daysAgo)
+  dates$date_daysAgo <- gsub(' day ago','', dates$date_daysAgo)
+  dates$date_daysAgo <- gsub('[+]','', dates$date_daysAgo)
+
+  hiring_html <- html_nodes(webpage,'.sjcl')
+  hiring <- html_text(hiring_html)
+  
+  hiring_html2 <- html_nodes(webpage2,'.sjcl')
+  hiring2 <- html_text(hiring_html2)
+
+  hiring_html3 <- html_nodes(webpage3,'.sjcl')
+  hiring3 <- html_text(hiring_html3)
+
+  hiring_html4 <- html_nodes(webpage4,'.sjcl')
+  hiring4 <- html_text(hiring_html4)
+
+  hiring_html5 <- html_nodes(webpage5,'.sjcl')
+  hiring5 <- html_text(hiring_html5)
+
+  hirings <- as.data.frame(c(hiring,hiring2, hiring3, hiring4, hiring5))
+  colnames(hirings) <- 'HiringAgency'
+  hirings$HiringAgency <- as.character(paste(hirings$HiringAgency))
+  hirings$HiringAgency <- gsub('\n','',hirings$HiringAgency)
+  
+  MinAnnualSalary <- as.data.frame(rep(minAnnualSalary,length(jobTitles$jobTitle)))
+  colnames(MinAnnualSalary) <- 'MinAnnualSalary'
+  MaxAnnualSalary <- as.data.frame(rep(maxAnnualSalary,length(jobTitles$jobTitle)))
+  colnames(MaxAnnualSalary) <- 'MaxAnnualSalary'
+  
+  MinHourlySalary <- as.data.frame(rep(minHourlySalary,length(jobTitles$jobTitle)))
+  colnames(MinHourlySalary) <- 'MinHourlySalary'
+  MaxHourlySalary <- as.data.frame(rep(maxHourlySalary,length(jobTitles$jobTitle)))
+  colnames(MaxHourlySalary) <- 'MaxHourlySalary'
+ 
+  cityDF <- as.data.frame(rep(city,length(jobTitles$jobTitle)))
+  colnames(cityDF) <- "city"
+  stateDF <- as.data.frame(rep(state,length(jobTitles$jobTitle)))
+  colnames(stateDF) <- 'state'
+  jobSearchDF <- as.data.frame(rep(jobTitle, length(jobTitles$jobTitle)))
+  colnames(jobSearchDF) <- 'jobSearched'
+  
+  date <- as.data.frame(rep(date(),length(cityDF$city)))
+  colnames(date) <- 'todaysDate'
+  
+  
+  tableJobs <- cbind(cityDF,stateDF,jobSearchDF,jobTitles,hirings,
+                     dates,date,MinHourlySalary,
+                     MaxHourlySalary,MinAnnualSalary,MaxAnnualSalary)
+  
+  setwd(busDir)
+  
+  cityDF2 <- as.data.frame(rep(city,length(salaries$salary)))
+  colnames(cityDF2) <- "city"
+  
+  stateDF2 <- as.data.frame(rep(state,length(salaries$salary)))
+  colnames(stateDF2) <- 'state'
+  
+  date2 <- as.data.frame(rep(date(),length(salaries$salary)))
+  colnames(date2) <- 'todaysDate'
+  
+  salaries2 <- cbind(salaries,cityDF2,stateDF2,date2)
+  
+  write.csv(salaries,paste('salaries_',jobTitle,city,state,".csv",sep=''))
+  write.table(salaries,
+              paste("salaries-allCities-",business,".csv",sep=''), append=TRUE,
+              col.names=FALSE, sep=",", 
+              quote=TRUE,
+              qmethod="double",
+              row.names=FALSE)
+
+  write.csv(tableJobs,paste(jobTitle,city,state,".csv",sep='_'),row.names = FALSE)
+  write.table(tableJobs,
+              paste("allCities-",business,".csv",sep=''), append=TRUE,
+              col.names=FALSE, sep=",", 
+              quote=TRUE,
+              qmethod="double",
+              row.names=FALSE)
+  names <- colnames(tableJobs)
+  write.csv(names,paste('tableJobsHeader-',business,'.csv',sep=''),
+            row.names=FALSE)
+  
+  setwd('../')
+  
+  return(cityDF)
+}
+```
+
+***
+
+Get the 10 most populated cities in each state from our table we pulled from the web called table10cities-altered.csv and read it in.
+```{r}
+table10 <- read.csv('table10cities-altered.csv',sep=',', header=TRUE, na.strings=c('',' ','NA'))
+```
+
+```{r}
+head(table10)
+```
+
+```{r}
+Table10 <- table10[,c(2,4)]
+Table10$jobTitle <- business
+Table10$functionInput <- paste(Table10$jobTitle,Table10$topCity,
+                               Table10$stateAbbreviations, sep=',')
+head(Table10)
+```
+
+
+
+
+```{r}
+for (i in Table10$functionInput[1:497]){
+  writeIndeedJobData5pages(i)
+}
+```
+
+```{r}
+for (i in Table10$functionInput[498:500]){
+  writeIndeedJobData5pages(i)
+  supplementary <- read.csv(
+    paste(busDir,"/allCities-",business,".csv",sep=''),sep=',',
+    header=F, na.strings=c('',' ','NA'),
+    stringsAsFactors = F)
+  names <- read.csv(paste(busDir,'/tableJobsHeader-',business,'.csv',sep=''),
+            sep=',',
+            na.strings=c('',' ','NA'),
+            stringsAsFactors = F)
+  colnames(supplementary) <- names$x
+  write.csv(supplementary,paste("supplementedCities-",business,".csv",
+                                sep=''), row.names=F)
+}
+```
+
+
+
+***
+ 
+When done pulling every city and state, read in the table data to get the statistics needed.
+```{r}
+
+allCities <- read.csv(paste(busDir,'/allCities-',business,'.csv',
+                            sep=''),
+                            sep=",", header=FALSE, na.strings=c('',' ','NA'))
+```
+
+```{r}
+header <- read.csv(paste(busDir,'/tableJobsHeader-',business,'.csv',
+                         sep=''),sep=',')
+```
+
+```{r}
+names <- header$x
+names
+```
+
+```{r}
+colnames(allCities) <- names
+```
+
+
+
+```{r}
+str(allCities)
+```
+
+```{r}
+head(allCities)
+```
+
+```{r}
+tail(allCities)
+```
+
+```{r}
+mean(rbind(allCities$MaxAnnualSalary,allCities$MinAnnualSalary),na.rm=T)
+```
+
+Group by state, and get the mean of the minimum hourly of the three cities, and the mean of the max of the hourly for the three cities used for each state, and add an avgHourly and avgAnualSalary column to get the average hourly and anual salary pay for each state using the three most populated cities in each state.
+```{r}
+allCities$state <- as.factor(allCities$state)
+
+stateMeans <- allCities %>% group_by(state) %>% summarise_at(vars(c("MinHourlySalary","MaxHourlySalary","MinAnnualSalary","MaxAnnualSalary")),mean, na.rm=TRUE)
+stateMeans$avgHourly <- apply(stateMeans[,2:3], 1,mean)
+stateMeans$avgAnualSalary <- apply(stateMeans[,4:5],1,mean)
+stateMeans
+```
+
+```{r}
+stateJobListings <- allCities %>% group_by(state) %>% count(state)
+colnames(stateJobListings)[2] <- 'jobsListed'
+stateJobListings
+```
+
+```{r}
+stateJobListings$jobSearched <- rep(allCities$jobSearched[1], length(stateJobListings$state))
+stateJobListings
+```
+
+
+```{r}
+statesRates <- merge(stateJobListings, stateMeans, by.x='state',by.y='state')
+statesRates <- statesRates[!is.na(statesRates$state),]
+statesRates
+```
+
+```{r}
+write.csv(statesRates,paste('jobListings_',business,'.csv',sep='')
+          , row.names=FALSE)
+```
+
