@@ -1,7 +1,7 @@
 ---
 title: "Ten Most Populated Cities: Indeed job search"
 author: "Janis Corona"
-date: "8/31/2020"
+date: "9/7/2020"
 output: html_document
 ---
 
@@ -371,13 +371,13 @@ head(Table10)
 
 
 ```{r}
-for (i in Table10$functionInput[1:497]){
+for (i in Table10$functionInput[1:64]){
   writeIndeedJobData5pages(i)
 }
 ```
 
 ```{r}
-for (i in Table10$functionInput[498:500]){
+for (i in Table10$functionInput[65:500]){
   writeIndeedJobData5pages(i)
   supplementary <- read.csv(
     paste(busDir,"/allCities-",business,".csv",sep=''),sep=',',

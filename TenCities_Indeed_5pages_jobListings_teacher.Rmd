@@ -10,8 +10,8 @@ This function will do similar to the other function but instead of printing to c
 This will save time in the long run, and turn hours into about 10 minutes of getting the average pay of each state using the ten most populated cities searched on Indeed and using the range of pay for hourly and salary to calculate the mean pay per state. It will also produce the number of listed job postings for the job title searched in each state and the date downloaded and also how many days ago it was posted.
 
 ```{r}
-business <- 'yoga instructor'
-busDir <- './yoga instructor'
+business <- 'teacher'
+busDir <- './teacher'
 ```
 
 
@@ -371,13 +371,13 @@ head(Table10)
 
 
 ```{r}
-for (i in Table10$functionInput[1:497]){
+for (i in Table10$functionInput[1:430]){
   writeIndeedJobData5pages(i)
 }
 ```
 
 ```{r}
-for (i in Table10$functionInput[498:500]){
+for (i in Table10$functionInput[431:500]){
   writeIndeedJobData5pages(i)
   supplementary <- read.csv(
     paste(busDir,"/allCities-",business,".csv",sep=''),sep=',',

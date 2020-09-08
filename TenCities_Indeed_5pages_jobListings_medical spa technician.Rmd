@@ -1,7 +1,7 @@
 ---
 title: "Ten Most Populated Cities: Indeed job search"
 author: "Janis Corona"
-date: "8/24/2020"
+date: "9/7/2020"
 output: html_document
 ---
 
@@ -319,7 +319,7 @@ writeIndeedJobData5pages <- function(jobCityState){
   colnames(stateDF2) <- 'state'
   
   date2 <- as.data.frame(rep(date(),length(salaries$salary)))
-  colnames(data) <- 'todaysDate'
+  colnames(date2) <- 'todaysDate'
   
   salaries2 <- cbind(salaries,cityDF2,stateDF2,date2)
   
